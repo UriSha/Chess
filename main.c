@@ -1,19 +1,32 @@
 #include <stdio.h>
 #include "ChessParser.h"
+#include "ChessHistory.h"
 
 int main() {
-    printf("Hello, World! %d\n",isInt("b"));
-    printf("Hello, World!\n");
+    ChessHistory* history=createChessHistory(3);
+    HistoryNode move;
+    char col='A';
+    int row=2;
+    Soldier sol=QUEEN;
+    move.soldierDied=sol;
+    Position pos;
+    pos.row=row;
+    pos.column=col;
+    move.source=pos;
+    col='B';
+    row=3;
+    Position pos2;
+    pos2.column=col;
+    pos2.row=row;
+    move.destination=pos2;
+    addMovetoHistory(history,move);
+    char *pawn;
+    if(move.soldierDied==QUEEN)
+        pawn="queen";
 
 
-    char str[1024];
-    fgets(str,1024,stdin);
 
-    ChessCommand cmd = parseLine(str);
-
-    int d = 5;
-
-
-    return 1;
+   printf("Moved %c%d to %c%d and We ate a %s",move.destination.column,move.destination.row,move.source.column
+   ,move.source.row,pawn);
 
 }
