@@ -30,10 +30,10 @@ ChessGame *gameCreate(int historySize) {
             game->gameBoard[i][j] = EMPTY_ENTRY;
     }
     game->score = 0;
-    game->whiteKnigPos.row = 0;
-    game->whiteKnigPos.column = 4;
-    game->blackKnigPos.row = 7;
-    game->blackKnigPos.column = 4;
+    game->whiteKnigPos.row = 1;
+    game->whiteKnigPos.column = 'E';
+    game->blackKnigPos.row = 8;
+    game->blackKnigPos.column = 'E';
 
     return game;
 }
@@ -121,12 +121,60 @@ int getPlayer(char soldier) {
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return INVALID_ARGUMENT;
-    game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
+    char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
+    if (srcSoldier == KING_WHITE) {
+        game->whiteKnigPos.row = dest.row;
+        game->whiteKnigPos.column = dest.column;
+    } else if (srcSoldier == KING_BLACK) {
+        game->blackKnigPos.row = dest.row;
+        game->blackKnigPos.column = dest.column;
+    }
+    game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = srcSoldier;
     game->gameBoard[GET_ROW(src)][GET_COLUMN(src)] = EMPTY_ENTRY;
     return SUCCESS;
 }
 
-bool myKingUnderThreat(ChessGame *game) {// TODO
+char getSoldier(char board[GAME_SIZE][GAME_SIZE], int row, int col) {
+    if (board == NULL)
+        return '\0';
+    if (row < 0 || row > GAME_SIZE - 1 || col < 0 || col > GAME_SIZE - 1)
+        return '\0';
+    return board[row][col];
+}
+
+bool myKingUnderThreat(ChessGame *game) {
+    if (game == NULL)
+        return false;
+
+    int kingCol;
+    int kingRow;
+
+    if (game->currentPlayer == WHITE_PLAYER) {
+        kingCol = GET_COLUMN(game->whiteKnigPos);
+        kingRow = GET_ROW(game->whiteKnigPos);
+
+        // pawns
+        if (game->gameBoard[kingRow + 1][kingCol + 1] == PAWN_BLACK ||
+            game->gameBoard[kingRow + 1][kingCol - 1] == PAWN_BLACK)
+            return true;
+
+        // knights
+        if (getSoldier(game->gameBoard, kingRow + 1, kingCol + 2) == KNIGHT_BLACK ||
+            getSoldier(game->gameBoard, kingRow + 1, kingCol - 2) == KNIGHT_BLACK)
+            return true;
+        if (getSoldier(game->gameBoard, kingRow - 1, kingCol + 2) == KNIGHT_BLACK ||
+            getSoldier(game->gameBoard, kingRow - 1, kingCol - 2) == KNIGHT_BLACK)
+            return true;
+        if (getSoldier(game->gameBoard, kingRow + 2, kingCol + 1) == KNIGHT_BLACK ||
+            getSoldier(game->gameBoard, kingRow + 2, kingCol - 1) == KNIGHT_BLACK)
+            return true;
+        if (getSoldier(game->gameBoard,kingRow - 2,kingCol + 1) == KNIGHT_BLACK ||
+            getSoldier(game->gameBoard,kingRow - 2,kingCol - 1) == KNIGHT_BLACK)
+            return true;
+
+    }
+
+
     return false;
 }
 

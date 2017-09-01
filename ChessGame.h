@@ -54,6 +54,8 @@ CHESS_MESSAGE printBoard(ChessGame *src);
 
 int getPlayer(char soldier);
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
+char getSoldier( char board[GAME_SIZE][GAME_SIZE], int row, int col);
+
 bool myKingUnderThreat(ChessGame *game);
 bool isValidMove_King(ChessGame* game, Position src, Position dest);
 bool isValidMove_Queen(ChessGame* game, Position src, Position dest);
