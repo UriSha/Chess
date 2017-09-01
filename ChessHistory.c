@@ -75,7 +75,7 @@ CHESS_MESSAGE addMovetoHistory(ChessHistory* source, HistoryNode move){
 
 HistoryNode* removeRecentMove(ChessHistory* source){
     if (source==NULL || source->actualSize<1)
-        return NULL;//TODO check if it's OK to leave it like this
+        return NULL;
     source->actualSize--;
     return &(source->moves[source->actualSize]);
 }

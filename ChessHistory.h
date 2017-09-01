@@ -1,6 +1,3 @@
-//
-// Created by Or Kashi on 30/08/2017.
-//
 
 #ifndef CHESS_CHESSHISTORY_H
 #define CHESS_CHESSHISTORY_H
@@ -17,7 +14,7 @@
 typedef struct chess_move_history{
     Position source;
     Position destination;
-    Soldier soldierDied;
+    char soldierDied;
 }HistoryNode;
 
 typedef struct chess_array_list{

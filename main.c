@@ -7,8 +7,7 @@ int main() {
     HistoryNode move;
     char col='A';
     int row=2;
-    Soldier sol=QUEEN;
-    move.soldierDied=sol;
+
     Position pos;
     pos.row=row;
     pos.column=col;
@@ -21,8 +20,7 @@ int main() {
     move.destination=pos2;
     addMovetoHistory(history,move);
     char *pawn;
-    if(move.soldierDied==QUEEN)
-        pawn="queen";
+
 
 
 
