@@ -19,7 +19,7 @@ ChessGame *gameCreate(int historySize) {
     game->gameBoard[0][2] = game->gameBoard[0][GAME_SIZE-3] = BISHOP_WHITE;
     game->gameBoard[GAME_SIZE-1][2] = game->gameBoard[GAME_SIZE-1][GAME_SIZE-3] =  BISHOP_BLACK;
     game->gameBoard[0][3] = QUEEN_WHITE; game->gameBoard[GAME_SIZE-1][3] = QUEEEN_BLACK;
-    game->gameBoard[0][4] = KING_WHITE; game->gameBoard[GAME_SIZE-1][4] = KNIGHT_BLACK;
+    game->gameBoard[0][4] = KING_WHITE; game->gameBoard[GAME_SIZE-1][4] = KING_BLACK;
 
     for (int j = 0; j < GAME_SIZE; j++) {
         game->gameBoard[1][j] = PAWN_WHITE;
@@ -35,11 +35,36 @@ ChessGame *gameCreate(int historySize) {
 CHESS_MESSAGE printBoard(ChessGame *src){
     if (src==NULL)
         return INVALID_ARGUMENT;
-    char toBePrinted[GAME_SIZE + 2][GAME_SIZE * 2 + 4];
+    char toBePrinted[GAME_SIZE][GAME_SIZE * 2 + 4];
 
-    for (int i=GAME_SIZE-1;i>=0;i--){
-        toBePrinted[i][0] = i+49;
-
+    // board frame
+    for (int i=0;i<GAME_SIZE;i++){
+        toBePrinted[i][0] = 56-i;
+        toBePrinted[i][1] = toBePrinted[i][GAME_SIZE*2+3] = '|';
     }
-    return INVALID_ARGUMENT;
+
+    // spaces
+    for (int i=GAME_SIZE-1;i>=0;i--) {
+        for (int j = 2; j < GAME_SIZE * 2 + 4; j += 2)
+            toBePrinted[i][j] = ' ';
+    }
+
+    // pawns
+    for (int i = 0; i<GAME_SIZE; i++){
+        for (int j = 3; j< GAME_SIZE+3;j++){
+            toBePrinted[i][2*j - 3] = src->gameBoard[GAME_SIZE-i-1][j-3];
+        }
+    }
+
+    for (int i=0; i< GAME_SIZE; i++){
+        for (int j=0; j<GAME_SIZE*2+4;j++) {
+            printf("%c", toBePrinted[i][j]);
+        }
+        printf("\n");
+    }
+    
+    printf("  -----------------\n");
+    printf("   A B C D E F G H   \n");
+
+    return SUCCESS;
 }
