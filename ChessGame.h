@@ -2,7 +2,9 @@
 
 #ifndef CHESS_CHESSGAME_H
 #define CHESS_CHESSGAME_H
+
 #include "ChessHistory.h"
+#include <ctype.h>
 //typedef enum {
 //    PAWN,
 //    QUEEN,
@@ -15,6 +17,7 @@
 #define GAME_SIZE 8
 #define WHITE_PLAYER 0
 #define BLACK_PLAYER 1
+#define EMPTY_SQUARE -1
 #define EMPTY_ENTRY '_'
 #define PAWN_WHITE 'm'
 #define PAWN_BLACK 'M'
@@ -29,16 +32,42 @@
 #define KING_WHITE 'k'
 #define KING_BLACK 'K'
 
-typedef struct chess_struct{
+#define GET_COLUMN(x) (x.column-65)
+#define GET_ROW(x) (x.row-1)
+
+typedef struct chess_struct {
     char gameBoard[GAME_SIZE][GAME_SIZE];
     int currentPlayer;
-    ChessHistory* history;
+    ChessHistory *history;
     int score;
-}ChessGame;
+    Position whiteKnigPos;
+    Position blackKnigPos;
+} ChessGame;
 
-ChessGame* gameCreate(int historySize);
+ChessGame *gameCreate(int historySize);
+
+ChessGame *gameCopy(ChessGame *src);
+
+void gameDestroy(ChessGame *src);
 
 CHESS_MESSAGE printBoard(ChessGame *src);
+
+int getPlayer(char soldier);
+CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
+bool myKingUnderThreat(ChessGame *game);
+bool isValidMove_King(ChessGame* game, Position src, Position dest);
+bool isValidMove_Queen(ChessGame* game, Position src, Position dest);
+bool isValidMove_Knight(ChessGame* game, Position src, Position dest);
+bool isValidMove_Bishop(ChessGame* game, Position src, Position dest);
+bool isValidMove_Rook(ChessGame* game, Position src, Position dest);
+bool isValidMove_Pawn(ChessGame* game, Position src, Position dest);
+
+
+
+
+// bonus functions
+void getMoves(ChessGame *src, Position pos);
+
 
 
 

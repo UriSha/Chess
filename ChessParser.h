@@ -2,7 +2,7 @@
 #define CHESS_CHESSPARSER_H
 
 #include <stdbool.h>
-
+#define MALLOC_ERROR "Error: malloc has failed\n"
 
 
 //a type used to represent a Game State command
