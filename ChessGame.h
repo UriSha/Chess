@@ -28,7 +28,7 @@
 #define KNIGHT_WHITE 'n'
 #define KNIGHT_BLACK 'N'
 #define QUEEN_WHITE 'q'
-#define QUEEEN_BLACK 'Q'
+#define QUEEN_BLACK 'Q'
 #define KING_WHITE 'k'
 #define KING_BLACK 'K'
 
@@ -61,6 +61,17 @@ bool isValidMove_Knight(ChessGame* game, Position src, Position dest);
 bool isValidMove_Bishop(ChessGame* game, Position src, Position dest);
 bool isValidMove_Rook(ChessGame* game, Position src, Position dest);
 bool isValidMove_Pawn(ChessGame* game, Position src, Position dest);
+
+
+/**
+ *
+ *
+ * @param game
+ * @param src
+ * @param dest
+ * @return
+ */
+bool isValidMove(ChessGame* game, Position src, Position dest);
 
 
 

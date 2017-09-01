@@ -19,7 +19,7 @@ ChessGame *gameCreate(int historySize) {
     game->gameBoard[0][2] = game->gameBoard[0][GAME_SIZE - 3] = BISHOP_WHITE;
     game->gameBoard[GAME_SIZE - 1][2] = game->gameBoard[GAME_SIZE - 1][GAME_SIZE - 3] = BISHOP_BLACK;
     game->gameBoard[0][3] = QUEEN_WHITE;
-    game->gameBoard[GAME_SIZE - 1][3] = QUEEEN_BLACK;
+    game->gameBoard[GAME_SIZE - 1][3] = QUEEN_BLACK;
     game->gameBoard[0][4] = KING_WHITE;
     game->gameBoard[GAME_SIZE - 1][4] = KING_BLACK;
 
@@ -30,8 +30,10 @@ ChessGame *gameCreate(int historySize) {
             game->gameBoard[i][j] = EMPTY_ENTRY;
     }
     game->score = 0;
-    game->whiteKnigPos.row = 0; game->whiteKnigPos.column = 4;
-    game->blackKnigPos.row = 7; game->blackKnigPos.column = 4;
+    game->whiteKnigPos.row = 0;
+    game->whiteKnigPos.column = 4;
+    game->blackKnigPos.row = 7;
+    game->blackKnigPos.column = 4;
 
     return game;
 }
@@ -55,8 +57,10 @@ ChessGame *gameCopy(ChessGame *src) {
         return NULL;
 
     copy->score = src->score;
-    copy->whiteKnigPos.row = src->whiteKnigPos.row; copy->whiteKnigPos.column = src->whiteKnigPos.column;
-    copy->blackKnigPos.row = src->blackKnigPos.row; copy->blackKnigPos.column = src->blackKnigPos.column;
+    copy->whiteKnigPos.row = src->whiteKnigPos.row;
+    copy->whiteKnigPos.column = src->whiteKnigPos.column;
+    copy->blackKnigPos.row = src->blackKnigPos.row;
+    copy->blackKnigPos.column = src->blackKnigPos.column;
 
     return copy;
 }
@@ -106,7 +110,7 @@ CHESS_MESSAGE printBoard(ChessGame *src) {
 }
 
 
-int getPlayer(char soldier){
+int getPlayer(char soldier) {
     if (soldier == EMPTY_ENTRY)
         return EMPTY_SQUARE;
     if (isupper(soldier) == 0)
@@ -114,61 +118,249 @@ int getPlayer(char soldier){
     return BLACK_PLAYER;
 }
 
-CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest){
-    if (game==NULL)
+CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
         return INVALID_ARGUMENT;
     game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
     game->gameBoard[GET_ROW(src)][GET_COLUMN(src)] = EMPTY_ENTRY;
     return SUCCESS;
 }
 
-bool myKingUnderThreat(ChessGame *game){// TODO
+bool myKingUnderThreat(ChessGame *game) {// TODO
     return false;
 }
 
-bool isValidMove_King(ChessGame* game, Position src, Position dest){
-    if (game==NULL)
+bool isValidMove_King(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
+        return false;
+    return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
+}
+
+bool isValidMove_Queen(ChessGame *game, Position src, Position dest) {
+    return (isValidMove_Rook(game, src, dest) || isValidMove_Bishop(game, src, dest));
+}
+
+
+bool isValidMove_Knight(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
+        return false;
+
+    int srcCol = GET_COLUMN(src);
+    int srcRow = GET_ROW(src);
+    int destCol = GET_COLUMN(dest);
+    int destRow = GET_ROW(dest);
+
+    if (srcCol + 1 == destCol && abs(srcRow - destRow) == 2)
+        return true;
+    if (srcCol - 1 == destCol && abs(srcRow - destRow) == 2)
+        return true;
+    if (srcCol + 2 == destCol && abs(srcRow - destRow) == 1)
+        return true;
+    if (srcCol - 2 == destCol && abs(srcRow - destRow) == 1)
+        return true;
+
+    return false;
+}
+
+bool isValidMove_Bishop(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
+        return false;
+
+    int srcCol = GET_COLUMN(src);
+    int srcRow = GET_ROW(src);
+    int destCol = GET_COLUMN(dest);
+    int destRow = GET_ROW(dest);
+
+    if (abs(destCol - srcCol) != abs(destRow - srcRow))
+        return false;
+
+    int curCol = srcCol;
+    int curRow = srcRow;
+
+    if (destCol > srcCol && destRow > srcRow) { // up-right
+        curCol++;
+        curRow++;
+        while (destCol > curCol) {
+            if (game->gameBoard[curRow][curCol] != EMPTY_ENTRY)
+                return false;
+            curCol++;
+            curRow++;
+        }
+        return true;
+    } else if (destCol < srcCol && destRow > srcRow) { // up-left
+        curCol--;
+        curRow++;
+        while (destCol < curCol) {
+            if (game->gameBoard[curRow][curCol] != EMPTY_ENTRY)
+                return false;
+            curCol--;
+            curRow++;
+        }
+        return true;
+
+    } else if (destCol > srcCol && destRow < srcRow) { // down-right
+        curCol++;
+        curRow--;
+        while (destCol > curCol) {
+            if (game->gameBoard[curRow][curCol] != EMPTY_ENTRY)
+                return false;
+            curCol++;
+            curRow--;
+        }
+        return true;
+    } else if (destCol < srcCol && destRow < srcRow) { // down-left
+        curCol--;
+        curRow--;
+        while (destCol < curCol) {
+            if (game->gameBoard[curRow][curCol] != EMPTY_ENTRY)
+                return false;
+            curCol--;
+            curRow--;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool isValidMove_Rook(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
+        return false;
+
+    int srcCol = GET_COLUMN(src);
+    int srcRow = GET_ROW(src);
+    int destCol = GET_COLUMN(dest);
+    int destRow = GET_ROW(dest);
+
+    if (srcCol == destCol) {
+        int currentRow;
+        if (destRow > srcRow) { // going up
+            currentRow = srcRow + 1;
+            while (destRow > currentRow) {
+                if (game->gameBoard[currentRow][srcCol] != EMPTY_ENTRY)
+                    return false;
+                currentRow++;
+            }
+            return true;
+        } else { // going down
+            currentRow = srcRow - 1;
+            while (destRow < currentRow) {
+                if (game->gameBoard[currentRow][srcCol] != EMPTY_ENTRY)
+                    return false;
+                currentRow--;
+            }
+            return true;
+        }
+    } else if (srcRow == destRow) {
+        int currentCol;
+        if (destCol > srcCol) { // going right
+            currentCol = srcCol + 1;
+            while (destCol > currentCol) {
+                if (game->gameBoard[srcRow][currentCol] != EMPTY_ENTRY)
+                    return false;
+                currentCol++;
+            }
+            return true;
+        } else { // going left
+            currentCol = srcCol - 1;
+            while (destCol < currentCol) {
+                if (game->gameBoard[srcRow][currentCol] != EMPTY_ENTRY)
+                    return false;
+                currentCol--;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool isValidMove_Pawn(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
+        return false;
+
+    int srcCol = GET_COLUMN(src);
+    int srcRow = GET_ROW(src);
+    int destCol = GET_COLUMN(dest);
+    int destRow = GET_ROW(dest);
+
+    // moving forward
+    if (srcCol == destCol && game->gameBoard[destRow][destCol] == EMPTY_ENTRY) {
+        if (game->currentPlayer == WHITE_PLAYER) {
+            if (destRow - srcRow == 2 && game->gameBoard[srcRow + 1][srcCol] == EMPTY_ENTRY && srcRow == 1)
+                return true;
+            if (destRow - srcRow == 1)
+                return true;
+        } else if (game->currentPlayer == BLACK_PLAYER) {
+            if (destRow - srcRow == -2 && game->gameBoard[srcRow - 1][srcCol] == EMPTY_ENTRY && srcRow == GAME_SIZE - 2)
+                return true;
+            if (destRow - srcRow == -1)
+                return true;
+        }
+
+    }
+        // diagonal attack
+    else if (abs(srcCol - destCol) == 1) {
+        if (game->currentPlayer == WHITE_PLAYER) {
+            if (destRow - srcRow == 1 && getPlayer(game->gameBoard[destRow][destCol]) == BLACK_PLAYER)
+                return true;
+        } else if (game->currentPlayer == BLACK_PLAYER) {
+            if (destRow - srcRow == -1 && getPlayer(game->gameBoard[destRow][destCol]) == WHITE_PLAYER)
+                return true;
+        }
+    }
+
+    return false;
+
+}
+
+bool isValidMove(ChessGame *game, Position src, Position dest) {
+    if (game == NULL)
         return false;
     if (game->currentPlayer != getPlayer(game->gameBoard[GET_ROW(src)][GET_COLUMN(src)]))
         return false;
-    if (dest.column == src.column && dest.row == src.row)
+    if (game->currentPlayer == getPlayer(game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)]))
         return false;
-    if (abs(dest.column - src.column) <= 1 && abs(dest.row-src.row)<=1){
-        char destSoldier = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-        if (game->currentPlayer == getPlayer(destSoldier))
-            return false;
-        if (destSoldier == KING_BLACK || destSoldier == KING_WHITE) // its in the right color already
-            return true;
-        ChessGame* copy = gameCopy(game);
-        if (movePiece(copy, src, dest)==SUCCESS) {
-            if (!myKingUnderThreat(copy)) {
-                gameDestroy(copy);
-                return true;
-            }
+
+    bool result;
+
+    switch (game->gameBoard[GET_ROW(src)][GET_COLUMN(src)]) {
+        case PAWN_WHITE:
+        case PAWN_BLACK:
+            result = isValidMove_Pawn(game, src, dest);
+            break;
+        case BISHOP_WHITE:
+        case BISHOP_BLACK:
+            result = isValidMove_Bishop(game, src, dest);
+            break;
+        case KNIGHT_WHITE:
+        case KNIGHT_BLACK:
+            result = isValidMove_Knight(game, src, dest);
+            break;
+        case ROOK_WHITE:
+        case ROOK_BLACK:
+            result = isValidMove_Rook(game, src, dest);
+            break;
+        case QUEEN_WHITE:
+        case QUEEN_BLACK:
+            result = isValidMove_Queen(game, src, dest);
+            break;
+        case KING_WHITE:
+        case KING_BLACK:
+            result = isValidMove_King(game, src, dest);
+            break;
+        default:
+            result = false;
+    }
+    if (result) {
+        if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == KING_BLACK ||
+            game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == KING_WHITE)
+            return result;
+        ChessGame *copy = gameCopy(game);
+        if (movePiece(copy, src, dest) == SUCCESS) {
+            if (myKingUnderThreat(copy))
+                result = false;
         }
         gameDestroy(copy);
     }
-    return false;
-}
-bool isValidMove_Queen(ChessGame* game, Position src, Position dest);
-bool isValidMove_Knight(ChessGame* game, Position source, Position dest);
-bool isValidMove_Bishop(ChessGame* game, Position source, Position dest);
-bool isValidMove_Rook(ChessGame* game, Position source, Position dest);
-
-
-bool isValidMove_Pawn(ChessGame* game, Position src, Position dest){
-    if (game==NULL)
-        return false;
-
-    int srcCol = GET_COLUMN(src); int srcRow = GET_ROW(src);
-    int destCol = GET_COLUMN(dest); int destRow = GET_ROW(dest);
-
-    if (srcCol==destCol){
-        if (destRow-srcRow==2 && )
-    }
-    else if (abs(srcCol-destCol)==1){ // attack
-
-    }
-    return false;
-
+    return result;
 }
