@@ -12,9 +12,10 @@
 //    KNIGHT,
 //    EMPTY,
 //}Soldier;
-#define CHESS_GAME_SIZE 8
+#define GAME_SIZE 8
 #define WHITE_PLAYER 0
 #define BLACK_PLAYER 1
+#define EMPTY_ENTRY '_'
 #define PAWN_WHITE 'm'
 #define PAWN_BLACK 'M'
 #define BISHOP_WHITE 'b'
@@ -29,12 +30,15 @@
 #define KING_BLACK 'K'
 
 typedef struct chess_struct{
-    char gameBoard[CHESS_GAME_SIZE][CHESS_GAME_SIZE];
+    char gameBoard[GAME_SIZE][GAME_SIZE];
     int currentPlayer;
     ChessHistory* history;
     int score;
 }ChessGame;
 
+ChessGame* gameCreate(int historySize);
+
+CHESS_MESSAGE printBoard(ChessGame *src);
 
 
 

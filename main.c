@@ -21,9 +21,6 @@ int main() {
     addMovetoHistory(history,move);
     char *pawn;
 
-
-
-
    printf("Moved %c%d to %c%d and We ate a %s",move.destination.column,move.destination.row,move.source.column
    ,move.source.row,pawn);
 

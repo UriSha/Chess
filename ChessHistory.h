@@ -3,7 +3,6 @@
 #define CHESS_CHESSHISTORY_H
 #include <stdio.h>
 #include <stdlib.h>
-#include "ChessGame.h"
 #include "ChessParser.h"
 /**
  * a struct that saves the last move that happened in the game.
