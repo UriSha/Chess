@@ -14,5 +14,6 @@ int main() {
     pos.column = 'D';
     pos.row = 8;
     printf("%d", GET_COLUMN(pos));
-    printf("%d", GET_ROW(pos));
+    printf("%d\n", GET_ROW(pos));
+
 }

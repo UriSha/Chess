@@ -52,7 +52,7 @@ void gameDestroy(ChessGame *src);
 
 CHESS_MESSAGE printBoard(ChessGame *src);
 
-int getPlayer(char soldier);
+int getPlayer(char soldier); //TODO add_new_fanctions here
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
 char getSoldier( char board[GAME_SIZE][GAME_SIZE], int row, int col);
 

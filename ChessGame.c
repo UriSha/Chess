@@ -321,7 +321,7 @@ bool myKingUnderThreat(ChessGame *game) {
             QBRThreatsKing(game, kingRow, kingCol, 0) || kingThreatsKing(game, kingRow, kingCol));
 }
 
-bool isValidMove_King(ChessGame *game, Position src, Position dest) {
+bool isValidMove_King(ChessGame *game, Position src, Position dest) { // TODO add castling
     if (game == NULL)
         return false;
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
