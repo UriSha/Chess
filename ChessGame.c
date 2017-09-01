@@ -161,6 +161,12 @@ char getOtherBishop(int player) {
 char getOtherRook(int player) {
     return (char) (player == WHITE_PLAYER ? ROOK_BLACK : ROOK_WHITE);
 }
+char getOtherPawn(int player) {
+    return (char) (player == WHITE_PLAYER ? PAWN_BLACK : PAWN_WHITE);
+}
+int getOtherPlayer(int player) {
+    return  player == WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER;
+}
 
 bool knightThreatsKing(ChessGame *game, int kingRow, int kingCol) {
     // knights
@@ -176,7 +182,7 @@ bool knightThreatsKing(ChessGame *game, int kingRow, int kingCol) {
     if (getSoldier(game->gameBoard, kingRow - 2, kingCol + 1) == getOtherKnight(game->currentPlayer) ||
         getSoldier(game->gameBoard, kingRow - 2, kingCol - 1) == getOtherKnight(game->currentPlayer))
         return true;
-
+    return false;
 }
 
 bool kingThreatsKing(ChessGame *game, int kingRow, int kingCol) {
@@ -193,10 +199,10 @@ bool kingThreatsKing(ChessGame *game, int kingRow, int kingCol) {
     if (getSoldier(game->gameBoard, kingRow + 1, kingCol - 1) == getOtherKing(game->currentPlayer) ||
         getSoldier(game->gameBoard, kingRow - 1, kingCol + 1) == getOtherKing(game->currentPlayer))
         return true;
-
+return false;
 }
 
-bool horizontalThreatsKing(ChessGame *game, int kingRow, int kingCol,bool diagonal) {
+bool QBRThreatsKing(ChessGame *game, int kingRow, int kingCol, bool diagonal) {//TODO make a function for while
     int curRow = kingRow;
     int curCol = kingCol;
     char danger;
@@ -221,53 +227,72 @@ bool horizontalThreatsKing(ChessGame *game, int kingRow, int kingCol,bool diagon
         if (getSoldier(game->gameBoard, curRow, curCol) == danger ||
             getSoldier(game->gameBoard, curRow, curCol) == getOtherQueen(game->currentPlayer))
             return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
+        if (getSoldier(game->gameBoard, curRow, curCol) == getOtherPawn(game->currentPlayer) ||
             getSoldier(game->gameBoard, curRow, curCol) == safe ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherKnight(game->currentPlayer))
             break;
     } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
+             getPlayer(game->gameBoard[curRow][curCol] != game->currentPlayer));
+    // reset
     curRow = kingRow;
     curCol = kingCol;
-    do {//down
-        curRow--;
-        if (getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
+    do {
+        if (diagonal) {//down right
+            curRow--;
+            curCol++;
+        }
+        else {//down
+            curRow--;
+        }
+        if (getSoldier(game->gameBoard, curRow, curCol) == danger ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherQueen(game->currentPlayer))
             return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
+        if (getSoldier(game->gameBoard, curRow, curCol) == getOtherPawn(game->currentPlayer) ||
+            getSoldier(game->gameBoard, curRow, curCol) == safe ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherKnight(game->currentPlayer))
             break;
     } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
+             getPlayer(game->gameBoard[curRow][curCol] != game->currentPlayer));
     curRow = kingRow;
     curCol = kingCol;
-    do {//right
-        curCol++;
-        if (getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
+    do {
+        if (diagonal) {//down left
+            curRow--;
+            curCol--;
+        }
+        else {//left
+            curCol--;
+        }
+        if (getSoldier(game->gameBoard, curRow, curCol) == danger ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherQueen(game->currentPlayer))
             return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
+        if (getSoldier(game->gameBoard, curRow, curCol) == getOtherPawn(game->currentPlayer) ||
+            getSoldier(game->gameBoard, curRow, curCol) == safe ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherKnight(game->currentPlayer))
             break;
     } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
+             getPlayer(game->gameBoard[curRow][curCol] != game->currentPlayer));
+    // reset
     curRow = kingRow;
     curCol = kingCol;
-    do {//left
-        curCol--;
-        if (getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
+    do {
+        if (diagonal) {//up left
+            curRow++;
+            curCol--;
+        }
+        else {//right
+            curCol++;
+        }
+        if (getSoldier(game->gameBoard, curRow, curCol) == danger ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherQueen(game->currentPlayer))
             return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
+        if (getSoldier(game->gameBoard, curRow, curCol) == getOtherPawn(game->currentPlayer) ||
+            getSoldier(game->gameBoard, curRow, curCol) == safe ||
+            getSoldier(game->gameBoard, curRow, curCol) == getOtherKnight(game->currentPlayer))
             break;
     } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
-
-
+             getPlayer(game->gameBoard[curRow][curCol] != game->currentPlayer));
+    return false;
 }
 
 bool myKingUnderThreat(ChessGame *game) {
@@ -292,72 +317,8 @@ bool myKingUnderThreat(ChessGame *game) {
             game->gameBoard[kingRow - 1][kingCol - 1] == PAWN_WHITE)
             return true;
     }
-    return (knightThreatsKing(game, kingRow, kingCol) || horizontalThreatsKing(game, kingRow, kingCol,1) ||
-            horizontalThreatsKing(game, kingRow, kingCol,0) || kingThreatsKing(game, kingRow, kingCol));
-
-
-
-
-    // bishops and queen
-    curRow = kingRow;
-    curCol = kingCol;
-    do {//up right
-        curRow++;
-        curCol++;
-        if (getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
-            return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
-            break;
-    } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
-    curRow = kingRow;
-    curCol = kingCol;
-    do {//down right
-        curRow--;
-        curCol++;
-        if (getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
-            return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
-            break;
-    } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
-    curRow = kingRow;
-    curCol = kingCol;
-    do {//up left
-        curRow++;
-        curCol--;
-        if (getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
-            return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
-            break;
-    } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
-    curRow = kingRow;
-    curCol = kingCol;
-    do {//down left
-        curRow--;
-        curCol--;
-        if (getSoldier(game->gameBoard, curRow, curCol) == BISHOP_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == QUEEN_BLACK)
-            return true;
-        if (getSoldier(game->gameBoard, curRow, curCol) == PAWN_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == ROOK_BLACK ||
-            getSoldier(game->gameBoard, curRow, curCol) == KNIGHT_BLACK)
-            break;
-    } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != WHITE_PLAYER));
-
-
-    return false;
+    return (knightThreatsKing(game, kingRow, kingCol) || QBRThreatsKing(game, kingRow, kingCol, 1) ||
+            QBRThreatsKing(game, kingRow, kingCol, 0) || kingThreatsKing(game, kingRow, kingCol));
 }
 
 bool isValidMove_King(ChessGame *game, Position src, Position dest) {
