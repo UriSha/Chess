@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "ChessParser.h"
 
 #define MAX_LINE_LENGTH 1024
@@ -28,13 +29,14 @@ Position getPosition(char *token) {
     res.row = INVALID_ROW;
     if (token == NULL || strlen(token) != 5)
         return res;
+    char test=token[3];
     if (token[0] == '<' && token[4] == '>') {
-        if ((token[1] > 64) && (token[1] < 73)) {
+        if ((token[1] >= '1') && (token[1] <= '8')) {
 
             if (token[2] == 44) {
-                if ((token[3] > 48) && (token[3] < 57)) {
-                    res.column = token[1];
-                    res.row = token[3] - 48;
+                if ((token[3] >= 'A') && (token[3] <= 'H')) {
+                    res.column = token[3];
+                    res.row = token[1] - '0';
                 }
             }
         }
@@ -97,6 +99,7 @@ ChessCommand parseLine(const char *str) {
     char *token = strtok(str2, DELIMITER);
     ChessCommand result;
     result.cmd = getChessCommand(token);
+    result.validArg=false;
     token = strtok(NULL, DELIMITER);
 
     if (token == '\0') {
@@ -108,8 +111,15 @@ ChessCommand parseLine(const char *str) {
             result.validArg = false;
         }
     } else if (isInt(token)) {
-        if ((result.cmd == DIFFICULTY) || (result.cmd == GAME_MODE) || (result.cmd == USER_COLOR)) {
+        int tokenInt = atoi(token);
+        if ((result.cmd == DIFFICULTY) && (1<=tokenInt && tokenInt<=5)) {
             result.validArg = true;
+            result.argument=tokenInt;
+        }
+        else if(((result.cmd==GAME_MODE)||(result.cmd==USER_COLOR))&& (tokenInt==1 || tokenInt==2))
+        {
+            result.argument=tokenInt;
+            result.validArg=true;
         }
     } else if ((result.cmd == SAVE) || (result.cmd == LOAD)) {
         result.validArg = true;
