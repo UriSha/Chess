@@ -24,6 +24,7 @@ typedef struct chess_array_list{
 
 typedef enum{
     SUCCESS,
+    ILLEGAL_MOVE,
     INVALID_ARGUMENT,
 
 }CHESS_MESSAGE;

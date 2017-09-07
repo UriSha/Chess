@@ -42,8 +42,10 @@ typedef struct chess_struct {
     int score;
     Position whiteKingPos;
     Position blackKingPos;
-    bool rightCastle;
-    bool leftCastle;
+    bool whiteRightCastle;
+    bool whiteLeftCastle;
+    bool blackRightCastle;
+    bool blackLeftCastle;
 } ChessGame;
 
 ChessGame *gameCreate(int historySize);
@@ -54,7 +56,7 @@ void gameDestroy(ChessGame *src);
 
 CHESS_MESSAGE printBoard(ChessGame *src);
 
-int getPlayer(char soldier); //TODO add_new_fanctions here
+int getPlayer(char soldier);
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
 char getSoldier( char board[GAME_SIZE][GAME_SIZE], int row, int col);
 
@@ -77,6 +79,8 @@ bool isValidMove_Knight(ChessGame *game, Position src, Position dest);
 bool isValidMove_Bishop(ChessGame *game, Position src, Position dest);
 bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
+
+CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
 
 
 /**
