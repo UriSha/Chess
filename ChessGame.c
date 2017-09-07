@@ -34,10 +34,10 @@ ChessGame *gameCreate(int historySize) {
             game->gameBoard[i][j] = EMPTY_ENTRY;
     }
     game->score = 0;
-    game->whiteKnigPos.row = WHITE_KING_INITIAL_ROW;
-    game->whiteKnigPos.column = KING_INITIAL_COL;
-    game->blackKnigPos.row = BLACK_KING_INITIAL_ROW;
-    game->blackKnigPos.column = KING_INITIAL_COL;
+    game->whiteKingPos.row = WHITE_KING_INITIAL_ROW;
+    game->whiteKingPos.column = KING_INITIAL_COL;
+    game->blackKingPos.row = BLACK_KING_INITIAL_ROW;
+    game->blackKingPos.column = KING_INITIAL_COL;
     game->leftCastle = game->rightCastle = 1;
 
     return game;
@@ -62,10 +62,10 @@ ChessGame *gameCopy(ChessGame *src) {
         return NULL;
 
     copy->score = src->score;
-    copy->whiteKnigPos.row = src->whiteKnigPos.row;
-    copy->whiteKnigPos.column = src->whiteKnigPos.column;
-    copy->blackKnigPos.row = src->blackKnigPos.row;
-    copy->blackKnigPos.column = src->blackKnigPos.column;
+    copy->whiteKingPos.row = src->whiteKingPos.row;
+    copy->whiteKingPos.column = src->whiteKingPos.column;
+    copy->blackKingPos.row = src->blackKingPos.row;
+    copy->blackKingPos.column = src->blackKingPos.column;
     copy->leftCastle = src->leftCastle;
     copy->rightCastle = src->rightCastle;
 
@@ -130,11 +130,11 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
         return INVALID_ARGUMENT;
     char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
     if (srcSoldier == KING_WHITE) {
-        game->whiteKnigPos.row = dest.row;
-        game->whiteKnigPos.column = dest.column;
+        game->whiteKingPos.row = dest.row;
+        game->whiteKingPos.column = dest.column;
     } else if (srcSoldier == KING_BLACK) {
-        game->blackKnigPos.row = dest.row;
-        game->blackKnigPos.column = dest.column;
+        game->blackKingPos.row = dest.row;
+        game->blackKingPos.column = dest.column;
     }
     game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = srcSoldier;
     game->gameBoard[GET_ROW(src)][GET_COLUMN(src)] = EMPTY_ENTRY;
@@ -254,16 +254,16 @@ bool myKingUnderThreat(ChessGame *game) {
     int kingCol = 100;
     int kingRow = 100;
     if (game->currentPlayer == WHITE_PLAYER) {
-        kingCol = GET_COLUMN(game->whiteKnigPos);
-        kingRow = GET_ROW(game->whiteKnigPos);
+        kingCol = GET_COLUMN(game->whiteKingPos);
+        kingRow = GET_ROW(game->whiteKingPos);
 
         // pawns
         if (game->gameBoard[kingRow + 1][kingCol + 1] == PAWN_BLACK ||
             game->gameBoard[kingRow + 1][kingCol - 1] == PAWN_BLACK)
             return true;
     } else if (game->currentPlayer == BLACK_PLAYER) {
-        kingCol = GET_COLUMN(game->blackKnigPos);
-        kingRow = GET_ROW(game->blackKnigPos);
+        kingCol = GET_COLUMN(game->blackKingPos);
+        kingRow = GET_ROW(game->blackKingPos);
         // pawns
         if (game->gameBoard[kingRow - 1][kingCol + 1] == PAWN_WHITE ||
             game->gameBoard[kingRow - 1][kingCol - 1] == PAWN_WHITE)
@@ -337,7 +337,7 @@ bool isValidMove_King(ChessGame *game, Position src, Position dest) { // TODO ad
     if(dest.row==src.row) {//possible Castling
         if (game->rightCastle  && GET_COLUMN(dest) == KING_INITIAL_COL + 2)
             return legalCastling(game, src, dest, 1);
-        if (game->leftCastle  && GET_COLUMN(dest) == KING_INITIAL_COL - 3)
+        if (game->leftCastle  && GET_COLUMN(dest) == KING_INITIAL_COL - 3) // TODO update the bit!!
             return legalCastling(game, src, dest, 0);
     }
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);

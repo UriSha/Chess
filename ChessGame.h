@@ -40,8 +40,8 @@ typedef struct chess_struct {
     int currentPlayer;
     ChessHistory *history;
     int score;
-    Position whiteKnigPos;
-    Position blackKnigPos;
+    Position whiteKingPos;
+    Position blackKingPos;
     bool rightCastle;
     bool leftCastle;
 } ChessGame;
