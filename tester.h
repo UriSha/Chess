@@ -7,4 +7,5 @@
 
 
 int testGame();
+int scholarsMate();
 #endif //CHESS_TESTER_H

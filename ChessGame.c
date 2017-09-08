@@ -2,8 +2,8 @@
 #include "ChessParser.h"
 
 #define KING_INITIAL_COL 'E'
-#define WHITE_INITIAL_ROW 1
-#define BLACK_INITIAL_ROW 8
+#define WHITE_INITIAL_ROW 0
+#define BLACK_INITIAL_ROW 7
 
 ChessGame *gameCreate(int historySize) {
     if (historySize <= 0)
@@ -613,22 +613,22 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
     return result;
 }
 
-void pawnPromotion(ChessGame *game, Position posOfPawn){
+void pawnPromotion(ChessGame *game, Position posOfPawn) {
     char userInput[MAX_LINE_LENGTH];
-    char chosenSolider= '\0';
-    do{
-    printf("Pawn promotion- please replace the pawn by queen, rook, knight, bishop or pawn:\n");
-        scanf("%s",userInput);
-        if (strcmp(userInput, "queen")==0)
-            chosenSolider = (char)(game->currentPlayer == WHITE_PLAYER ? QUEEN_WHITE : QUEEN_BLACK);
-        else if (strcmp(userInput, "bishop")==0)
-            chosenSolider = (char)(game->currentPlayer == WHITE_PLAYER ? BISHOP_WHITE : BISHOP_BLACK);
-        else if (strcmp(userInput, "rook")==0)
-            chosenSolider = (char)(game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
-        else if (strcmp(userInput, "knight")==0)
-            chosenSolider = (char)(game->currentPlayer == WHITE_PLAYER ? KNIGHT_WHITE : KNIGHT_BLACK);
-        else if (strcmp(userInput, "pawn")==0)
-            chosenSolider = (char)(game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
+    char chosenSolider = '\0';
+    do {
+        printf("Pawn promotion- please replace the pawn by queen, rook, knight, bishop or pawn:\n");
+        scanf("%s", userInput);
+        if (strcmp(userInput, "queen") == 0)
+            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? QUEEN_WHITE : QUEEN_BLACK);
+        else if (strcmp(userInput, "bishop") == 0)
+            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? BISHOP_WHITE : BISHOP_BLACK);
+        else if (strcmp(userInput, "rook") == 0)
+            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
+        else if (strcmp(userInput, "knight") == 0)
+            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? KNIGHT_WHITE : KNIGHT_BLACK);
+        else if (strcmp(userInput, "pawn") == 0)
+            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
         else {
             printf("Invalid Type\n");
         }
@@ -667,13 +667,94 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
         game->blackRightCastle = 0;
 
     int lastRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW : WHITE_INITIAL_ROW;
-    char srcSolider = (char)(game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
-    if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)]== srcSolider && GET_ROW(dest)==lastRow)
+    char srcSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
+    if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == srcSolider && GET_ROW(dest) == lastRow)
         pawnPromotion(game, dest);
 
     game->currentPlayer = 1 - game->currentPlayer;
+    return SUCCESS;
 
-    // TODO checkStatus(game);
+}
+//bool queenMoves(ChessGame* game){
+//
+//}
+//bool bishopMoves(ChessGame* game){
+//
+//}
+//bool rookMoves(ChessGame* game){
+//
+//}
+//bool pawnMoves(ChessGame* game){
+//    Position src,dest;
+//    for(int i=0;i<GAME_SIZE;i++) {
+//        for (int j = o; j < GAME_SIZE; j++){}
+//    }
+//
+//
+//}
+//bool kingMoves(ChessGame* game){
+//
+//}
+//bool knightMoves(ChessGame* game){
+//
+//}
+int getSoldierColor(char soldier){
+    if(soldier==EMPTY_ENTRY)
+        return -1;
+    return isupper(soldier)==0 ? WHITE_PLAYER : BLACK_PLAYER;
+}
+bool areThereAnyMoves(ChessGame *game) {
 
+    Position src,dest;
+    for(int i=1;i<=GAME_SIZE;i++) {
+        for (int j = 0; j < GAME_SIZE; j++){
+            if(i==7)
+                i=7;
+            src.row=i;
+            src.column='A'+j;
+            if(getSoldierColor(game->gameBoard[i][j])!=game->currentPlayer)
+                continue;
+            for(int k=0;k<GAME_SIZE;k++){
+                for(int l=0;l<GAME_SIZE;l++)
+                {
+                    dest.row=k;
+                    dest.column='A'+l;
+                    if(isValidMove(game,src,dest))
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
+CHESS_MESSAGE checkStatus(ChessGame *game) {
+    if (game == NULL)
+        return INVALID_ARGUMENT;
+    char *playerColor = (char *) malloc(sizeof(char) * 5);
+    playerColor = game->currentPlayer == WHITE_PLAYER ? "black" : "white";
+    if (myKingUnderThreat(game)) {
+        if (!areThereAnyMoves(game)) {
+            printf("Checkmate! %s player wins the game\n", playerColor);
+            return MATE;
+        }
+        printf("Check!\n");
+        return CHECK;
+    }
+    if (!areThereAnyMoves(game)) {
+        printf("The game ends in a tie\n");
+        return TIE;
+    }
+    return CONTINUE;
+}
+
+void getMoves(ChessGame *game, Position pos){
+    if(game==NULL)
+        return ;
+    char *playerColor = (char *) malloc(sizeof(char) * 5);
+    playerColor = game->currentPlayer == WHITE_PLAYER ? "white" : "black";
+    if(getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])!=game->currentPlayer)
+        printf("The specified position does not contain %s player piece\n",playerColor);
+    if(pos.row>8 || pos.row<1 || pos.column>'H' || pos.column<'A')
+        printf("Invalid position on the board\n");
 }

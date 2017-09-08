@@ -26,6 +26,10 @@ typedef enum{
     SUCCESS,
     ILLEGAL_MOVE,
     INVALID_ARGUMENT,
+    CHECK,
+    MATE,
+    TIE,
+    CONTINUE,
 
 }CHESS_MESSAGE;
 

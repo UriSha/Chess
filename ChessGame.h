@@ -79,8 +79,9 @@ bool isValidMove_Knight(ChessGame *game, Position src, Position dest);
 bool isValidMove_Bishop(ChessGame *game, Position src, Position dest);
 bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
-
+void pawnPromotion(ChessGame *game, Position posOfPawn);
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
+CHESS_MESSAGE checkStatus(ChessGame* game);
 
 
 /**
@@ -97,7 +98,7 @@ bool isValidMove(ChessGame* game, Position src, Position dest);
 
 
 // bonus functions
-void getMoves(ChessGame *src, Position pos);
+void getMoves(ChessGame *game, Position pos);
 
 
 
