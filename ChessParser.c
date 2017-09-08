@@ -1,12 +1,7 @@
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
+
 #include "ChessParser.h"
 
-#define MAX_LINE_LENGTH 1024
-#define DELIMITER " \t\r\n"
-#define INVALID_ROW 100
-#define INVALID_COL '\0'
+
 
 
 bool isInt(const char *str) {

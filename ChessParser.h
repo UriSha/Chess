@@ -2,8 +2,14 @@
 #define CHESS_CHESSPARSER_H
 
 #include <stdbool.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #define MALLOC_ERROR "Error: malloc has failed\n"
-
+#define MAX_LINE_LENGTH 1024
+#define DELIMITER " \t\r\n"
+#define INVALID_ROW 100
+#define INVALID_COL '\0'
 
 //a type used to represent a Game State command
 typedef enum {

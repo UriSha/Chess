@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "ChessParser.h"
-#include "ChessHistory.h"
-#include "ChessGame.h"
+//#include "ChessHistory.h"
+//#include "ChessGame.h"
+#include "tester.h"
 
 
 int main() {
@@ -80,4 +81,6 @@ int main() {
 
     cmd = parseLine("reset");
     if (cmd.cmd != RESTART) { printf("Error 24\n"); }
+
+    testGame();
 }
