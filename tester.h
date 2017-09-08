@@ -8,4 +8,5 @@
 
 int testGame();
 int scholarsMate();
+void checkPrintMoves();
 #endif //CHESS_TESTER_H

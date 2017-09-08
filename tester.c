@@ -80,3 +80,46 @@ int scholarsMate(){
     printBoard(game);
     checkStatus(game);
 }
+
+void checkPrintMoves()
+{
+    Position src;
+    Position dest;
+
+    ChessGame *game = gameCreate(3);
+    printBoard(game);
+    src.row=1;
+    src.column='B';
+    printMoves(game,src);
+    src.row = 2;
+    src.column = 'E';
+    dest.row = 4;
+    dest.column = 'E';
+    setMove(game,src,dest);
+    printBoard(game);
+    src.row = 7;
+    src.column = 'E';
+    dest.row = 5;
+    dest.column = 'E';
+    setMove(game,src,dest);
+    printBoard(game);
+    src.row = 1;
+    src.column = 'D';
+    dest.row = 5;
+    dest.column = 'H';
+    setMove(game,src,dest);
+    printBoard(game);
+    src.row = 7;
+    src.column = 'A';
+    dest.row = 6;
+    dest.column = 'A';
+    setMove(game,src,dest);
+    printBoard(game);
+    dest.row = 5;
+    dest.column = 'H';
+    printMoves(game,dest);
+
+
+
+
+}

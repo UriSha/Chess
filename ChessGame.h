@@ -67,11 +67,11 @@ char getOtherBishop(int player);
 char getOtherRook(int player);
 char getOtherPawn(int player);
 int getOtherPlayer(int player);
-bool knightThreatsKing(ChessGame *game, int kingRow, int kingCol);
-bool kingThreatsKing(ChessGame *game, int kingRow, int kingCol);
+bool knightThreatsPosition(ChessGame *game, int row, int col);
+bool kingThreatsPosition(ChessGame *game, int row, int col);
 
-bool QBRThreatsKing(ChessGame *game, int kingRow, int kingCol);
-bool myKingUnderThreat(ChessGame *game);
+bool QBRThreatsPosition(ChessGame *game, int row, int col);
+bool myPositionUnderThreat(ChessGame *game,Position pos);
 bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling);
 bool isValidMove_King(ChessGame *game, Position src, Position dest);
 bool isValidMove_Queen(ChessGame *game, Position src, Position dest);
@@ -95,12 +95,12 @@ CHESS_MESSAGE checkStatus(ChessGame* game);
 bool isValidMove(ChessGame* game, Position src, Position dest);
 
 
-
+char *getStringFromPosition(Position dest);
 
 // bonus functions
-void getMoves(ChessGame *game, Position pos);
+void printMoves(ChessGame *game, Position pos);
 
-
+int getMoves(ChessGame* game, Position *result, Position pos);
 
 
 #endif //CHESS_CHESSGAME_H

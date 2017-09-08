@@ -209,36 +209,36 @@ int getOtherPlayer(int player) {
     return player == WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER;
 }
 
-bool knightThreatsKing(ChessGame *game, int kingRow, int kingCol) {
+bool knightThreatsPosition(ChessGame *game, int row, int col) {
     // knights
-    if (getSoldier(game->gameBoard, kingRow + 1, kingCol + 2) == getOtherKnight(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow + 1, kingCol - 2) == getOtherKnight(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row + 1, col + 2) == getOtherKnight(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row + 1, col - 2) == getOtherKnight(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow - 1, kingCol + 2) == getOtherKnight(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow - 1, kingCol - 2) == getOtherKnight(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row - 1, col + 2) == getOtherKnight(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row - 1, col - 2) == getOtherKnight(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow + 2, kingCol + 1) == getOtherKnight(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow + 2, kingCol - 1) == getOtherKnight(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row + 2, col + 1) == getOtherKnight(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row + 2, col - 1) == getOtherKnight(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow - 2, kingCol + 1) == getOtherKnight(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow - 2, kingCol - 1) == getOtherKnight(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row - 2, col + 1) == getOtherKnight(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row - 2, col - 1) == getOtherKnight(game->currentPlayer))
         return true;
     return false;
 }
 
-bool kingThreatsKing(ChessGame *game, int kingRow, int kingCol) {
+bool kingThreatsPosition(ChessGame *game, int row, int col) {
 
-    if (getSoldier(game->gameBoard, kingRow, kingCol + 1) == getOtherKing(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow, kingCol - 1) == getOtherKing(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row, col + 1) == getOtherKing(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row, col - 1) == getOtherKing(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow + 1, kingCol) == getOtherKing(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow - 1, kingCol) == getOtherKing(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row + 1, col) == getOtherKing(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row - 1, col) == getOtherKing(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow + 1, kingCol + 1) == getOtherKing(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow - 1, kingCol - 1) == getOtherKing(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row + 1, col + 1) == getOtherKing(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row - 1, col - 1) == getOtherKing(game->currentPlayer))
         return true;
-    if (getSoldier(game->gameBoard, kingRow + 1, kingCol - 1) == getOtherKing(game->currentPlayer) ||
-        getSoldier(game->gameBoard, kingRow - 1, kingCol + 1) == getOtherKing(game->currentPlayer))
+    if (getSoldier(game->gameBoard, row + 1, col - 1) == getOtherKing(game->currentPlayer) ||
+        getSoldier(game->gameBoard, row - 1, col + 1) == getOtherKing(game->currentPlayer))
         return true;
     return false;
 }
@@ -269,40 +269,28 @@ diagonalOrHorizontalThreat(ChessGame *game, int rowPlusMinus, int colPlusMinus, 
     return false;
 }
 
-bool QBRThreatsKing(ChessGame *game, int kingRow, int kingCol) {
+bool QBRThreatsPosition(ChessGame *game, int row, int col) {
     for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
-            if (diagonalOrHorizontalThreat(game, i, j, kingRow, kingCol))
+            if (diagonalOrHorizontalThreat(game, i, j, row, col))
                 return true;
         }
     }
     return false;
 }
 
-bool myKingUnderThreat(ChessGame *game) {
+bool myPositionUnderThreat(ChessGame *game, Position pos) {
     if (game == NULL)
         return false;
-
-    int kingCol = 100;
-    int kingRow = 100;
-    if (game->currentPlayer == WHITE_PLAYER) {
-        kingCol = GET_COLUMN(game->whiteKingPos);
-        kingRow = GET_ROW(game->whiteKingPos);
-
-        // pawns
-        if (game->gameBoard[kingRow + 1][kingCol + 1] == PAWN_BLACK ||
-            game->gameBoard[kingRow + 1][kingCol - 1] == PAWN_BLACK)
-            return true;
-    } else if (game->currentPlayer == BLACK_PLAYER) {
-        kingCol = GET_COLUMN(game->blackKingPos);
-        kingRow = GET_ROW(game->blackKingPos);
-        // pawns
-        if (game->gameBoard[kingRow - 1][kingCol + 1] == PAWN_WHITE ||
-            game->gameBoard[kingRow - 1][kingCol - 1] == PAWN_WHITE)
-            return true;
-    }
-    return (knightThreatsKing(game, kingRow, kingCol) || QBRThreatsKing(game, kingRow, kingCol) ||
-            QBRThreatsKing(game, kingRow, kingCol) || kingThreatsKing(game, kingRow, kingCol));
+    int col = GET_COLUMN(pos);
+    int row = GET_ROW(pos);
+    int plusMinus = game->currentPlayer == WHITE_PLAYER ? 1 : -1;
+    // pawns
+    if (game->gameBoard[row + plusMinus][col + plusMinus] == getOtherPawn(game->currentPlayer) ||
+        game->gameBoard[row + plusMinus][col - plusMinus] == getOtherPawn(game->currentPlayer))
+        return true;
+    return (knightThreatsPosition(game, row, col) || QBRThreatsPosition(game, row, col) ||
+            QBRThreatsPosition(game, row, col) || kingThreatsPosition(game, row, col));
 }
 
 bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling) {
@@ -312,23 +300,26 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
     char rook = (char) (game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
     Position firstStep;
     firstStep.row = kingRow;
+    Position kingPos = game->currentPlayer == WHITE_PLAYER ?
+                       game->whiteKingPos : game->blackKingPos;
     if (isRightCastling) {
         firstStep.column = KING_INITIAL_COL + 1;
         if ((game->gameBoard[kingRow][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
             (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
             game->gameBoard[kingRow][GAME_SIZE - 1] != rook)
             return false;
-
-        if (myKingUnderThreat(game))
+        if (myPositionUnderThreat(game, kingPos))
             return false;
         ChessGame *copy = gameCopy(game);
         movePiece(copy, src, firstStep);
-        if (myKingUnderThreat(copy)) {
+        kingPos.column++;
+        if (myPositionUnderThreat(copy, kingPos)) {
             gameDestroy(copy);
             return false;
         }
         movePiece(copy, firstStep, dest);
-        if (myKingUnderThreat(copy)) {
+        kingPos.column++;
+        if (myPositionUnderThreat(copy, kingPos)) {
             gameDestroy(copy);
             return false;
         }
@@ -343,21 +334,24 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
             (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
             (game->gameBoard[kingRow][0] != rook))
             return false;
-        if (myKingUnderThreat(game))
+        if (myPositionUnderThreat(game, kingPos))
             return false;
         ChessGame *copy = gameCopy(game);
         movePiece(copy, src, firstStep);
-        if (myKingUnderThreat(copy)) {
+        kingPos.column--;
+        if (myPositionUnderThreat(copy, kingPos)) {
             gameDestroy(copy);
             return false;
         }
         movePiece(copy, firstStep, secondStep);
-        if (myKingUnderThreat(copy)) {
+        kingPos.column--;
+        if (myPositionUnderThreat(copy, kingPos)) {
             gameDestroy(copy);
             return false;
         }
         movePiece(copy, secondStep, dest);
-        if (myKingUnderThreat(copy)) {
+        kingPos.column--;
+        if (myPositionUnderThreat(copy, kingPos)) {
             gameDestroy(copy);
             return false;
         }
@@ -605,7 +599,9 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
             return result;
         ChessGame *copy = gameCopy(game);
         if (movePiece(copy, src, dest) == SUCCESS) {
-            if (myKingUnderThreat(copy))
+            Position kingPos = game->currentPlayer == WHITE_PLAYER ?
+                               game->whiteKingPos : game->blackKingPos;
+            if (myPositionUnderThreat(copy, kingPos))
                 result = false;
         }
         gameDestroy(copy);
@@ -675,6 +671,7 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     return SUCCESS;
 
 }
+
 //bool queenMoves(ChessGame* game){
 //
 //}
@@ -698,28 +695,26 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
 //bool knightMoves(ChessGame* game){
 //
 //}
-int getSoldierColor(char soldier){
-    if(soldier==EMPTY_ENTRY)
+int getSoldierColor(char soldier) {
+    if (soldier == EMPTY_ENTRY)
         return -1;
-    return isupper(soldier)==0 ? WHITE_PLAYER : BLACK_PLAYER;
+    return isupper(soldier) == 0 ? WHITE_PLAYER : BLACK_PLAYER;
 }
+
 bool areThereAnyMoves(ChessGame *game) {
 
-    Position src,dest;
-    for(int i=1;i<=GAME_SIZE;i++) {
-        for (int j = 0; j < GAME_SIZE; j++){
-            if(i==7)
-                i=7;
-            src.row=i;
-            src.column='A'+j;
-            if(getSoldierColor(game->gameBoard[i][j])!=game->currentPlayer)
+    Position src, dest;
+    for (int i = 1; i <= GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
+            src.row = i;
+            src.column = 'A' + j;
+            if (getSoldierColor(game->gameBoard[i][j]) != game->currentPlayer)
                 continue;
-            for(int k=0;k<GAME_SIZE;k++){
-                for(int l=0;l<GAME_SIZE;l++)
-                {
-                    dest.row=k;
-                    dest.column='A'+l;
-                    if(isValidMove(game,src,dest))
+            for (int k = 0; k < GAME_SIZE; k++) {
+                for (int l = 0; l < GAME_SIZE; l++) {
+                    dest.row = k;
+                    dest.column = 'A' + l;
+                    if (isValidMove(game, src, dest))
                         return true;
                 }
             }
@@ -733,7 +728,9 @@ CHESS_MESSAGE checkStatus(ChessGame *game) {
         return INVALID_ARGUMENT;
     char *playerColor = (char *) malloc(sizeof(char) * 5);
     playerColor = game->currentPlayer == WHITE_PLAYER ? "black" : "white";
-    if (myKingUnderThreat(game)) {
+    Position kingPos = game->currentPlayer == WHITE_PLAYER ?
+                       game->whiteKingPos : game->blackKingPos;
+    if (myPositionUnderThreat(game, kingPos)) {
         if (!areThereAnyMoves(game)) {
             printf("Checkmate! %s player wins the game\n", playerColor);
             return MATE;
@@ -748,13 +745,78 @@ CHESS_MESSAGE checkStatus(ChessGame *game) {
     return CONTINUE;
 }
 
-void getMoves(ChessGame *game, Position pos){
-    if(game==NULL)
-        return ;
-    char *playerColor = (char *) malloc(sizeof(char) * 5);
+char *getStringFromPosition(Position dest) {
+    char *result = (char *) malloc(sizeof(char) * 15);
+    result[0] = '<';
+    result[4] = '>';
+    result[1] = (char) (dest.row + '0');
+    result[2] = 44;
+    result[3] = dest.column;
+    result[5] = '\0';
+    return result;
+}
+
+int getMoves(ChessGame *game, Position *result, Position pos) {
+    Position dest;
+    int movesCounter = 0;
+    for (int i = 1; i <= GAME_SIZE; i++) {
+        dest.row = i;
+        for (int j = 0; j < GAME_SIZE; j++) {
+            dest.column = 'A' + j;
+            if (isValidMove(game, pos, dest))
+                result[movesCounter++] = dest;
+        }
+    }
+    return movesCounter;
+}
+
+
+void printMoves(ChessGame *game, Position pos) {
+    if (game == NULL)
+        return;
+    char *playerColor ;
     playerColor = game->currentPlayer == WHITE_PLAYER ? "white" : "black";
-    if(getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])!=game->currentPlayer)
-        printf("The specified position does not contain %s player piece\n",playerColor);
-    if(pos.row>8 || pos.row<1 || pos.column>'H' || pos.column<'A')
+    if (getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])
+        != game->currentPlayer)
+        printf("The specified position does not contain %s player piece\n", playerColor);
+    if (pos.row > 8 || pos.row < 1 || pos.column > 'H' || pos.column < 'A')
         printf("Invalid position on the board\n");
+    Position *result = (Position *) malloc(28 * sizeof(Position));
+    int positionCounter = getMoves(game, result, pos);
+    result = (Position *) realloc(result, positionCounter * sizeof(Position));
+    char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
+    for(int i=0;i<positionCounter;i++)
+        movesArray[i]=(char*)malloc(sizeof(char)*15);
+
+    for (int i = 0; i < positionCounter; i++) {
+        movesArray[i] = getStringFromPosition(result[i]);
+        if((game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)]==KING_WHITE ||
+            game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)]==KING_BLACK)&&(result[i].column==KING_INITIAL_COL+2 ||
+            result[i].column==KING_INITIAL_COL-3)) {
+            sprintf(movesArray[i], "castle <%c,%c>", result[i].row - '0', result[i].column);
+            continue;
+        }
+        bool someoneDied = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] != EMPTY_ENTRY ?
+                           true : false;
+        ChessGame *copy = gameCopy(game);
+        movePiece(copy, pos, result[i]);
+        if (myPositionUnderThreat(copy, result[i])) {
+            movesArray[i][5] = '*';
+            if (someoneDied) {
+                movesArray[i][6] = '^';
+                movesArray[i][7] = '\0';
+
+            } else
+                movesArray[i][6] = '\0';
+        } else if (someoneDied) {
+            movesArray[i][5] = '^';
+            movesArray[i][6] = '\0';
+        }
+        gameDestroy(copy);
+    }
+    for(int i=0;i<positionCounter;i++)
+        printf("%s\n",movesArray[i]);
+    for(int i=0;i<positionCounter;i++)
+        free(movesArray[i]);
+    free(movesArray);
 }
