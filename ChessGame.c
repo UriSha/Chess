@@ -633,6 +633,10 @@ void pawnPromotion(ChessGame *game, Position posOfPawn) {
     game->gameBoard[GET_ROW(posOfPawn)][GET_COLUMN(posOfPawn)] = chosenSolider;
 
 }
+void updateScore(char soldierDied,ChessGame* game){
+
+
+}
 
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
@@ -641,8 +645,12 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (!isValidMove(game, src, dest))
         return ILLEGAL_MOVE;
 
-//    char currentKing = game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK;
+
     char soliderDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
+    if(soliderDied!=EMPTY_ENTRY)
+    {
+        updateScore(char soldierDied ,game);
+    }
 
     HistoryNode move;
     move.source = src;
@@ -671,30 +679,6 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     return SUCCESS;
 
 }
-
-//bool queenMoves(ChessGame* game){
-//
-//}
-//bool bishopMoves(ChessGame* game){
-//
-//}
-//bool rookMoves(ChessGame* game){
-//
-//}
-//bool pawnMoves(ChessGame* game){
-//    Position src,dest;
-//    for(int i=0;i<GAME_SIZE;i++) {
-//        for (int j = o; j < GAME_SIZE; j++){}
-//    }
-//
-//
-//}
-//bool kingMoves(ChessGame* game){
-//
-//}
-//bool knightMoves(ChessGame* game){
-//
-//}
 int getSoldierColor(char soldier) {
     if (soldier == EMPTY_ENTRY)
         return -1;
@@ -774,7 +758,7 @@ int getMoves(ChessGame *game, Position *result, Position pos) {
 void printMoves(ChessGame *game, Position pos) {
     if (game == NULL)
         return;
-    char *playerColor ;
+    char *playerColor;
     playerColor = game->currentPlayer == WHITE_PLAYER ? "white" : "black";
     if (getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])
         != game->currentPlayer)
@@ -785,15 +769,16 @@ void printMoves(ChessGame *game, Position pos) {
     int positionCounter = getMoves(game, result, pos);
     result = (Position *) realloc(result, positionCounter * sizeof(Position));
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
-    for(int i=0;i<positionCounter;i++)
-        movesArray[i]=(char*)malloc(sizeof(char)*15);
+    for (int i = 0; i < positionCounter; i++)
+        movesArray[i] = (char *) malloc(sizeof(char) * 15);
 
     for (int i = 0; i < positionCounter; i++) {
         movesArray[i] = getStringFromPosition(result[i]);
-        if((game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)]==KING_WHITE ||
-            game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)]==KING_BLACK)&&(result[i].column==KING_INITIAL_COL+2 ||
-            result[i].column==KING_INITIAL_COL-3)) {
-            sprintf(movesArray[i], "castle <%c,%c>", result[i].row - '0', result[i].column);
+        if ((game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_WHITE ||
+             game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_BLACK) &&
+            (result[i].column == KING_INITIAL_COL + 2 ||
+             result[i].column == KING_INITIAL_COL - 3)) {
+            sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
             continue;
         }
         bool someoneDied = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] != EMPTY_ENTRY ?
@@ -814,9 +799,25 @@ void printMoves(ChessGame *game, Position pos) {
         }
         gameDestroy(copy);
     }
-    for(int i=0;i<positionCounter;i++)
-        printf("%s\n",movesArray[i]);
-    for(int i=0;i<positionCounter;i++)
+    for (int i = 0; i < positionCounter; i++)
+        printf("%s\n", movesArray[i]);
+    for (int i = 0; i < positionCounter; i++)
         free(movesArray[i]);
     free(movesArray);
+}
+void undoMove(ChessGame* game){
+    if (game==NULL)
+        return ;
+    if(isHistoryEmpty(game->history)){
+        printf("Empty history, move cannot be undone\n");
+        return;
+    }
+    HistoryNode* lastMove = removeRecentMove(game->history);
+    char* playerColor=getOtherPlayer(game->currentPlayer)==WHITE_PLAYER ? "white" : "black";
+    movePiece(game,lastMove->destination,lastMove->source);
+    game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)]=lastMove->soldierDied;
+    printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n",playerColor,lastMove->destination.row,lastMove->destination.column,
+            lastMove->source.row,lastMove->source.column);
+    game->currentPlayer=1-game->currentPlayer;
+
 }

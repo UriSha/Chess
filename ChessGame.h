@@ -5,15 +5,7 @@
 
 #include "ChessHistory.h"
 #include <ctype.h>
-//typedef enum {
-//    PAWN,
-//    QUEEN,
-//    KING,
-//    BISHOP,
-//    ROOK,
-//    KNIGHT,
-//    EMPTY,
-//}Soldier;
+
 #define GAME_SIZE 8
 #define WHITE_PLAYER 0
 #define BLACK_PLAYER 1
@@ -80,6 +72,7 @@ bool isValidMove_Bishop(ChessGame *game, Position src, Position dest);
 bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
 void pawnPromotion(ChessGame *game, Position posOfPawn);
+void updateScore(char soldierDied,ChessGame* game);
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
 CHESS_MESSAGE checkStatus(ChessGame* game);
 
@@ -102,5 +95,5 @@ void printMoves(ChessGame *game, Position pos);
 
 int getMoves(ChessGame* game, Position *result, Position pos);
 
-
+void undoMove(ChessGame* game);
 #endif //CHESS_CHESSGAME_H

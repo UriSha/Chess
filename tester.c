@@ -2,7 +2,7 @@
 #include "tester.h"
 
 int testGame() {
-    ChessGame *game = gameCreate(3);
+    ChessGame *game = gameCreate(6);
     Position src;
     Position dest;
 
@@ -14,6 +14,32 @@ int testGame() {
     printBoard(game);
     setMove(game,src, dest);
     printBoard(game);
+    src.row = 7;
+    src.column = 'A';
+    dest.row = 5;
+    dest.column = 'A';
+    setMove(game,src, dest);
+    printBoard(game);
+    src.row = 2;
+    src.column = 'B';
+    dest.row = 3;
+    dest.column = 'B';
+    setMove(game,src, dest);
+    printBoard(game);
+    src.row = 8;
+    src.column = 'B';
+    dest.row = 6;
+    dest.column = 'A';
+    setMove(game,src, dest);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
 
 }
 
@@ -21,7 +47,7 @@ int scholarsMate(){
     Position src;
     Position dest;
 
-    ChessGame *game = gameCreate(3);
+    ChessGame *game = gameCreate(6);
     printBoard(game);
     printf("\n\n");
     src.row = 2;
@@ -78,7 +104,20 @@ int scholarsMate(){
     dest.column = 'F';
     setMove(game,src,dest);
     printBoard(game);
-    checkStatus(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
+    undoMove(game);
+    printBoard(game);
 }
 
 void checkPrintMoves()

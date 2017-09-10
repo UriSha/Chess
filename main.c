@@ -7,6 +7,5 @@
 
 
 int main() {
-//    scholarsMate();
-    checkPrintMoves();
+    scholarsMate();
 }
