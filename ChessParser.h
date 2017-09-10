@@ -30,7 +30,7 @@ typedef enum {
 } CHESS_COMMAND;
 
 
-
+//a type used to represent a chess game board pisition
 typedef struct board_position {
     char column;
     int row;
@@ -57,10 +57,39 @@ typedef struct command_game {
  */
 bool isInt(const char* str);
 
+/**
+ * parses a Position from a string input
+ *
+ * @return
+ * board Position
+ */
 Position getPosition(char *token);
 
+/**
+ * Given a string, returns the maching enum
+ *
+ * @return
+ * chess command according to the input string
+ */
 CHESS_COMMAND getChessCommand (char* token);
 
+/**
+ * Parses a specified line. If the line is a command which has an integer
+ * argument then the argument is parsed and is saved in the field argument, if it has
+ * board positions then they are parsed and saved as source and destination and the
+ * field validArg is set to true. In any other case then 'validArg' is set to
+ * false and the value 'arg' is undefined
+ *
+ * @return
+ * A parsed line such that:
+ *   cmd - contains the command type, if the line is invalid then this field is
+ *         set to INVALID_LINE
+ *   source, destination - board Positions
+ *   validArg - is set to true if the command is a legal one and the integer or positions arguments
+ *              are valid
+ *   argument  - the integer argument in case validArg is set to true
+ *   path - path to a file, used for the saved games of the user
+ */
 ChessCommand parseLine(const char* str);
 
 
