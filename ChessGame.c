@@ -3,7 +3,8 @@
 
 #define KING_INITIAL_COL 'E'
 #define WHITE_INITIAL_ROW 0
-#define BLACK_INITIAL_ROW 7
+//#define BLACK_INITIAL_ROW 7 // TODO bug was here
+#define BLACK_INITIAL_ROW 8 // TODO bug was here
 
 ChessGame *gameCreate(int historySize) {
     if (historySize <= 0)
@@ -634,32 +635,33 @@ void pawnPromotion(ChessGame *game, Position posOfPawn) {
 
 }
 void updateScore(char soldierDied,ChessGame* game){
-    int blackOrWhite= isupper(soldierDied)==0 ? 1 : -1 ;
+    int isBlackDied= isupper(soldierDied)==0 ? -1 : 1 ;
+
     switch(soldierDied)
     {
         case PAWN_BLACK :
         case PAWN_WHITE :
-            game->score+=(1*blackOrWhite);
+            game->score+=(1*isBlackDied);
             break;
         case ROOK_BLACK :
         case ROOK_WHITE :
-            game->score+=(5*blackOrWhite);
+            game->score+=(5*isBlackDied);
             break;
         case KNIGHT_BLACK :
         case KNIGHT_WHITE :
-            game->score+=(3*blackOrWhite);
+            game->score+=(3*isBlackDied);
             break;
         case BISHOP_BLACK :
         case BISHOP_WHITE :
-            game->score+=(3*blackOrWhite);
+            game->score+=(3*isBlackDied);
             break;
         case QUEEN_BLACK :
         case QUEEN_WHITE :
-            game->score+=(9*blackOrWhite);
+            game->score+=(9*isBlackDied);
             break;
         case KING_BLACK :
         case KING_WHITE :
-            game->score+=(100*blackOrWhite);
+            game->score+=(100*isBlackDied);
             break;
         default :
             return;
@@ -722,9 +724,9 @@ bool areThereAnyMoves(ChessGame *game) {
         for (int j = 0; j < GAME_SIZE; j++) {
             src.row = i;
             src.column = 'A' + j;
-            if (getSoldierColor(game->gameBoard[i][j]) != game->currentPlayer)
+            if (getSoldierColor(game->gameBoard[i-1][j]) != game->currentPlayer)
                 continue;
-            for (int k = 0; k < GAME_SIZE; k++) {
+            for (int k = 1; k <= GAME_SIZE; k++) {
                 for (int l = 0; l < GAME_SIZE; l++) {
                     dest.row = k;
                     dest.column = 'A' + l;
@@ -740,20 +742,21 @@ bool areThereAnyMoves(ChessGame *game) {
 CHESS_MESSAGE checkStatus(ChessGame *game) {
     if (game == NULL)
         return INVALID_ARGUMENT;
-    char *playerColor = (char *) malloc(sizeof(char) * 5);
-    playerColor = game->currentPlayer == WHITE_PLAYER ? "black" : "white";
+    char *playerColor = (char *) malloc(sizeof(char) * 5); //TODO unnesesery
+    playerColor = game->currentPlayer == WHITE_PLAYER ? "black" : "white"; //TODO bug was here
     Position kingPos = game->currentPlayer == WHITE_PLAYER ?
                        game->whiteKingPos : game->blackKingPos;
     if (myPositionUnderThreat(game, kingPos)) {
         if (!areThereAnyMoves(game)) {
-            printf("Checkmate! %s player wins the game\n", playerColor);
+//            printBoard(game);
+            printf("Checkmate! %s player wins the game\n", playerColor); //TODO not supposed to print here
             return MATE;
         }
-        printf("Check!\n");
+//        printf("Check!\n"); //TODO not supposed to print here
         return CHECK;
     }
     if (!areThereAnyMoves(game)) {
-        printf("The game ends in a tie\n");
+//        printf("The game ends in a tie\n"); //TODO not supposed to print here
         return TIE;
     }
     return CONTINUE;
@@ -839,13 +842,13 @@ void undoMove(ChessGame* game){
     if (game==NULL)
         return ;
     if(isHistoryEmpty(game->history)){
-        printf("Empty history, move cannot be undone\n");
+//        printf("Empty history, move cannot be undone\n");//TODO not supposed to print here
         return;
     }
     HistoryNode* lastMove = removeRecentMove(game->history);
     char* playerColor=getOtherPlayer(game->currentPlayer)==WHITE_PLAYER ? "white" : "black";
     movePiece(game,lastMove->destination,lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)]=lastMove->soldierDied;
-    printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n",playerColor,lastMove->destination.row,lastMove->destination.column,
-            lastMove->source.row,lastMove->source.column);
+//    printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n",playerColor,lastMove->destination.row,lastMove->destination.column,
+//            lastMove->source.row,lastMove->source.column); ///TODO not supposed to print here
 }

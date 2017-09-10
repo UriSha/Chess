@@ -4,9 +4,13 @@
 
 
 #include "ChessGame.h"
+#include "MiniMax.h"
 
 
 int testGame();
 int scholarsMate();
+void testMinMax();
 void checkPrintMoves();
+void computerIsWhite();
+void bardak();
 #endif //CHESS_TESTER_H

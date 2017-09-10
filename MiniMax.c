@@ -29,11 +29,8 @@ MiniMaxNode *createNode(int alpha, int beta, bool isMaxType, ChessGame *copyOfGa
 }
 
 void nodeDestroy(MiniMaxNode *node) {
-    if (node != NULL) {
-
-        gameDestroy(node->game);
+    if (node != NULL)
         free(node);
-    }
 }
 
 void updateRoot(MiniMaxNode *root, MiniMaxNode *child) {
@@ -48,17 +45,17 @@ void updateRoot(MiniMaxNode *root, MiniMaxNode *child) {
     }
 }
 
-void updateAlphaBeta(ChessGame *game, MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
-    if (game == NULL)
+void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
+    if (root->game == NULL)
         return;
-    if (checkStatus(game) == TIE) {
+    if (checkStatus(root->game) == TIE) {
         if (root->isMaxType == true)
             root->alpha = 0;
         else
             root->beta = 0;
         return;
     }
-    if (checkStatus(game) == MATE) {
+    if (checkStatus(root->game) == MATE) {
         if (root->isMaxType == true)
             root->alpha = INT_MIN;
         else
@@ -66,8 +63,8 @@ void updateAlphaBeta(ChessGame *game, MiniMaxNode *root, bool isExpertLevel, int
         return;
     }
     Position src, dest;
-    ChessGame *copy = gameCopy(game);
-    MiniMaxNode* child;
+    ChessGame *copy = gameCopy(root->game);
+    MiniMaxNode *child;
     for (int row = 1; row <= GAME_SIZE; row++) {
         src.row = row;
         for (int col = 0; col < GAME_SIZE; col++) {
@@ -82,10 +79,11 @@ void updateAlphaBeta(ChessGame *game, MiniMaxNode *root, bool isExpertLevel, int
                             if (!root->isMaxType)
                                 changePlayer(copy);
                             int moveScore = scoringFunction(copy, isExpertLevel);
-                            child=createNode(moveScore,moveScore,1-root->isMaxType,copy);
+                            child = createNode(moveScore, moveScore, 1 - root->isMaxType, copy);
                             updateRoot(root, child);
                             if (root->alpha >= root->beta) {
                                 gameDestroy(copy);
+                                nodeDestroy(child);
                                 return;
                             }
                             if (!root->isMaxType)
@@ -93,13 +91,16 @@ void updateAlphaBeta(ChessGame *game, MiniMaxNode *root, bool isExpertLevel, int
                             undoMove(copy);
                         } else {
                             child = createNode(root->alpha, root->beta, 1 - root->isMaxType, copy);
-                            updateAlphaBeta(copy,child,isExpertLevel,maxDepth-1);
-                            updateRoot(root,child);
+                            updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
+                            updateRoot(root, child);
                             if (root->alpha >= root->beta) {
                                 gameDestroy(copy);
+                                nodeDestroy(child);
                                 return;
-                        }
+                            }
+                            undoMove(copy);
 
+                        }
                     }
                 }
             }
@@ -129,6 +130,10 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
             for (int i = 1; i <= GAME_SIZE; i++) {
                 dest.row = i;
                 for (int j = 0; j < GAME_SIZE; j++) {
+//                    if (row ==3 && col ==0 && i == 5 && j == 1 && copy->gameBoard[2][0]==KNIGHT_WHITE)
+//                        printf("hii");
+//                    if (row ==7 && col ==0 && i == 6 && j == 1 && copy->gameBoard[5][1]==PAWN_WHITE)
+//                        printf("hii\n");
                     dest.column = 'A' + j;
                     if (isValidMove(copy, src, dest)) {
                         if (firstValid) {
@@ -150,14 +155,15 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                         } else {
                             changePlayer(copy);
                             MiniMaxNode *child = createNode(currentAlpha, INT_MAX, false, copy);
-                            updateAlphaBeta(copy, child, isExpertLevel, maxDepth - 1);
+                            updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
                             if (child->beta > currentAlpha) {
                                 currentAlpha = child->beta;
                                 bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
                                 bestMove.source = src;
                                 bestMove.destination = dest;
                             }
-                            nodeDestroy(child);
+                            changePlayer(copy);
+//                            nodeDestroy(child); // TODO bugs were here
                         }
                         undoMove(copy);
                     }

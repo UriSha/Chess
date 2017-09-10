@@ -162,3 +162,239 @@ void checkPrintMoves()
 
 
 }
+
+void computerMove(ChessGame *game, int maxDepth){
+    HistoryNode move = bestMove(game,maxDepth,false);
+    setMove(game,move.source,move.destination);
+    changePlayer(game);
+}
+
+void testMinMax(){
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+
+    Position myMoveSrc;
+    Position myMovedest;
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'C';
+    setMove(game,myMoveSrc, myMovedest);
+//    changePlayer(game);
+    printBoard(game);
+////
+    myMoveSrc.row = 4;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 5;
+    myMovedest.column = 'C';
+    setMove(game,myMoveSrc, myMovedest);
+    printBoard(game);
+
+    myMoveSrc.row = 5;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 6;
+    myMovedest.column = 'C';
+    setMove(game,myMoveSrc, myMovedest);
+    printBoard(game);
+
+
+    myMoveSrc.row = 6;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 7;
+    myMovedest.column = 'D';
+    setMove(game,myMoveSrc, myMovedest);
+    printBoard(game);
+    changePlayer(game);
+    checkStatus(game);
+//    computerMove(game,1);
+//    printBoard(game);
+//
+//
+//    myMoveSrc.row = 2;
+//    myMoveSrc.column = 'A';
+//
+//    myMovedest.row = 4;
+//    myMovedest.column = 'A';
+//    setMove(game,myMoveSrc, myMovedest);
+//    changePlayer(game);
+//    printBoard(game);
+//
+//    computerMove(game,1);
+//    printBoard(game);
+//
+//    myMoveSrc.row = 2;
+//    myMoveSrc.column = 'C';
+//
+//    myMovedest.row = 4;
+//    myMovedest.column = 'C';
+//    setMove(game,myMoveSrc, myMovedest);
+//    changePlayer(game);
+//    printBoard(game);
+//
+//    computerMove(game,1);
+//    printBoard(game);
+//
+//    myMoveSrc.row = 1;
+//    myMoveSrc.column = 'D';
+//
+//    myMovedest.row = 4;
+//    myMovedest.column = 'A';
+//    setMove(game,myMoveSrc, myMovedest);
+//    changePlayer(game);
+//    printBoard(game);
+//
+//    computerMove(game,2);
+//    printBoard(game);
+//
+//    myMoveSrc.row = 4;
+//    myMoveSrc.column = 'A';
+//
+//    myMovedest.row = 7;
+//    myMovedest.column = 'D';
+//    setMove(game,myMoveSrc, myMovedest);
+//    changePlayer(game);
+//    printBoard(game);
+////    checkStatus(game);
+//    computerMove(game,2);
+//    printBoard(game);
+
+
+
+
+}
+
+void computerIsWhite(){
+
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+    computerMove(game,2);
+    printBoard(game);
+
+    Position myMoveSrc;
+    Position myMovedest;
+
+    myMoveSrc.row = 7;
+    myMoveSrc.column = 'B';
+
+    myMovedest.row = 5;
+    myMovedest.column = 'B';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game,1);
+    printBoard(game);
+
+    myMoveSrc.row = 7;
+    myMoveSrc.column = 'A';
+
+    myMovedest.row = 6;
+    myMovedest.column = 'A';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+//    computerMove(game,2);
+//    printBoard(game);
+}
+
+void bardak() {
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+
+    Position myMoveSrc;
+    Position myMovedest;
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'C';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 4);
+    printBoard(game);
+
+//    myMoveSrc.row = 2;
+//    myMoveSrc.column = 'B';
+//
+//    myMovedest.row = 4;
+//    myMovedest.column = 'B';
+//    setMove(game, myMoveSrc, myMovedest);
+//    changePlayer(game);
+//    printBoard(game);
+}
+
+void otherTest(){
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+
+    Position myMoveSrc;
+    Position myMovedest;
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'B';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'B';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+//
+    computerMove(game,1);
+    printBoard(game);
+
+
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'A';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'A';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game,1);
+    printBoard(game);
+
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'C';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game,1);
+    printBoard(game);
+
+    myMoveSrc.row = 1;
+    myMoveSrc.column = 'D';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'A';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game,2);
+    printBoard(game);
+
+    myMoveSrc.row = 4;
+    myMoveSrc.column = 'A';
+
+    myMovedest.row = 7;
+    myMovedest.column = 'D';
+    setMove(game,myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+//    checkStatus(game);
+    computerMove(game,2);
+    printBoard(game);
+
+
+}

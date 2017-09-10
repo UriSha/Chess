@@ -6,6 +6,9 @@
 #include "tester.h"
 
 
+
 int main() {
-    scholarsMate();
+//    scholarsMate();
+//    testMinMax();
+    bardak();
 }
