@@ -66,7 +66,7 @@ bool isInt(const char* str);
 Position getPosition(char *token);
 
 /**
- * Given a string, returns the maching enum
+ * Given a string, returns the matching enum
  *
  * @return
  * chess command according to the input string

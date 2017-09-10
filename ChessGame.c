@@ -634,6 +634,36 @@ void pawnPromotion(ChessGame *game, Position posOfPawn) {
 
 }
 void updateScore(char soldierDied,ChessGame* game){
+    int blackOrWhite= isupper(soldierDied)==0 ? 1 : -1 ;
+    switch(soldierDied)
+    {
+        case PAWN_BLACK :
+        case PAWN_WHITE :
+            game->score+=(1*blackOrWhite);
+            break;
+        case ROOK_BLACK :
+        case ROOK_WHITE :
+            game->score+=(5*blackOrWhite);
+            break;
+        case KNIGHT_BLACK :
+        case KNIGHT_WHITE :
+            game->score+=(3*blackOrWhite);
+            break;
+        case BISHOP_BLACK :
+        case BISHOP_WHITE :
+            game->score+=(3*blackOrWhite);
+            break;
+        case QUEEN_BLACK :
+        case QUEEN_WHITE :
+            game->score+=(9*blackOrWhite);
+            break;
+        case KING_BLACK :
+        case KING_WHITE :
+            game->score+=(100*blackOrWhite);
+            break;
+        default :
+            return;
+    }
 
 
 }
@@ -646,16 +676,13 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
         return ILLEGAL_MOVE;
 
 
-    char soliderDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-    if(soliderDied!=EMPTY_ENTRY)
-    {
-        updateScore(char soldierDied ,game);
-    }
-
+    char soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
+    if(soldierDied!=EMPTY_ENTRY)
+        updateScore(soldierDied ,game);
     HistoryNode move;
     move.source = src;
     move.destination = dest;
-    move.soldierDied = soliderDied;
+    move.soldierDied = soldierDied;
 
     addMovetoHistory(game->history, move);
 
@@ -675,9 +702,12 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == srcSolider && GET_ROW(dest) == lastRow)
         pawnPromotion(game, dest);
 
-    game->currentPlayer = 1 - game->currentPlayer;
     return SUCCESS;
 
+}
+void changePlayer(ChessGame* game)
+{
+    game->currentPlayer = 1 - game->currentPlayer;
 }
 int getSoldierColor(char soldier) {
     if (soldier == EMPTY_ENTRY)
@@ -818,6 +848,4 @@ void undoMove(ChessGame* game){
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)]=lastMove->soldierDied;
     printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n",playerColor,lastMove->destination.row,lastMove->destination.column,
             lastMove->source.row,lastMove->source.column);
-    game->currentPlayer=1-game->currentPlayer;
-
 }

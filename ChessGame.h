@@ -73,6 +73,7 @@ bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
 void pawnPromotion(ChessGame *game, Position posOfPawn);
 void updateScore(char soldierDied,ChessGame* game);
+void changePlayer(ChessGame* game);
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
 CHESS_MESSAGE checkStatus(ChessGame* game);
 
