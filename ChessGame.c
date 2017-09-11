@@ -4,8 +4,7 @@
 #define KING_INITIAL_COL_CHAR 'E'
 #define KING_INITIAL_COL_NUM 4
 #define WHITE_INITIAL_ROW 1
-//#define BLACK_INITIAL_ROW 7 //
-#define BLACK_INITIAL_ROW 8 // TODO bug was here
+#define BLACK_INITIAL_ROW 8
 
 ChessGame *gameCreate(int historySize) {
     if (historySize <= 0)
@@ -267,7 +266,7 @@ diagonalOrHorizontalThreat(ChessGame *game, int rowPlusMinus, int colPlusMinus, 
             getSoldier(game->gameBoard, curRow, curCol) == getOtherKnight(game->currentPlayer))
             break;
     } while (getSoldier(game->gameBoard, curRow, curCol) != '\0' &&
-             getPlayer(game->gameBoard[curRow][curCol] != game->currentPlayer));
+             getPlayer(game->gameBoard[curRow][curCol]) != game->currentPlayer);
     return false;
 }
 
@@ -601,8 +600,8 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
             return result;
         ChessGame *copy = gameCopy(game);
         if (movePiece(copy, src, dest) == SUCCESS) {
-            Position kingPos = game->currentPlayer == WHITE_PLAYER ?
-                               game->whiteKingPos : game->blackKingPos;
+            Position kingPos = copy->currentPlayer == WHITE_PLAYER ?
+                               copy->whiteKingPos : copy->blackKingPos;
             if (myPositionUnderThreat(copy, kingPos))
                 result = false;
         }
@@ -718,7 +717,7 @@ int getSoldierColor(char soldier) {
     return isupper(soldier) == 0 ? WHITE_PLAYER : BLACK_PLAYER;
 }
 
-bool areThereAnyMoves(ChessGame *game) {//TODO change the function
+bool areThereAnyMoves(ChessGame *game) {
 
     Position src, dest;
     for (int i = 1; i <= GAME_SIZE; i++) {
@@ -740,14 +739,14 @@ bool areThereAnyMoves(ChessGame *game) {//TODO change the function
     return false;
 }
 
-CHESS_MESSAGE checkStatus(ChessGame *game) {//TODO change the function
+CHESS_MESSAGE checkStatus(ChessGame *game) {
     if (game == NULL)
         return INVALID_ARGUMENT;
     Position kingPos = game->currentPlayer == WHITE_PLAYER ?
                        game->whiteKingPos : game->blackKingPos;
     if (myPositionUnderThreat(game, kingPos)) {
         if (!areThereAnyMoves(game)) {
-//            printf("Checkmate! %s player wins the game\n", playerColor); //TODO not supposed to print here
+//            printf("Checkmate! player wins the game\n"); //TODO not supposed to print here
             return MATE;
         }
 //        printf("Check!\n"); //TODO not supposed to print here
