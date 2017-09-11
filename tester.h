@@ -7,10 +7,11 @@
 #include "MiniMax.h"
 
 
-int testGame();
-int scholarsMate();
+void testGame();
+void scholarsMate();
 void testMinMax();
 void checkPrintMoves();
 void computerIsWhite();
 void bardak();
+void statusCheck();
 #endif //CHESS_TESTER_H

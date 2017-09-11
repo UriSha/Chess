@@ -1,9 +1,10 @@
 #include "ChessGame.h"
 #include "ChessParser.h"
 
-#define KING_INITIAL_COL 'E'
-#define WHITE_INITIAL_ROW 0
-//#define BLACK_INITIAL_ROW 7 // TODO bug was here
+#define KING_INITIAL_COL_CHAR 'E'
+#define KING_INITIAL_COL_NUM 4
+#define WHITE_INITIAL_ROW 1
+//#define BLACK_INITIAL_ROW 7 //
 #define BLACK_INITIAL_ROW 8 // TODO bug was here
 
 ChessGame *gameCreate(int historySize) {
@@ -37,9 +38,9 @@ ChessGame *gameCreate(int historySize) {
     }
     game->score = 0;
     game->whiteKingPos.row = WHITE_INITIAL_ROW;
-    game->whiteKingPos.column = KING_INITIAL_COL;
+    game->whiteKingPos.column = KING_INITIAL_COL_CHAR;
     game->blackKingPos.row = BLACK_INITIAL_ROW;
-    game->blackKingPos.column = KING_INITIAL_COL;
+    game->blackKingPos.column = KING_INITIAL_COL_CHAR;
     game->whiteLeftCastle = game->whiteRightCastle = 1;
     game->blackLeftCastle = game->blackRightCastle = 1;
 
@@ -136,11 +137,11 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
     char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
     if (srcSoldier == KING_WHITE) {
         if (GET_COLUMN(game->whiteKingPos) + 2 == GET_COLUMN(dest)) { // right castling white player
-            game->gameBoard[KING_INITIAL_COL + 1][WHITE_INITIAL_ROW] = ROOK_WHITE;
-            game->gameBoard[KING_INITIAL_COL + 3][WHITE_INITIAL_ROW] = EMPTY_ENTRY;
+            game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM + 1] = ROOK_WHITE;
+            game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
         } else if (GET_COLUMN(game->whiteKingPos) - 3 == GET_COLUMN(dest)) {// left castling white player
-            game->gameBoard[KING_INITIAL_COL - 1][WHITE_INITIAL_ROW] = ROOK_WHITE;
-            game->gameBoard[KING_INITIAL_COL - 4][WHITE_INITIAL_ROW] = EMPTY_ENTRY;
+            game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM - 1] = ROOK_WHITE;
+            game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
         }
         game->whiteKingPos.row = dest.row;
         game->whiteKingPos.column = dest.column;
@@ -148,25 +149,25 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
 
     } else if (srcSoldier == KING_BLACK) {
         if (GET_COLUMN(game->blackKingPos) + 2 == GET_COLUMN(dest)) { // right castling black player
-            game->gameBoard[KING_INITIAL_COL + 1][BLACK_INITIAL_ROW] = ROOK_BLACK;
-            game->gameBoard[KING_INITIAL_COL + 3][BLACK_INITIAL_ROW] = EMPTY_ENTRY;
+            game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM + 1] = ROOK_BLACK;
+            game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
         } else if (GET_COLUMN(game->blackKingPos) - 3 == GET_COLUMN(dest)) {// left castling black player
-            game->gameBoard[KING_INITIAL_COL - 1][BLACK_INITIAL_ROW] = ROOK_BLACK;
-            game->gameBoard[KING_INITIAL_COL - 4][BLACK_INITIAL_ROW] = EMPTY_ENTRY;
+            game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM - 1] = ROOK_BLACK;
+            game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
         }
         game->blackKingPos.row = dest.row;
         game->blackKingPos.column = dest.column;
         game->blackLeftCastle = game->blackRightCastle = 0;
     }
     if (srcSoldier == ROOK_WHITE) {
-        if (GET_COLUMN(src) == GAME_SIZE - 1 && GET_ROW(src) == WHITE_INITIAL_ROW)
+        if (src.column == 'H' && src.row == WHITE_INITIAL_ROW)//Right Rook White moved
             game->whiteRightCastle = 0;
-        else if (GET_COLUMN(src) == 0 && GET_ROW(src) == WHITE_INITIAL_ROW)
+        else if (src.column == 'A' && src.row == WHITE_INITIAL_ROW)//Left Rook White moved
             game->whiteLeftCastle = 0;
     } else if (srcSoldier == ROOK_BLACK) {
-        if (GET_COLUMN(src) == GAME_SIZE - 1 && GET_ROW(src) == BLACK_INITIAL_ROW)
+        if (src.column == 'H' && src.row == BLACK_INITIAL_ROW)//Right Rook Black moved
             game->blackRightCastle = 0;
-        else if (GET_COLUMN(src) == 0 && GET_ROW(src) == BLACK_INITIAL_ROW)
+        else if (src.column == 'A' && src.row == BLACK_INITIAL_ROW)//Left Rook Black moved
             game->blackLeftCastle = 0;
     }
     game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = srcSoldier;
@@ -304,7 +305,7 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
     Position kingPos = game->currentPlayer == WHITE_PLAYER ?
                        game->whiteKingPos : game->blackKingPos;
     if (isRightCastling) {
-        firstStep.column = KING_INITIAL_COL + 1;
+        firstStep.column = KING_INITIAL_COL_CHAR + 1;
         if ((game->gameBoard[kingRow][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
             (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
             game->gameBoard[kingRow][GAME_SIZE - 1] != rook)
@@ -326,10 +327,10 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
         }
         gameDestroy(copy);
     } else {//leftCastling
-        firstStep.column = KING_INITIAL_COL - 1;
+        firstStep.column = KING_INITIAL_COL_CHAR - 1;
         Position secondStep;
         secondStep.row = firstStep.row;
-        secondStep.column = KING_INITIAL_COL - 2;
+        secondStep.column = KING_INITIAL_COL_CHAR - 2;
         if ((game->gameBoard[kingRow][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
             (game->gameBoard[kingRow][GET_COLUMN(secondStep)] != EMPTY_ENTRY) ||
             (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
@@ -361,15 +362,15 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
     return true;
 }
 
-bool isValidMove_King(ChessGame *game, Position src, Position dest) { // TODO add castling
+bool isValidMove_King(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return false;
     if (dest.row == src.row) {//possible Castling
         bool rightCastle = game->currentPlayer == WHITE_PLAYER ? game->whiteRightCastle : game->blackRightCastle;
         bool leftCastle = game->currentPlayer == WHITE_PLAYER ? game->whiteLeftCastle : game->blackLeftCastle;
-        if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL + 2)
+        if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM + 2)
             return legalCastling(game, src, dest, 1);
-        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL - 3) // TODO update the bit!!
+        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 3)
             return legalCastling(game, src, dest, 0);
     }
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
@@ -690,16 +691,16 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
 
     movePiece(game, src, dest);
 
-    if (game->gameBoard[WHITE_INITIAL_ROW][0] != ROOK_WHITE)
+    if (game->gameBoard[WHITE_INITIAL_ROW-1][0] != ROOK_WHITE)
         game->whiteLeftCastle = 0;
-    if (game->gameBoard[WHITE_INITIAL_ROW][GAME_SIZE - 1] != ROOK_WHITE)
+    if (game->gameBoard[WHITE_INITIAL_ROW-1][GAME_SIZE - 1] != ROOK_WHITE)
         game->whiteRightCastle = 0;
-    if (game->gameBoard[BLACK_INITIAL_ROW][0] != ROOK_BLACK)
+    if (game->gameBoard[BLACK_INITIAL_ROW-1][0] != ROOK_BLACK)
         game->blackLeftCastle = 0;
-    if (game->gameBoard[BLACK_INITIAL_ROW][GAME_SIZE - 1] != ROOK_BLACK)
+    if (game->gameBoard[BLACK_INITIAL_ROW-1][GAME_SIZE - 1] != ROOK_BLACK)
         game->blackRightCastle = 0;
 
-    int lastRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW : WHITE_INITIAL_ROW;
+    int lastRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW-1 : WHITE_INITIAL_ROW-1;
     char srcSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
     if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == srcSolider && GET_ROW(dest) == lastRow)
         pawnPromotion(game, dest);
@@ -717,7 +718,7 @@ int getSoldierColor(char soldier) {
     return isupper(soldier) == 0 ? WHITE_PLAYER : BLACK_PLAYER;
 }
 
-bool areThereAnyMoves(ChessGame *game) {
+bool areThereAnyMoves(ChessGame *game) {//TODO change the function
 
     Position src, dest;
     for (int i = 1; i <= GAME_SIZE; i++) {
@@ -739,17 +740,14 @@ bool areThereAnyMoves(ChessGame *game) {
     return false;
 }
 
-CHESS_MESSAGE checkStatus(ChessGame *game) {
+CHESS_MESSAGE checkStatus(ChessGame *game) {//TODO change the function
     if (game == NULL)
         return INVALID_ARGUMENT;
-    char *playerColor = (char *) malloc(sizeof(char) * 5); //TODO unnesesery
-    playerColor = game->currentPlayer == WHITE_PLAYER ? "black" : "white"; //TODO bug was here
     Position kingPos = game->currentPlayer == WHITE_PLAYER ?
                        game->whiteKingPos : game->blackKingPos;
     if (myPositionUnderThreat(game, kingPos)) {
         if (!areThereAnyMoves(game)) {
-//            printBoard(game);
-            printf("Checkmate! %s player wins the game\n", playerColor); //TODO not supposed to print here
+//            printf("Checkmate! %s player wins the game\n", playerColor); //TODO not supposed to print here
             return MATE;
         }
 //        printf("Check!\n"); //TODO not supposed to print here
@@ -809,8 +807,8 @@ void printMoves(ChessGame *game, Position pos) {
         movesArray[i] = getStringFromPosition(result[i]);
         if ((game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_WHITE ||
              game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_BLACK) &&
-            (result[i].column == KING_INITIAL_COL + 2 ||
-             result[i].column == KING_INITIAL_COL - 3)) {
+            (result[i].column == KING_INITIAL_COL_CHAR + 2 ||
+             result[i].column == KING_INITIAL_COL_CHAR - 3)) {
             sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
             continue;
         }

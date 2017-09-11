@@ -1,7 +1,7 @@
 
 #include "tester.h"
 
-int testGame() {
+void testGame() {
     ChessGame *game = gameCreate(6);
     Position src;
     Position dest;
@@ -43,7 +43,7 @@ int testGame() {
 
 }
 
-int scholarsMate(){
+void scholarsMate(){
     Position src;
     Position dest;
 
@@ -396,5 +396,55 @@ void otherTest(){
     computerMove(game,2);
     printBoard(game);
 
+
+}
+void statusCheck(){
+    ChessGame * game = gameCreate(6);
+    printBoard(game);
+    for(int i=0;i<GAME_SIZE;i++)
+    {
+        for(int j =0;j<GAME_SIZE;j++)
+            game->gameBoard[i][j]=EMPTY_ENTRY;
+    }
+    printBoard(game);
+    game->gameBoard[2][4]='r';
+    game->gameBoard[0][2]='b';
+    game->gameBoard[0][3]='k';
+    game->gameBoard[0][4]='n';
+    game->gameBoard[0][5]='b';
+    game->gameBoard[2][2]='r';
+
+    game->gameBoard[1][0]='m';
+    game->gameBoard[2][3]='q';
+    game->gameBoard[1][2]='n';
+    game->gameBoard[1][5]='m';
+
+    game->gameBoard[3][1]='m';
+
+    game->gameBoard[3][5]='m';
+    game->gameBoard[6][1]='m';
+    game->gameBoard[6][2]='m';
+    game->gameBoard[6][3]='m';
+    game->gameBoard[6][4]='M';
+    game->gameBoard[6][5]='m';
+    game->gameBoard[6][6]='M';
+    game->gameBoard[6][7]='M';
+
+    game->gameBoard[7][0]='R';
+    game->gameBoard[7][1]='N';
+    game->gameBoard[7][2]='B';
+    game->gameBoard[7][3]='Q';
+    game->gameBoard[4][3]='K';
+    game->gameBoard[7][5]='B';
+    game->gameBoard[7][6]='N';
+    game->gameBoard[7][7]='R';
+
+    printBoard(game);
+    game->whiteKingPos.row=1;
+    game->whiteKingPos.column='D';
+    game->blackKingPos.row=5;
+    game->blackKingPos.column='D';
+    changePlayer(game);
+    checkStatus(game);
 
 }

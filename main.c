@@ -10,5 +10,6 @@
 int main() {
 //    scholarsMate();
 //    testMinMax();
-    bardak();
+//    bardak();
+    statusCheck();
 }
