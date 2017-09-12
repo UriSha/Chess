@@ -14,4 +14,5 @@ void checkPrintMoves();
 void computerIsWhite();
 void bardak();
 void statusCheck();
+void compVsComp();
 #endif //CHESS_TESTER_H

@@ -11,5 +11,6 @@ int main() {
 //    scholarsMate();
 //    testMinMax();
 //    bardak();
-    statusCheck();
+//    statusCheck();
+    compVsComp();
 }

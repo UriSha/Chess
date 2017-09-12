@@ -319,14 +319,66 @@ void bardak() {
     computerMove(game, 4);
     printBoard(game);
 
-//    myMoveSrc.row = 2;
-//    myMoveSrc.column = 'B';
-//
-//    myMovedest.row = 4;
-//    myMovedest.column = 'B';
-//    setMove(game, myMoveSrc, myMovedest);
-//    changePlayer(game);
-//    printBoard(game);
+    myMoveSrc.row = 1;
+    myMoveSrc.column = 'D';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'A';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 3);
+    printBoard(game);
+
+    myMoveSrc.row = 4;
+    myMoveSrc.column = 'C';
+
+    myMovedest.row = 5;
+    myMovedest.column = 'B';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 4);
+    printBoard(game);
+
+    myMoveSrc.row = 2;
+    myMoveSrc.column = 'D';
+
+    myMovedest.row = 4;
+    myMovedest.column = 'D';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 4);
+    printBoard(game);
+
+    myMoveSrc.row = 1;
+    myMoveSrc.column = 'G';
+
+    myMovedest.row = 3;
+    myMovedest.column = 'F';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 4);
+    printBoard(game);
+
+    myMoveSrc.row = 3;
+    myMoveSrc.column = 'F';
+
+    myMovedest.row = 5;
+    myMovedest.column = 'E';
+    setMove(game, myMoveSrc, myMovedest);
+    changePlayer(game);
+    printBoard(game);
+
+    computerMove(game, 4);
+    printBoard(game);
+
 }
 
 void otherTest(){
@@ -447,4 +499,15 @@ void statusCheck(){
     changePlayer(game);
     checkStatus(game);
 
+}
+
+void compVsComp(){
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+    int x = 10;
+    while (x>0) {
+        computerMove(game, 3);
+        printBoard(game);
+        x--;
+    }
 }
