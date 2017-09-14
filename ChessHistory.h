@@ -53,7 +53,7 @@ ChessHistory * copyChessHistory(ChessHistory* source);
  * deletes a ChessHistory struct, frees all resources
  *
  */
-void destroyChessHistory(ChessHistory* source);
+void destroyChessHistory(ChessHistory **source);
 
 /**
  * add a given move to the given ChessHistory

@@ -82,7 +82,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                             child = createNode(moveScore, moveScore, 1 - root->isMaxType, copy);
                             updateRoot(root, child);
                             if (root->alpha >= root->beta) {
-                                gameDestroy(copy);
+                                gameDestroy(&copy);
                                 nodeDestroy(child);
                                 return;
                             }
@@ -94,7 +94,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
                             updateRoot(root, child);
                             if (root->alpha >= root->beta) {
-                                gameDestroy(copy);
+                                gameDestroy(&copy);
                                 nodeDestroy(child);
                                 return;
                             }
@@ -167,7 +167,7 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
             }
         }
     }
-    gameDestroy(copy);
+    gameDestroy(&copy);
     return bestMove;
 }
 

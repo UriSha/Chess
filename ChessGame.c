@@ -77,11 +77,13 @@ ChessGame *gameCopy(ChessGame *src) {
     return copy;
 }
 
-void gameDestroy(ChessGame *src) {
-    if (src != NULL) {
-        destroyChessHistory(src->history);
-        free(src);
-    }
+void gameDestroy(ChessGame **src) {
+    if (src == NULL || *src == NULL)
+        return;
+
+    destroyChessHistory(&((*src)->history));
+    free(*src);
+    *src = NULL;
 }
 
 CHESS_MESSAGE printBoard(ChessGame *src) {
@@ -315,16 +317,16 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
         movePiece(copy, src, firstStep);
         kingPos.column++;
         if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(copy);
+            gameDestroy(&copy);
             return false;
         }
         movePiece(copy, firstStep, dest);
         kingPos.column++;
         if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(copy);
+            gameDestroy(&copy);
             return false;
         }
-        gameDestroy(copy);
+        gameDestroy(&copy);
     } else {//leftCastling
         firstStep.column = KING_INITIAL_COL_CHAR - 1;
         Position secondStep;
@@ -341,22 +343,22 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
         movePiece(copy, src, firstStep);
         kingPos.column--;
         if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(copy);
+            gameDestroy(&copy);
             return false;
         }
         movePiece(copy, firstStep, secondStep);
         kingPos.column--;
         if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(copy);
+            gameDestroy(&copy);
             return false;
         }
         movePiece(copy, secondStep, dest);
         kingPos.column--;
         if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(copy);
+            gameDestroy(&copy);
             return false;
         }
-        gameDestroy(copy);
+        gameDestroy(&copy);
     }
     return true;
 }
@@ -605,7 +607,7 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
             if (myPositionUnderThreat(copy, kingPos))
                 result = false;
         }
-        gameDestroy(copy);
+        gameDestroy(&copy);
     }
     return result;
 }
@@ -827,7 +829,7 @@ void printMoves(ChessGame *game, Position pos) {
             movesArray[i][5] = '^';
             movesArray[i][6] = '\0';
         }
-        gameDestroy(copy);
+        gameDestroy(&copy);
     }
     for (int i = 0; i < positionCounter; i++)
         printf("%s\n", movesArray[i]);

@@ -47,11 +47,13 @@ ChessHistory *copyChessHistory(ChessHistory *source) {
     return history;
 }
 
-void destroyChessHistory(ChessHistory *source) {
-    if (source != NULL) {
-        free(source->moves);
-        free(source);
-    }
+void destroyChessHistory(ChessHistory **source) {
+    if (source == NULL || *source == NULL)
+        return;
+    free ((*source)->moves);
+    free(*source);
+    *source = NULL;
+    return;
 }
 
 CHESS_MESSAGE addMovetoHistory(ChessHistory *source, HistoryNode move) {

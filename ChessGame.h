@@ -45,7 +45,7 @@ ChessGame *gameCreate(int historySize);
 
 ChessGame *gameCopy(ChessGame *src);
 
-void gameDestroy(ChessGame *src);
+void gameDestroy(ChessGame **src);
 
 CHESS_MESSAGE printBoard(ChessGame *src);
 
