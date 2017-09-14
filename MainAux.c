@@ -53,7 +53,7 @@ bool saveGame(char* filePath ,ChessGame* game,int mode, int difficulty, int user
     }
     fprintf(saveFile,"\t<board>\n");
     for(int i=GAME_SIZE;i>0;i--)
-        fprintf(saveFile, "\t\t<row_%d>%s</row_%d>\n",i,game->gameBoard[i-1],i);
+        fprintf(saveFile, "\t\t<row_%d>%.8s</row_%d>\n",i,game->gameBoard[i-1],i);
     fprintf(saveFile,"\t</board>\n");
     fprintf(saveFile,"</game>\n");
 

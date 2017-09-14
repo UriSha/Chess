@@ -12,4 +12,5 @@ int main() {
 ChessGame* game=gameCreate(6);
     saveGame("../SavedGames/test.xml",game,1,4,0);
     int x=6;
+    printf("%.8s","abcdefghhhh");
 }
