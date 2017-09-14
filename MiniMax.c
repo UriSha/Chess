@@ -109,8 +109,8 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
 }
 
 
-HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
-    HistoryNode bestMove;
+moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
+    moveNode bestMove;
     int bestScoreSoFar = INT_MIN;
     Position src, dest;
     src.row = dest.row = 100;
@@ -175,14 +175,15 @@ CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
 
     if (game == NULL)
         return INVALID_ARGUMENT;
-    HistoryNode move = bestMove(game, maxDepth, isExpertLevel);
+    moveNode move = bestMove(game, maxDepth, isExpertLevel);
     char soldier = game->gameBoard[GET_ROW(move.source)][GET_COLUMN(move.source)];
     char* soliderName = getSoldierName(soldier);
 
 
 
     if(setMove(game, move.source, move.destination)==SUCCESS){
-        printf("Computer: move [pawn|bishop|knight|rook|queen] at <x,y> to <i,j>\n");
+        printf("Computer: move %s at <x,y> to <i,j>\n",soliderName);
     }
+    return SUCCESS;//TODO finish the function
 
 }

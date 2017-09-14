@@ -14,11 +14,11 @@ typedef struct chess_move_history{
     Position source;
     Position destination;
     char soldierDied;
-}HistoryNode;
+}moveNode;
 
 // new type used to hold chess moves
 typedef struct chess_array_list{
-    HistoryNode* moves;
+    moveNode* moves;
     int actualSize;
     int maxSize;
 }ChessHistory;
@@ -61,14 +61,14 @@ void destroyChessHistory(ChessHistory **source);
  *
  * @return message that indicates success of failure
  */
-CHESS_MESSAGE addMovetoHistory(ChessHistory* source, HistoryNode move);
+CHESS_MESSAGE addMovetoHistory(ChessHistory* source, moveNode move);
 
 /**
  * remove the most recent added move from the given ChessHistory (LIFO order)
  *
  * @return message that indicates success of failure
  */
-HistoryNode* removeRecentMove(ChessHistory* source);
+moveNode* removeRecentMove(ChessHistory* source);
 
 /**
  *

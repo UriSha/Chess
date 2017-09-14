@@ -164,7 +164,7 @@ void checkPrintMoves()
 }
 //
 //void computerMove(ChessGame *game, int maxDepth){
-//    HistoryNode move = bestMove(game,maxDepth,false);
+//    moveNode move = bestMove(game,maxDepth,false);
 //    setMove(game,move.source,move.destination);
 //    changePlayer(game);
 //}
@@ -539,15 +539,24 @@ void getMovesCheck(){
     setMove(game,src,dest);
     printBoard(game);
 
-    src.row = 1;
-    src.column = 'E';
-    dest.row = 1;
-    dest.column = 'G';
+//    src.row = 1;
+//    src.column = 'E';
+//    dest.row = 1;
+//    dest.column = 'G';
+//    setMove(game,src,dest);
+//    printBoard(game);
+
+Position f;
+    f.row=1;
+    f.column='H';
+
+
+    printMoves(game,f);
+    src.row=1;
+    src.column='E';
+    dest.row=1;
+    dest.column='G';
     setMove(game,src,dest);
+    undoMove(game);
     printBoard(game);
-
-
-
-
-    printMoves(game,game->whiteKingPos);
 }

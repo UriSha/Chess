@@ -1,11 +1,6 @@
 #include "ChessGame.h"
 
 
-#define KING_INITIAL_COL_CHAR 'E'
-#define KING_INITIAL_COL_NUM 4
-#define WHITE_INITIAL_ROW 1
-#define BLACK_INITIAL_ROW 8
-
 ChessGame *gameCreate(int historySize) {
     if (historySize <= 0)
         return NULL;
@@ -363,6 +358,7 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
     return true;
 }
 
+
 bool isValidMove_King(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return false;
@@ -683,7 +679,7 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     char soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
     if (soldierDied != EMPTY_ENTRY)
         updateScore(soldierDied, game);
-    HistoryNode move;
+    moveNode move;
     move.source = src;
     move.destination = dest;
     move.soldierDied = soldierDied;
@@ -784,6 +780,20 @@ int getMoves(ChessGame *game, Position *result, Position pos) {
                 result[movesCounter++] = dest;
         }
     }
+    int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+    Position kingPos = game->currentPlayer == WHITE_PLAYER ? game->whiteKingPos : game->blackKingPos;
+    dest.row = myRow;
+    if (pos.row == myRow) {
+        if (pos.column == 'H') {
+            dest.column = 'G';
+            if (legalCastling(game, kingPos, dest, true))
+                result[movesCounter++] = pos;
+        } else if (pos.column == 'A') {
+            dest.column = 'B';
+            if (legalCastling(game, kingPos, dest, false))
+                result[movesCounter++] = pos;
+        }
+    }
     return movesCounter;
 }
 
@@ -804,9 +814,11 @@ void printMoves(ChessGame *game, Position pos) {
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
     for (int i = 0; i < positionCounter; i++)
         movesArray[i] = (char *) malloc(sizeof(char) * 15);//15 is maximun length of a row
-
+    int k = 0;
+    char *castle1 = (char *) malloc(sizeof(char) * 15);
+    char *castle2 = (char *) malloc(sizeof(char) * 15);
     for (int i = 0; i < positionCounter; i++) {
-        movesArray[i] = getStringFromPosition(result[i]);
+        movesArray[k++] = getStringFromPosition(result[i]);
         char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
         int myKingInitRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
 
@@ -817,34 +829,46 @@ void printMoves(ChessGame *game, Position pos) {
             if (pos.column == KING_INITIAL_COL_CHAR && GET_ROW(pos) == myKingInitRow) {
                 if (GET_ROW(result[i]) == myKingInitRow) {
                     if (castleRight && GET_COLUMN(result[i]) == KING_INITIAL_COL_NUM + 2) {
-                        sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
+                        sprintf(castle2, "castle <%d,H>", result[i].row);
+                        k--;
                         continue;
                     }
                     if (castleLeft && GET_COLUMN(result[i]) == KING_INITIAL_COL_NUM - 3) {
-                        sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
+                        sprintf(castle1, "castle <%d,A>", result[i].row);
+                        k--;
                         continue;
                     }
                 }
             }
+        } else if (movesArray[k - 1][3] == pos.column && movesArray[k - 1][1] - '0' == pos.row) {
+            sprintf(castle1, "castle <%d,%c>", result[i].row, pos.column);
+            k--;
+            continue;
         }
+
+
         bool someoneDied = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] != EMPTY_ENTRY ?
                            true : false;
         ChessGame *copy = gameCopy(game);
         movePiece(copy, pos, result[i]);
         if (myPositionUnderThreat(copy, result[i])) {
-            movesArray[i][5] = '*';
+            movesArray[k][5] = '*';
             if (someoneDied) {
-                movesArray[i][6] = '^';
-                movesArray[i][7] = '\0';
+                movesArray[k][6] = '^';
+                movesArray[k][7] = '\0';
 
             } else
-                movesArray[i][6] = '\0';
+                movesArray[k][6] = '\0';
         } else if (someoneDied) {
-            movesArray[i][5] = '^';
-            movesArray[i][6] = '\0';
+            movesArray[k][5] = '^';
+            movesArray[k][6] = '\0';
         }
         gameDestroy(&copy);
     }
+    if (strcmp(castle1, "") != 0)
+        movesArray[k++] = castle1;
+    if (strcmp(castle2, "") != 0)
+        movesArray[k] = castle2;
     for (int i = 0; i < positionCounter; i++)
         printf("%s\n", movesArray[i]);
     for (int i = 0; i < positionCounter; i++)
@@ -852,12 +876,54 @@ void printMoves(ChessGame *game, Position pos) {
     free(movesArray);
 }
 
+Position *isCastling(ChessGame *game, moveNode move) {
+    Position *res = (Position *) malloc(sizeof(Position) * 2);
+    int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+    char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
+
+    res[0].row = res[1].row = INVALID_ROW;
+    res[0].column = res[1].column = INVALID_COL;
+
+
+    if (game->gameBoard[GET_ROW(move.destination)][GET_COLUMN(move.destination)] == myKing) {
+        if (move.source.row == myRow && move.source.column == KING_INITIAL_COL_CHAR) {
+            if (move.destination.row == myRow) {
+                if (move.destination.column == KING_INITIAL_COL_CHAR + 2) {
+                    res[0].row = res[1].row = myRow;
+                    res[0].column = 'F';
+                    res[1].column = 'H';
+                    if (game->currentPlayer==WHITE_PLAYER)
+                        game->whiteRightCastle = true;
+                    else
+                        game->blackRightCastle = true;
+
+                }
+                if (move.destination.column == KING_INITIAL_COL_CHAR - 3) {
+                    res[0].row = res[1].row = myRow;
+                    res[0].column = 'C';
+                    res[1].column = 'A';
+                    if (game->currentPlayer==WHITE_PLAYER)
+                        game->whiteLeftCastle = true;
+                    else
+                        game->blackLeftCastle = true;
+                }
+            }
+        }
+    }
+    return res;
+
+}
+
 CHESS_MESSAGE undoMove(ChessGame *game) {
     if (game == NULL)
         return INVALID_ARGUMENT;
     if (isHistoryEmpty(game->history))
         return NO_HISTORY;
-    HistoryNode *lastMove = removeRecentMove(game->history);
+    moveNode *lastMove = removeRecentMove(game->history);
+    Position * rookPositions = isCastling(game,*lastMove);
+    if (rookPositions[0].row != INVALID_ROW) {
+        movePiece(game, rookPositions[0], rookPositions[1]);
+    }
     movePiece(game, lastMove->destination, lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->soldierDied;
     return SUCCESS;

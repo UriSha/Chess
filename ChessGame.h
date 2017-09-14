@@ -24,6 +24,10 @@
 #define QUEEN_BLACK 'Q'
 #define KING_WHITE 'k'
 #define KING_BLACK 'K'
+#define KING_INITIAL_COL_CHAR 'E'
+#define KING_INITIAL_COL_NUM 4
+#define WHITE_INITIAL_ROW 1
+#define BLACK_INITIAL_ROW 8
 
 #define GET_COLUMN(x) ((x).column-65)
 #define GET_ROW(x) ((x).row-1)
@@ -50,33 +54,58 @@ void gameDestroy(ChessGame **src);
 CHESS_MESSAGE printBoard(ChessGame *src);
 
 int getPlayer(char soldier);
+
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
-char getSoldier( char board[GAME_SIZE][GAME_SIZE], int row, int col);
-CHESS_MESSAGE undoMove(ChessGame* game);
+
+char getSoldier(char board[GAME_SIZE][GAME_SIZE], int row, int col);
+
+CHESS_MESSAGE undoMove(ChessGame *game);
+
 char getOtherKnight(int player);
+
 char getOtherKing(int player);
+
 char getOtherQueen(int player);
+
 char getOtherBishop(int player);
+
 char getOtherRook(int player);
+
 char getOtherPawn(int player);
+
 int getOtherPlayer(int player);
+
 bool knightThreatsPosition(ChessGame *game, int row, int col);
+
 bool kingThreatsPosition(ChessGame *game, int row, int col);
 
 bool QBRThreatsPosition(ChessGame *game, int row, int col);
-bool myPositionUnderThreat(ChessGame *game,Position pos);
+
+bool myPositionUnderThreat(ChessGame *game, Position pos);
+
 bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling);
+
 bool isValidMove_King(ChessGame *game, Position src, Position dest);
+
 bool isValidMove_Queen(ChessGame *game, Position src, Position dest);
+
 bool isValidMove_Knight(ChessGame *game, Position src, Position dest);
+
 bool isValidMove_Bishop(ChessGame *game, Position src, Position dest);
+
 bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
+
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
+
 void pawnPromotion(ChessGame *game, Position posOfPawn);
-void updateScore(char soldierDied,ChessGame* game);
-void changePlayer(ChessGame* game);
+
+void updateScore(char soldierDied, ChessGame *game);
+
+void changePlayer(ChessGame *game);
+
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
-CHESS_MESSAGE checkStatus(ChessGame* game);
+
+CHESS_MESSAGE checkStatus(ChessGame *game);
 
 
 /**
@@ -87,7 +116,7 @@ CHESS_MESSAGE checkStatus(ChessGame* game);
  * @param dest
  * @return
  */
-bool isValidMove(ChessGame* game, Position src, Position dest);
+bool isValidMove(ChessGame *game, Position src, Position dest);
 
 
 char *getStringFromPosition(Position dest);
@@ -95,9 +124,12 @@ char *getStringFromPosition(Position dest);
 // bonus functions
 void printMoves(ChessGame *game, Position pos);
 
-int getMoves(ChessGame* game, Position *result, Position pos);
+int getMoves(ChessGame *game, Position *result, Position pos);
 
-CHESS_MESSAGE undoMove(ChessGame* game);
+CHESS_MESSAGE undoMove(ChessGame *game);
 
 char *getSoldierName(char soldier);
+
+Position *isCastling(ChessGame *game, moveNode move);
+
 #endif //CHESS_CHESSGAME_H

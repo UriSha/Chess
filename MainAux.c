@@ -9,7 +9,7 @@ bool undo(ChessGame *game, int mode) {
         printf("Undo command not available in 2 players mode\n");
         return false;
     }
-    HistoryNode undoNode;
+    moveNode undoNode;
     CHESS_MESSAGE undoMessage = undoMove(game);
     if (undoMessage == INVALID_ARGUMENT)
         return false;
@@ -122,8 +122,8 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
 
         case LOAD:
             if (command.validArg) {
-                if (loadGame(command.path, session));
-                return false;
+                if (loadGame(command.path, session))
+                    return false;
             }
         case GAME_MODE:
             if (command.validArg) {
@@ -158,7 +158,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
                 printf("SETTINGS:\n");
                 printf("GAME_MODE: %d\n", session->mode);
                 if (session->mode == ONE_PLAYER) {
-                    printf("DIFFICULTY_LVL: X\n", session->difficulty);
+                    printf("DIFFICULTY_LVL: %d\n", session->difficulty);
                     char *playerColor;
                     playerColor = session->game->currentPlayer == WHITE_PLAYER ? "WHITE" : "BLACK";
                     printf("USER_CLR: %s\n", playerColor);
@@ -182,6 +182,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
 bool processCommandGame(GameSession *session, ChessCommand command) {
     if (session == NULL)
         return false;
+    char soldier;
     switch (command.cmd) {
         case UNDO_MOVE:
             if (command.validArg) {
@@ -209,6 +210,43 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             }
 //            changePlayer(session->game);
             return true;
+        case CASTLE:
+            if (!command.validArg) {
+                printf("Wrong position for a rook\n");
+                return false;
+            }
+            soldier = session->game->gameBoard[GET_ROW(command.source)][GET_COLUMN(command.source)];
+            char myRook = (char) (session->game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
+            if (soldier != myRook) {
+                printf("Wrong position for a rook\n");
+                return false;
+            }
+            Position dest;
+            int myRow = session->game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+            dest.row = myRow;
+            Position kingPos = session->game->currentPlayer == WHITE_PLAYER ? session->game->whiteKingPos
+                                                                            : session->game->blackKingPos;
+            if (command.source.row == myRow && command.source.column == 'H') {//right castle
+
+                dest.column = KING_INITIAL_COL_CHAR + 2;
+                if (!legalCastling(session->game, kingPos, dest, true)) {
+                    printf("Illegal castling move\n");
+                    return false;
+                }
+                if (setMove(session->game, kingPos, dest) == SUCCESS)
+                    return true;
+            } else if (command.source.row == myRow && command.source.column == 'A')//left castle
+            {
+                dest.column = KING_INITIAL_COL_CHAR - 3;
+                if (!legalCastling(session->game, kingPos, dest, false)) {
+                    printf("Illegal castling move\n");
+                    return false;
+                }
+                if (setMove(session->game, kingPos, dest) == SUCCESS)
+                    return true;
+            }
+            break;
+
         case GET_MOVES:
             if (!command.validArg) {
                 printf("Invalid position on the board\n");
@@ -269,12 +307,12 @@ void settingState(GameSession *session) {
         fgets(commandLine, MAX_LINE_LENGTH, stdin);
         command = parseLine(commandLine);
     } while (!processCommandSettings(session, command));
-//    int winner=gameState(session);
+//    int winner=gameState(session); //TODO what should we do here?
 }
 
-int gameState(GameSession *session) {
+CHESS_COMMAND gameState(GameSession *session) {
     if (session == NULL)
-        return -100;
+        return INVALID_LINE;
     char *playerColor;
     bool gameStop = false;
     char commandLine[MAX_LINE_LENGTH];
@@ -288,13 +326,17 @@ int gameState(GameSession *session) {
             fgets(commandLine, MAX_LINE_LENGTH, stdin);
             command = parseLine(commandLine);
         } while (!processCommandGame(session, command));
-        if (command.cmd == MOVE) //TODO what about reset or quit?
+        if (command.cmd == MOVE || command.cmd == CASTLE)
             changePlayer(session->game);
+        else if(command.cmd==RESET)
+            return RESET;
+        else if(command.cmd==QUIT)
+            return QUIT;
         msg = checkStatus(session->game);
         switch (msg) {
             case MATE:
-                printf("Checkmate! %s player wins the game\n",playerColor);
-                gameDestroy(session->game);
+                printf("Checkmate! %s player wins the game\n", playerColor);
+                gameDestroy(&(session->game));
                 free(session);
                 exit(0);
             case CHECK:
@@ -302,7 +344,7 @@ int gameState(GameSession *session) {
                 break;
             case TIE:
                 printf("The game ends in a tie\n");
-                gameDestroy(session->game);
+                gameDestroy(&(session->game));
                 free(session);
                 exit(0);
             default:
@@ -310,14 +352,14 @@ int gameState(GameSession *session) {
         }
         if (session->mode == ONE_PLAYER)//computer's turn
         {
-            if(session->difficulty==5)
-                computerMove(session->game,session->difficulty,true);//TODO maybe change the system of difficulty
-            else
-                computerMove(session->game,session->difficulty,false);
+           moveNode move =bestMove(session->game,session->difficulty,session->difficulty==5);
+
+
 
         }
+        gameStop = true;//TODO Change it
     }
-    return -1;
+    return DEFAULT;
 
 }
 

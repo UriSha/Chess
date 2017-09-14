@@ -16,7 +16,7 @@ ChessHistory *createChessHistory(int maxSize) {
     }
     history->maxSize = maxSize;
     history->actualSize = 0;
-    history->moves = (HistoryNode *) malloc(maxSize * sizeof(HistoryNode));
+    history->moves = (moveNode *) malloc(maxSize * sizeof(moveNode));
     if (history->moves == NULL) {
         free(history);
         printf("%s", MALLOC_ERROR);
@@ -34,7 +34,7 @@ ChessHistory *copyChessHistory(ChessHistory *source) {
         printf("%s", MALLOC_ERROR);
         return NULL;
     }
-    history->moves = (HistoryNode *) malloc(source->maxSize * sizeof(HistoryNode));
+    history->moves = (moveNode *) malloc(source->maxSize * sizeof(moveNode));
     if (history->moves == NULL) {
         free(history);
         printf("%s", MALLOC_ERROR);
@@ -56,7 +56,7 @@ void destroyChessHistory(ChessHistory **source) {
     return;
 }
 
-CHESS_MESSAGE addMovetoHistory(ChessHistory *source, HistoryNode move) {
+CHESS_MESSAGE addMovetoHistory(ChessHistory *source, moveNode move) {
     if (source == NULL || source->maxSize <= 0)
         return INVALID_ARGUMENT;
 
@@ -74,7 +74,7 @@ CHESS_MESSAGE addMovetoHistory(ChessHistory *source, HistoryNode move) {
     return SUCCESS;
 }
 
-HistoryNode *removeRecentMove(ChessHistory *source) {
+moveNode *removeRecentMove(ChessHistory *source) {
     if (source == NULL || source->actualSize < 1)
         return NULL;
     source->actualSize--;

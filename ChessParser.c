@@ -82,6 +82,9 @@ CHESS_COMMAND getChessCommand(char *token) {
     if (strcmp(token, "start") == 0) {
         return START;
     }
+    if (strcmp(token, "castle") == 0){
+        return CASTLE;
+    }
 
     return INVALID_LINE;
 
@@ -121,7 +124,7 @@ ChessCommand parseLine(const char *str) {
         result.path = token;
     } else if (result.cmd == INVALID_LINE) {
         result.validArg = false;
-    } else if (result.cmd == GET_MOVES) {
+    } else if (result.cmd == GET_MOVES || result.cmd == CASTLE) {
         Position pos = getPosition(token);
         if (pos.row==INVALID_ROW) //don't need to check INVALID_COL
             result.validArg = false;

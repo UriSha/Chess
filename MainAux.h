@@ -20,6 +20,6 @@ bool saveGame(char* filePath ,ChessGame* game,int mode, int difficulty, int user
 bool loadGame(char* filePath,GameSession* gameSession);
 bool processCommandSettings(GameSession* session, ChessCommand command);
 bool processCommandGame(GameSession* session,ChessCommand command);
-int gameState(GameSession *session);
+CHESS_COMMAND gameState(GameSession *session);
 void settingState(GameSession* session);
 #endif //CHESS_MAINAUX_H

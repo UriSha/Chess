@@ -27,6 +27,7 @@ typedef enum {
     PRINT_SETTING,
     START,
     INVALID_LINE,
+    CASTLE,
 } CHESS_COMMAND;
 
 
