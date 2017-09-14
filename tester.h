@@ -15,4 +15,5 @@ void computerIsWhite();
 void bardak();
 void statusCheck();
 void compVsComp();
+void getMovesCheck();
 #endif //CHESS_TESTER_H

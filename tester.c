@@ -512,3 +512,42 @@ void statusCheck(){
 //        x--;
 //    }
 //}
+void getMovesCheck(){
+    ChessGame *game = gameCreate(6);
+    printBoard(game);
+
+    Position src;
+    Position dest;
+    src.row = 1;
+    src.column = 'G';
+    dest.row = 3;
+    dest.column = 'F';
+    setMove(game,src,dest);
+    printBoard(game);
+
+    src.row = 2;
+    src.column = 'G';
+    dest.row = 3;
+    dest.column = 'G';
+    setMove(game,src,dest);
+    printBoard(game);
+
+    src.row = 1;
+    src.column = 'F';
+    dest.row = 3;
+    dest.column = 'H';
+    setMove(game,src,dest);
+    printBoard(game);
+
+    src.row = 1;
+    src.column = 'E';
+    dest.row = 1;
+    dest.column = 'G';
+    setMove(game,src,dest);
+    printBoard(game);
+
+
+
+
+    printMoves(game,game->whiteKingPos);
+}

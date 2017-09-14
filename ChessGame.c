@@ -307,9 +307,9 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
                        game->whiteKingPos : game->blackKingPos;
     if (isRightCastling) {
         firstStep.column = KING_INITIAL_COL_CHAR + 1;
-        if ((game->gameBoard[kingRow][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
-            game->gameBoard[kingRow][GAME_SIZE - 1] != rook)
+        if ((game->gameBoard[kingRow-1][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
+            (game->gameBoard[kingRow-1][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
+            game->gameBoard[kingRow-1][GAME_SIZE - 1] != rook)
             return false;
         if (myPositionUnderThreat(game, kingPos))
             return false;
@@ -332,10 +332,10 @@ bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCas
         Position secondStep;
         secondStep.row = firstStep.row;
         secondStep.column = KING_INITIAL_COL_CHAR - 2;
-        if ((game->gameBoard[kingRow][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow][GET_COLUMN(secondStep)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow][0] != rook))
+        if ((game->gameBoard[kingRow-1][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
+            (game->gameBoard[kingRow-1][GET_COLUMN(secondStep)] != EMPTY_ENTRY) ||
+            (game->gameBoard[kingRow-1][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
+            (game->gameBoard[kingRow-1][0] != rook))
             return false;
         if (myPositionUnderThreat(game, kingPos))
             return false;
@@ -612,7 +612,7 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
     return result;
 }
 
-void pawnPromotion(ChessGame *game, Position posOfPawn) {
+void pawnPromotion(ChessGame *game, Position posOfPawn) {//TODO computer pawn promotion
     char userInput[MAX_LINE_LENGTH];
     char chosenSolider = '\0';
     do {
@@ -806,12 +806,26 @@ void printMoves(ChessGame *game, Position pos) {
 
     for (int i = 0; i < positionCounter; i++) {
         movesArray[i] = getStringFromPosition(result[i]);
-        if ((game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_WHITE ||
-             game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == KING_BLACK) &&
-            (result[i].column == KING_INITIAL_COL_CHAR + 2 ||
-             result[i].column == KING_INITIAL_COL_CHAR - 3)) {
-            sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
-            continue;
+        char myKing=(char)(game->currentPlayer==WHITE_PLAYER ? KING_WHITE : KING_BLACK);
+        int myKingInitRow=game->currentPlayer==WHITE_PLAYER ? WHITE_INITIAL_ROW-1 : BLACK_INITIAL_ROW-1;
+
+        bool castleRight =game->currentPlayer==WHITE_PLAYER ? game->whiteRightCastle : game->blackRightCastle;
+        bool castleLeft =game->currentPlayer==WHITE_PLAYER ? game->whiteLeftCastle : game->blackLeftCastle;
+
+        if (game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == myKing) {
+            if(pos.column==KING_INITIAL_COL_CHAR&& GET_ROW(pos)==myKingInitRow)
+            {
+                if(GET_ROW(result[i])==myKingInitRow){
+                    if(castleRight &&GET_COLUMN(result[i])==KING_INITIAL_COL_NUM+2){
+                        sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
+                        continue;
+                    }
+                    if (castleLeft && GET_COLUMN(result[i])==KING_INITIAL_COL_NUM-3){
+                        sprintf(movesArray[i], "castle <%d,%c>", result[i].row, result[i].column);
+                        continue;
+                    }
+                }
+            }
         }
         bool someoneDied = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] != EMPTY_ENTRY ?
                            true : false;
