@@ -748,14 +748,14 @@ CHESS_MESSAGE checkStatus(ChessGame *game) {
                        game->whiteKingPos : game->blackKingPos;
     if (myPositionUnderThreat(game, kingPos)) {
         if (!areThereAnyMoves(game)) {
-//            printf("Checkmate! player wins the game\n"); //TODO not supposed to print here
+
             return MATE;
         }
-//        printf("Check!\n"); //TODO not supposed to print here
+
         return CHECK;
     }
     if (!areThereAnyMoves(game)) {
-//        printf("The game ends in a tie\n"); //TODO not supposed to print here
+
         return TIE;
     }
     return CONTINUE;
@@ -790,19 +790,19 @@ int getMoves(ChessGame *game, Position *result, Position pos) {
 void printMoves(ChessGame *game, Position pos) {
     if (game == NULL)
         return;
-    char *playerColor;
-    playerColor = game->currentPlayer == WHITE_PLAYER ? "white" : "black";
-    if (getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])
-        != game->currentPlayer)
-        printf("The specified position does not contain %s player piece\n", playerColor);
-    if (pos.row > 8 || pos.row < 1 || pos.column > 'H' || pos.column < 'A')
-        printf("Invalid position on the board\n");
-    Position *result = (Position *) malloc(28 * sizeof(Position));
+//    char *playerColor;
+//    playerColor = game->currentPlayer == WHITE_PLAYER ? "white" : "black";
+//    if (getSoldierColor(game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)])
+//        != game->currentPlayer)
+//        printf("The specified position does not contain %s player piece\n", playerColor);
+//    if (pos.row > 8 || pos.row < 1 || pos.column > 'H' || pos.column < 'A')
+//        printf("Invalid position on the board\n");
+    Position *result = (Position *) malloc(28 * sizeof(Position));//28 is approximately the maximum number of moves
     int positionCounter = getMoves(game, result, pos);
     result = (Position *) realloc(result, positionCounter * sizeof(Position));
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
     for (int i = 0; i < positionCounter; i++)
-        movesArray[i] = (char *) malloc(sizeof(char) * 15);
+        movesArray[i] = (char *) malloc(sizeof(char) * 15);//15 is maximun length of a row
 
     for (int i = 0; i < positionCounter; i++) {
         movesArray[i] = getStringFromPosition(result[i]);

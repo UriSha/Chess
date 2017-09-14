@@ -18,7 +18,7 @@ typedef enum {
     GET_MOVES,
     SAVE,
     QUIT,
-    RESTART,
+    RESET,
     LOAD,
     GAME_MODE,
     DIFFICULTY,

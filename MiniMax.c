@@ -176,6 +176,8 @@ CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     if (game == NULL)
         return INVALID_ARGUMENT;
     HistoryNode move = bestMove(game, maxDepth, isExpertLevel);
-    return setMove(game, move.source, move.destination);
+    if(setMove(game, move.source, move.destination)==SUCCESS){
+        printf("Computer: move [pawn|bishop|knight|rook|queen] at <x,y> to <i,j>\n");
+    }
 
 }

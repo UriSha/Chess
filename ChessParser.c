@@ -56,7 +56,7 @@ CHESS_COMMAND getChessCommand(char *token) {
         return QUIT;
     }
     if (strcmp(token, "reset") == 0) {
-        return RESTART;
+        return RESET;
     }
     if (strcmp(token, "save") == 0) {
         return SAVE;
@@ -100,7 +100,7 @@ ChessCommand parseLine(const char *str) {
     if (token == '\0') {
         if ((result.cmd == QUIT) || (result.cmd == DEFAULT) ||
             (result.cmd == START) || (result.cmd == PRINT_SETTING) || (result.cmd == UNDO_MOVE) ||
-            (result.cmd == RESTART)) {
+            (result.cmd == RESET)) {
             result.validArg = true;
         } else {
             result.validArg = false;
@@ -131,7 +131,7 @@ ChessCommand parseLine(const char *str) {
 
         }
     }
-    else //result.cmd==MOVE
+    else if(result.cmd==MOVE)
     {
         Position source = getPosition(token);
         token=strtok(NULL,DELIMITER);
