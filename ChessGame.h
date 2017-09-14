@@ -98,4 +98,6 @@ void printMoves(ChessGame *game, Position pos);
 int getMoves(ChessGame* game, Position *result, Position pos);
 
 CHESS_MESSAGE undoMove(ChessGame* game);
+
+char *getSoldierName(char soldier);
 #endif //CHESS_CHESSGAME_H

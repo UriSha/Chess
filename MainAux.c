@@ -288,12 +288,12 @@ int gameState(GameSession *session) {
             fgets(commandLine, MAX_LINE_LENGTH, stdin);
             command = parseLine(commandLine);
         } while (!processCommandGame(session, command));
-        if (command.cmd == MOVE)
+        if (command.cmd == MOVE) //TODO what about reset or quit?
             changePlayer(session->game);
         msg = checkStatus(session->game);
         switch (msg) {
             case MATE:
-                printf("Checkmate! player wins the game\n");
+                printf("Checkmate! %s player wins the game\n",playerColor);
                 gameDestroy(session->game);
                 free(session);
                 exit(0);
