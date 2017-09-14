@@ -4,6 +4,7 @@
 #define CHESS_CHESSGAME_H
 
 #include "ChessHistory.h"
+#include "ChessParser.h"
 #include <ctype.h>
 
 #define GAME_SIZE 8

@@ -1,5 +1,5 @@
 #include "ChessGame.h"
-#include "ChessParser.h"
+
 
 #define KING_INITIAL_COL_CHAR 'E'
 #define KING_INITIAL_COL_NUM 4
