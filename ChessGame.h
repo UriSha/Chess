@@ -52,7 +52,7 @@ CHESS_MESSAGE printBoard(ChessGame *src);
 int getPlayer(char soldier);
 CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest);
 char getSoldier( char board[GAME_SIZE][GAME_SIZE], int row, int col);
-
+CHESS_MESSAGE undoMove(ChessGame* game);
 char getOtherKnight(int player);
 char getOtherKing(int player);
 char getOtherQueen(int player);
@@ -97,5 +97,5 @@ void printMoves(ChessGame *game, Position pos);
 
 int getMoves(ChessGame* game, Position *result, Position pos);
 
-void undoMove(ChessGame* game);
+CHESS_MESSAGE undoMove(ChessGame* game);
 #endif //CHESS_CHESSGAME_H

@@ -837,17 +837,13 @@ void printMoves(ChessGame *game, Position pos) {
         free(movesArray[i]);
     free(movesArray);
 }
-void undoMove(ChessGame* game){
+CHESS_MESSAGE undoMove(ChessGame* game){
     if (game==NULL)
-        return ;
-    if(isHistoryEmpty(game->history)){
-//        printf("Empty history, move cannot be undone\n");//TODO not supposed to print here
-        return;
-    }
+        return INVALID_ARGUMENT;
+    if(isHistoryEmpty(game->history))
+        return NO_HISTORY;
     HistoryNode* lastMove = removeRecentMove(game->history);
-    char* playerColor=getOtherPlayer(game->currentPlayer)==WHITE_PLAYER ? "white" : "black";
     movePiece(game,lastMove->destination,lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)]=lastMove->soldierDied;
-//    printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n",playerColor,lastMove->destination.row,lastMove->destination.column,
-//            lastMove->source.row,lastMove->source.column); ///TODO not supposed to print here
+    return SUCCESS;
 }

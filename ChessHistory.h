@@ -28,6 +28,7 @@ typedef enum{
     SUCCESS,
     ILLEGAL_MOVE,
     INVALID_ARGUMENT,
+    NO_HISTORY,
     CHECK,
     MATE,
     TIE,
