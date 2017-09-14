@@ -17,6 +17,9 @@ typedef struct minimax_node {
 int scoringFunction(ChessGame* game, bool isExpertLevel);
 
 MiniMaxNode *createNode(int alpha, int beta, bool isMaxType, ChessGame *copyOfGame);
-HistoryNode bestMove(ChessGame * game, int maxDepth,bool isExpertLevel);
+void nodeDestroy(MiniMaxNode *node);
+void updateRoot(MiniMaxNode *root, MiniMaxNode *child);
 void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth);
+HistoryNode bestMove(ChessGame * game, int maxDepth,bool isExpertLevel);
+CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth,bool isExpertLevel);
 #endif //CHESS_MINIMAX_H

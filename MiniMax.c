@@ -34,7 +34,7 @@ void nodeDestroy(MiniMaxNode *node) {
 }
 
 void updateRoot(MiniMaxNode *root, MiniMaxNode *child) {
-    if (root == NULL || child==NULL)
+    if (root == NULL || child == NULL)
         return;
     if (root->isMaxType) {
         if (root->alpha < child->beta)
@@ -130,10 +130,6 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
             for (int i = 1; i <= GAME_SIZE; i++) {
                 dest.row = i;
                 for (int j = 0; j < GAME_SIZE; j++) {
-//                    if (row ==3 && col ==0 && i == 5 && j == 1 && copy->gameBoard[2][0]==KNIGHT_WHITE)
-//                        printf("hii");
-//                    if (row ==7 && col ==0 && i == 6 && j == 1 && copy->gameBoard[5][1]==PAWN_WHITE)
-//                        printf("hii\n");
                     dest.column = 'A' + j;
                     if (isValidMove(copy, src, dest)) {
                         if (firstValid) {
@@ -163,7 +159,7 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                                 bestMove.destination = dest;
                             }
                             changePlayer(copy);
-//                            nodeDestroy(child); // TODO bugs were here
+                            nodeDestroy(child); //TODO is this causing any bugs??
                         }
                         undoMove(copy);
                     }
@@ -173,4 +169,13 @@ HistoryNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     }
     gameDestroy(copy);
     return bestMove;
+}
+
+CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
+
+    if (game == NULL)
+        return INVALID_ARGUMENT;
+    HistoryNode move = bestMove(game, maxDepth, isExpertLevel);
+    return setMove(game, move.source, move.destination);
+
 }

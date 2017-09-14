@@ -8,9 +8,14 @@
 
 
 int main() {
-//    scholarsMate();
-//    testMinMax();
-//    bardak();
-//    statusCheck();
-    compVsComp();
+ChessGame* game=gameCreate(6);
+    MiniMaxNode *node=createNode(1,1,0,game);
+    Position src,dest;
+    src.row=2;
+    src.column='B';
+    dest.row=4;
+    dest.column='B';
+    setMove(game,src,dest);
+    nodeDestroy(node);
+    int x=6;
 }
