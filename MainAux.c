@@ -144,11 +144,10 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
             return false;
         case USER_COLOR:
             if (command.validArg && session->mode == ONE_PLAYER) {
-                session->game->currentPlayer = command.argument;
-                char * userColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
+                session->user_color = command.argument;
+                char *userColor = session->user_color == WHITE_PLAYER ? "white" : "black";
                 printf("User color is set to %s\n", userColor);
-            }
-            else
+            } else
                 printf("Invalid command\n");
             return false;
 
@@ -156,7 +155,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
             if (command.validArg) {
                 session->mode = ONE_PLAYER;
                 session->difficulty = 2;
-                session->game->currentPlayer = WHITE_PLAYER;
+                session->user_color = WHITE_PLAYER;
                 printf("Settings are set to default\n");
                 return false;
 
@@ -168,7 +167,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
                 if (session->mode == ONE_PLAYER) {
                     printf("DIFFICULTY_LVL: %d\n", session->difficulty);
                     char *playerColor;
-                    playerColor = session->game->currentPlayer == WHITE_PLAYER ? "WHITE" : "BLACK";
+                    playerColor = session->user_color == WHITE_PLAYER ? "WHITE" : "BLACK";
                     printf("USER_CLR: %s\n", playerColor);
                 }
                 return false;
@@ -194,7 +193,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
     switch (command.cmd) {
         case UNDO_MOVE:
             if (command.validArg) {
-                if(undo(session))
+                if (undo(session))
                     undo(session);
             }
             printBoard(session->game);
@@ -300,7 +299,7 @@ GameSession sessionCreate(int historySize) {
     session.game = gameCreate(historySize);
     session.difficulty = 2;
     session.mode = ONE_PLAYER;
-    session.game->currentPlayer = WHITE_PLAYER;
+    session.user_color=WHITE_PLAYER;
     return session;
 }
 
@@ -323,7 +322,7 @@ int settingState(GameSession *session) {
 
 CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg, GameSession *session) {
     char *playerColor;
-    playerColor = session->game->currentPlayer == WHITE_PLAYER ? "black" : "white"; // the opposite player
+    playerColor = session->game->currentPlayer== WHITE_PLAYER ? "black" : "white"; // the opposite player
     switch (msg) {
         case MATE:
             printf("Checkmate! %s player wins the game\n", playerColor);
@@ -350,24 +349,25 @@ CHESS_MESSAGE gameState(GameSession *session) {
     char *playerColor;
 
     while (!gameStop) {
-        printBoard(session->game);
-        do {
-            playerColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
-            printf("%s player - enter your move:\n", playerColor);
-            fgets(commandLine, MAX_LINE_LENGTH, stdin);
-            command = parseLine(commandLine);
-        } while (!processCommandGame(session, command));
-        if (command.cmd == MOVE || command.cmd == CASTLE)
-            changePlayer(session->game);
-        else if (command.cmd == RESET)
-            return RESET_GAME;
-        else if (command.cmd == QUIT)
-            return EXIT_GAME;
-        msg = checkStatus(session->game);
-        gameStatus(msg, session);
-        if (msg == TIE || msg == MATE)
-            return msg;
-
+        if ( session->mode == TWO_PLAYER ||session->user_color == session->game->currentPlayer )  {
+            printBoard(session->game);
+            do {
+                playerColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
+                printf("%s player - enter your move:\n", playerColor);
+                fgets(commandLine, MAX_LINE_LENGTH, stdin);
+                command = parseLine(commandLine);
+            } while (!processCommandGame(session, command));
+            if (command.cmd == MOVE || command.cmd == CASTLE)
+                changePlayer(session->game);
+            else if (command.cmd == RESET)
+                return RESET_GAME;
+            else if (command.cmd == QUIT)
+                return EXIT_GAME;
+            msg = checkStatus(session->game);
+            gameStatus(msg, session);
+            if (msg == TIE || msg == MATE)
+                return msg;
+        }
         if (session->mode == ONE_PLAYER)//computer's turn
         {
             moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
