@@ -337,15 +337,22 @@ int settingState(GameSession *session) {
 CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg, GameSession *session) {
     char *playerColor;
     playerColor = session->game->currentPlayer== WHITE_PLAYER ? "black" : "white"; // the opposite player
+    char *threatenColor = strcmp(playerColor, "white")==0 ? "black" : "white";
     switch (msg) {
         case MATE:
             printf("Checkmate! %s player wins the game\n", playerColor);
             return MATE;
         case CHECK:
-            printf("Check!\n");
+            if (session->user_color==session->game->currentPlayer)
+                printf("Check!");
+            else
+                printf("Check: %s King is threatened!\n", threatenColor);
             break;
         case TIE:
-            printf("The game ends in a tie\n");
+            if (session->user_color==session->game->currentPlayer)
+                printf("The game ends in a tie\n");
+            else
+                printf("The game is tied\n");
             return TIE;
         default:
             break;
