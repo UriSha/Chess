@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #include "ChessParser.h"
 
 
@@ -15,7 +16,32 @@ bool isInt(const char *str) {
     }
     return true;
 }
-
+bool isIntChar( char str) {
+    return  !(str < '0' || str > '9');
+}
+bool isInFormat(char* token)
+{
+    char* pointer=token;
+    if(pointer[0]!='<')
+        return false;
+    int i=1;
+    if(pointer[i]=='-')
+        i++;
+    if((pointer[i] < '0' || pointer[i] > '9'))
+        return false;
+    while(pointer[i] >= '0' && pointer[i] <= '9')
+        i++;
+    if(pointer[i]!=',')
+        return false;
+    i++;
+    if(pointer[i]<'A' || pointer[i]>'Z')
+        return false;
+    i++;
+    if(pointer[i]!='>')
+        return false;
+    i++;
+    return pointer[i]=='\0';
+}
 Position getPosition(char *token) {
     Position res;
     res.column = INVALID_COL;
@@ -133,20 +159,32 @@ ChessCommand parseLine(const char *str) {
 
         }
     } else if (result.cmd == MOVE) {
-        Position source = getPosition(token);
-        token = strtok(NULL, DELIMITER);
-        if (strcmp(token, "to") != 0)
+        if (!isInFormat(token)) {
+            result.isNotInFormat = true;
             result.validArg = false;
-        else {
+        } else {
+            Position source = getPosition(token);
             token = strtok(NULL, DELIMITER);
-            Position destination = getPosition(token);
-
-            if (source.row == INVALID_ROW || destination.row == INVALID_ROW) //don't need to check INVALID_COL
+            if (strcmp(token, "to") != 0) {
+                result.isNotInFormat = true;
                 result.validArg = false;
+            }
             else {
-                result.source = source;
-                result.destination = destination;
-                result.validArg = true;
+                token = strtok(NULL, DELIMITER);
+                if (!isInFormat(token)) {
+                    result.isNotInFormat = true;
+                    result.validArg = false;
+                } else {
+                    Position destination = getPosition(token);
+
+                    if (source.row == INVALID_ROW || destination.row == INVALID_ROW) //don't need to check INVALID_COL
+                        result.validArg = false;
+                    else {
+                        result.source = source;
+                        result.destination = destination;
+                        result.validArg = true;
+                    }
+                }
             }
         }
     }

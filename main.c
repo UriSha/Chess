@@ -19,8 +19,13 @@ int main() {
         msg=gameState(gameSession);
         if(msg==TIE || msg ==MATE || msg==EXIT_GAME)
             gameStatus=0;
+        if(msg==RESET_GAME){
+            gameDestroy(&(gameSession->game));
+            free(gameSession);
+        }
     }
     gameDestroy(&(gameSession->game));
     free(gameSession);
     return 0;
+
 }

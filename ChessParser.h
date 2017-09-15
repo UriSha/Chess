@@ -45,6 +45,7 @@ typedef struct command_game {
     bool validArg;
     int argument;
     char* path;
+    bool isNotInFormat;
 } ChessCommand;
 
 
@@ -94,7 +95,7 @@ CHESS_COMMAND getChessCommand (char* token);
 ChessCommand parseLine(const char* str);
 
 
-
+bool isInFormat(char* token);
 
 
 #endif

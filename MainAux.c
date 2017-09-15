@@ -37,8 +37,8 @@ void quit(ChessGame *game) {
 void resetSession(GameSession *session) {
     if (session != NULL) {
         printf("Restarting...\n");
-        gameDestroy(&(session->game));
-        free(session);
+//        gameDestroy(&(session->game));
+//        free(session);
 //        settingsState(session);
     }
 
@@ -199,7 +199,11 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             printBoard(session->game);
             return false;
         case MOVE:
-            if (!command.validArg) {
+            if (!command.validArg ) {
+                if(command.isNotInFormat) {
+                    printf("Invalid command\n");
+                    return false;
+                }
                 printf("Invalid position on the board\n");
                 return false;
             }
