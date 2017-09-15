@@ -92,7 +92,7 @@ bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf probl
         fgets(token, MAX_LINE_LENGTH, loadedFile);
         sscanf(token, "\t<difficulty>%d", &(gameSession->difficulty));
         fgets(token, MAX_LINE_LENGTH, loadedFile);
-        sscanf(token, "\t<user_color>%d", &(gameSession->userColor));
+        sscanf(token, "\t<user_color>%d", &(gameSession->game->currentPlayer));
 
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
@@ -144,8 +144,8 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
             return false;
         case USER_COLOR:
             if (command.validArg && session->mode == ONE_PLAYER) {
-                session->userColor = command.argument;
-                char * userColor = session->userColor == WHITE_PLAYER ? "white" : "black";
+                session->game->currentPlayer = command.argument;
+                char * userColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
                 printf("User color is set to %s\n", userColor);
             }
             else
@@ -154,9 +154,9 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
 
         case DEFAULT:
             if (command.validArg) {
-                session->mode = 1;
+                session->mode = ONE_PLAYER;
                 session->difficulty = 2;
-                session->userColor = 1;
+                session->game->currentPlayer = WHITE_PLAYER;
                 printf("Settings are set to default\n");
                 return false;
 
@@ -267,7 +267,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             return false;
         case SAVE:
             if (command.validArg) {
-                saveGame(command.path, session->game, session->mode, session->difficulty, session->userColor);
+                saveGame(command.path, session->game, session->mode, session->difficulty, session->game->currentPlayer);
                 return false;
             }
 
@@ -299,7 +299,7 @@ GameSession sessionCreate(int historySize) {
     session.game = gameCreate(historySize);
     session.difficulty = 2;
     session.mode = ONE_PLAYER;
-    session.userColor = WHITE_PLAYER;
+    session.game->currentPlayer = WHITE_PLAYER;
     return session;
 }
 
@@ -314,7 +314,7 @@ int settingState(GameSession *session) {
     } while (!processCommandSettings(session, command));
     if (command.cmd == QUIT) {
         quit(session->game);
-        free(session);
+//        free(session);
         return 0;
     }
     return 1; // gameState

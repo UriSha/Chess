@@ -11,7 +11,6 @@ typedef struct game_session{
     ChessGame* game;
     int mode;
     int difficulty;
-    int userColor;
 }GameSession;
 bool undo(GameSession* session);
 void quit(ChessGame* game);

@@ -8,8 +8,8 @@
 #include <ctype.h>
 
 #define GAME_SIZE 8
-#define WHITE_PLAYER 0
-#define BLACK_PLAYER 1
+#define WHITE_PLAYER 1
+#define BLACK_PLAYER 0
 #define EMPTY_SQUARE (-1)
 #define EMPTY_ENTRY '_'
 #define PAWN_WHITE 'm'
