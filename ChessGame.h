@@ -39,10 +39,12 @@ typedef struct chess_struct {
     int score;
     Position whiteKingPos;
     Position blackKingPos;
-    bool whiteRightCastle;
-    bool whiteLeftCastle;
-    bool blackRightCastle;
-    bool blackLeftCastle;
+    bool rightWhiteRookMoved;
+    bool leftWhiteRookMoved;
+    bool rightBlackRookMoved;
+    bool leftBlackRookMoved;
+    bool whiteCastle;
+    bool blackCastle;
 } ChessGame;
 
 ChessGame *gameCreate(int historySize);

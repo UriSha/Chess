@@ -53,7 +53,6 @@ void destroyChessHistory(ChessHistory **source) {
     free ((*source)->moves);
     free(*source);
     *source = NULL;
-    return;
 }
 
 CHESS_MESSAGE addMovetoHistory(ChessHistory *source, moveNode move) {

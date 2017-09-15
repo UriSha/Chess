@@ -37,10 +37,10 @@ void updateRoot(MiniMaxNode *root, MiniMaxNode *child) {
     if (root == NULL || child == NULL)
         return;
     if (root->isMaxType) {
-        if (root->alpha <= child->beta)
+        if (root->alpha < child->beta)
             root->alpha = child->beta;
     } else {
-        if (root->beta >= child->alpha)
+        if (root->beta > child->alpha)
             root->beta = child->alpha;
     }
 }
@@ -142,7 +142,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
 
                         if (maxDepth == 1) {// no recursion
                             int moveScore = scoringFunction(copy, isExpertLevel);
-                            if (moveScore >= bestScoreSoFar) {
+                            if (moveScore > bestScoreSoFar) {
                                 bestScoreSoFar = moveScore;
                                 bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
                                 bestMove.source = src;
@@ -152,7 +152,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                             changePlayer(copy);
                             MiniMaxNode *child = createNode(currentAlpha, INT_MAX, false, copy);
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
-                            if (child->beta >= currentAlpha) {
+                            if (child->beta > currentAlpha) {
                                 currentAlpha = child->beta;
                                 bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
                                 bestMove.source = src;
