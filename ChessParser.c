@@ -23,6 +23,8 @@ bool isIntChar(char str) {
 
 bool isInFormat(char *token) {
     char *pointer = token;
+    if (token == '\0')
+        return false;
     if (pointer[0] != '<')
         return false;
     int i = 1;
@@ -174,7 +176,11 @@ ChessCommand parseLine(const char *str) {
         } else {
             Position source = getPosition(token);
             token = strtok(NULL, DELIMITER);
-            if (strcmp(token, "to") != 0) {
+            if (token == '\0'){
+                result.isNotInFormat = true;
+                result.validArg = false;
+            }
+            else if (strcmp(token, "to") != 0) {
                 result.isNotInFormat = true;
                 result.validArg = false;
             } else {
