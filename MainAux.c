@@ -344,7 +344,7 @@ CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg, GameSession *session) {
             return MATE;
         case CHECK:
             if (session->user_color==session->game->currentPlayer)
-                printf("Check!");
+                printf("Check!\n");
             else
                 printf("Check: %s King is threatened!\n", threatenColor);
             break;
