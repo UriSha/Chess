@@ -8,8 +8,16 @@ int scoringFunction(ChessGame *game, bool isExpertLevel) {
         return INT_MAX * blackOrWhite;
     if (!isExpertLevel)
         return game->score * blackOrWhite;
-    return 0;//TODO expert level scoring function
 
+//    int currentScore = game->score;
+//    bool isWhite = game->currentPlayer == WHITE_PLAYER ? true : false;
+//    for (int i = 0; i < GAME_SIZE; i++) {
+//        for (int j = 0; j < GAME_SIZE; j++) {
+//
+//        }
+//    }
+
+return 0;//TODO expert level
 }
 
 MiniMaxNode *createNode(int alpha, int beta, bool isMaxType, ChessGame *copyOfGame) {
@@ -177,12 +185,11 @@ CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
         return INVALID_ARGUMENT;
     moveNode move = bestMove(game, maxDepth, isExpertLevel);
     char soldier = game->gameBoard[GET_ROW(move.source)][GET_COLUMN(move.source)];
-    char* soliderName = getSoldierName(soldier);
+    char *soliderName = getSoldierName(soldier);
 
 
-
-    if(setMove(game, move.source, move.destination)==SUCCESS){
-        printf("Computer: move %s at <x,y> to <i,j>\n",soliderName);
+    if (setMove(game, move.source, move.destination) == SUCCESS) {
+        printf("Computer: move %s at <x,y> to <i,j>\n", soliderName);
     }
     return SUCCESS;//TODO finish the function
 
