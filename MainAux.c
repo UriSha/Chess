@@ -194,9 +194,10 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
     switch (command.cmd) {
         case UNDO_MOVE:
             if (command.validArg) {
-                undo(session);
-                undo(session);
+                if(undo(session))
+                    undo(session);
             }
+            printBoard(session->game);
             return false;
         case MOVE:
             if (!command.validArg) {
