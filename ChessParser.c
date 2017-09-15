@@ -16,32 +16,34 @@ bool isInt(const char *str) {
     }
     return true;
 }
-bool isIntChar( char str) {
-    return  !(str < '0' || str > '9');
+
+bool isIntChar(char str) {
+    return !(str < '0' || str > '9');
 }
-bool isInFormat(char* token)
-{
-    char* pointer=token;
-    if(pointer[0]!='<')
+
+bool isInFormat(char *token) {
+    char *pointer = token;
+    if (pointer[0] != '<')
         return false;
-    int i=1;
-    if(pointer[i]=='-')
+    int i = 1;
+    if (pointer[i] == '-')
         i++;
-    if((pointer[i] < '0' || pointer[i] > '9'))
+    if ((pointer[i] < '0' || pointer[i] > '9'))
         return false;
-    while(pointer[i] >= '0' && pointer[i] <= '9')
+    while (pointer[i] >= '0' && pointer[i] <= '9')
         i++;
-    if(pointer[i]!=',')
+    if (pointer[i] != ',')
         return false;
     i++;
-    if(pointer[i]<'A' || pointer[i]>'Z')
+    if (pointer[i] < 'A' || pointer[i] > 'Z')
         return false;
     i++;
-    if(pointer[i]!='>')
+    if (pointer[i] != '>')
         return false;
     i++;
-    return pointer[i]=='\0';
+    return pointer[i] == '\0';
 }
+
 Position getPosition(char *token) {
     Position res;
     res.column = INVALID_COL;
@@ -150,15 +152,22 @@ ChessCommand parseLine(const char *str) {
     } else if (result.cmd == INVALID_LINE) {
         result.validArg = false;
     } else if (result.cmd == GET_MOVES || result.cmd == CASTLE) {
-        Position pos = getPosition(token);
-        if (pos.row == INVALID_ROW) //don't need to check INVALID_COL
+        result.isNotInFormat = false;
+        if (!isInFormat(token)) {
+            result.isNotInFormat = true;
             result.validArg = false;
-        else {
-            result.source = pos;
-            result.validArg = true;
+        } else {
+            Position pos = getPosition(token);
+            if (pos.row == INVALID_ROW) //don't need to check INVALID_COL
+                result.validArg = false;
+            else {
+                result.source = pos;
+                result.validArg = true;
 
+            }
         }
     } else if (result.cmd == MOVE) {
+        result.isNotInFormat = false;
         if (!isInFormat(token)) {
             result.isNotInFormat = true;
             result.validArg = false;
@@ -168,8 +177,7 @@ ChessCommand parseLine(const char *str) {
             if (strcmp(token, "to") != 0) {
                 result.isNotInFormat = true;
                 result.validArg = false;
-            }
-            else {
+            } else {
                 token = strtok(NULL, DELIMITER);
                 if (!isInFormat(token)) {
                     result.isNotInFormat = true;

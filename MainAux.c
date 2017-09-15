@@ -220,6 +220,11 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             return true;
         case CASTLE:
             if (!command.validArg) {
+                if(command.isNotInFormat)
+                {
+                    printf("Invalid command\n");
+                    return false;
+                }
                 printf("Wrong position for a rook\n");
                 return false;
             }
@@ -257,6 +262,11 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
 
         case GET_MOVES:
             if (!command.validArg) {
+                if(command.isNotInFormat)
+                {
+                    printf("Invalid command\n");
+                    return false;
+                }
                 printf("Invalid position on the board\n");
                 return false;
             }
