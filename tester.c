@@ -6,40 +6,20 @@ void testGame() {
     Position src;
     Position dest;
 
-    src.row = 2;
-    src.column = 'A';
-    dest.row = 4;
-    dest.column = 'A';
-
     printBoard(game);
-    setMove(game,src, dest);
-    printBoard(game);
-    src.row = 7;
-    src.column = 'A';
-    dest.row = 5;
-    dest.column = 'A';
-    setMove(game,src, dest);
-    printBoard(game);
-    src.row = 2;
-    src.column = 'B';
-    dest.row = 3;
-    dest.column = 'B';
-    setMove(game,src, dest);
-    printBoard(game);
-    src.row = 8;
-    src.column = 'B';
-    dest.row = 6;
-    dest.column = 'A';
-    setMove(game,src, dest);
+    src.row=2;
+    src.column='E';
+    dest.row=4;
+    dest.column='E';
+    setMove(game,src,dest);
+    src.row=1;
+    src.column='E';
+    dest.row=2;
+    dest.column='E';
+    setMove(game,src,dest);
     printBoard(game);
     undoMove(game);
-    printBoard(game);
-    undoMove(game);
-    printBoard(game);
-    undoMove(game);
-    printBoard(game);
-    undoMove(game);
-    printBoard(game);
+    int x =6;
 
 }
 

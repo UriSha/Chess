@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <ctype.h>
+//#include <ctype.h>
 #include "ChessParser.h"
 //#include "ChessHistory.h"
 //#include "ChessGame.h"
@@ -9,10 +9,18 @@
 
 
 int main() {
-
-//    saveGame("../SavedGames/test.xml",game,1,4,0);
-//    int x=6;
-//    GameSession* session=(GameSession*)malloc(sizeof(GameSession));
-//    loadGame("../SavedGames/test.xml",session);
-    getMovesCheck();
+    GameSession* gameSession=(GameSession*)malloc(sizeof(GameSession));
+    int gameStatus=-1;
+    CHESS_MESSAGE msg;
+    while(gameStatus!=0) {
+        gameStatus = settingState(gameSession);
+        if (gameStatus == 0)
+            continue;
+        msg=gameState(gameSession);
+        if(msg==TIE || msg ==MATE || msg==EXIT_GAME)
+            gameStatus=0;
+    }
+    gameDestroy(&(gameSession->game));
+    free(gameSession);
+    return 0;
 }

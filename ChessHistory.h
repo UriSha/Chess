@@ -33,6 +33,8 @@ typedef enum{
     MATE,
     TIE,
     CONTINUE,
+    RESET_GAME,
+    EXIT_GAME,
 
 }CHESS_MESSAGE;
 

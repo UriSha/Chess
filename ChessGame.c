@@ -697,10 +697,10 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (game->gameBoard[BLACK_INITIAL_ROW - 1][GAME_SIZE - 1] != ROOK_BLACK)
         game->blackRightCastle = 0;
 
-    int lastRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW - 1 : WHITE_INITIAL_ROW - 1;
-    char srcSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
-    if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == srcSolider && GET_ROW(dest) == lastRow)
-        pawnPromotion(game, dest);
+//    int lastRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW - 1 : WHITE_INITIAL_ROW - 1;
+//    char srcSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
+//    if (game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] == srcSolider && GET_ROW(dest) == lastRow)
+//        pawnPromotion(game, dest);
 
     return SUCCESS;
 
@@ -926,6 +926,7 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
     }
     movePiece(game, lastMove->destination, lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->soldierDied;
+
     return SUCCESS;
 }
 

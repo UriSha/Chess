@@ -13,13 +13,16 @@ typedef struct game_session{
     int difficulty;
     int userColor;
 }GameSession;
-bool undo(ChessGame* game, int mode);
+bool undo(GameSession* session);
 void quit(ChessGame* game);
 void resetSession(GameSession *session);
 bool saveGame(char* filePath ,ChessGame* game,int mode, int difficulty, int userColor);
 bool loadGame(char* filePath,GameSession* gameSession);
 bool processCommandSettings(GameSession* session, ChessCommand command);
 bool processCommandGame(GameSession* session,ChessCommand command);
-CHESS_COMMAND gameState(GameSession *session);
-void settingState(GameSession* session);
+GameSession sessionCreate(int historySize);
+int settingState(GameSession *session);
+CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg,GameSession* session);
+CHESS_MESSAGE gameState(GameSession *session);
+
 #endif //CHESS_MAINAUX_H

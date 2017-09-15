@@ -2,35 +2,35 @@
 #include "MainAux.h"
 
 
-bool undo(ChessGame *game, int mode) {
-    if (game == NULL)
+bool undo(GameSession* session) {
+    if (session->game == NULL)
         return false;
-    if (mode == TWO_PLAYER) {
+    if (session->mode == TWO_PLAYER) {
         printf("Undo command not available in 2 players mode\n");
         return false;
     }
     moveNode undoNode;
-    CHESS_MESSAGE undoMessage = undoMove(game);
+    CHESS_MESSAGE undoMessage = undoMove(session->game);
     if (undoMessage == INVALID_ARGUMENT)
         return false;
     if (undoMessage == NO_HISTORY) {
         printf("Empty history, move cannot be undone\n");
         return false;
     }
-    undoNode.source = game->history->moves[game->history->actualSize].source;
-    undoNode.destination = game->history->moves[game->history->actualSize].destination;
-    char *playerColor = getOtherPlayer(game->currentPlayer) == WHITE_PLAYER ? "white" : "black";
+    undoNode.source = session->game->history->moves[session->game->history->actualSize].source;
+    undoNode.destination = session->game->history->moves[session->game->history->actualSize].destination;
+    char *playerColor = getOtherPlayer(session->game->currentPlayer) == WHITE_PLAYER ? "white" : "black";
     printf("Undo move for player %s : <%d,%c> -> <%d,%c>\n", playerColor, undoNode.destination.row,
            undoNode.destination.column,
            undoNode.source.row, undoNode.source.column);
-    changePlayer(game);
+    changePlayer(session->game);
     return true;
 }
 
 void quit(ChessGame *game) {
     if (game != NULL) {
         printf("Exiting...\n");
-        gameDestroy(&game);
+//        gameDestroy(&game);
     }
 }
 
@@ -115,9 +115,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
 
         case QUIT:
             if (command.validArg) {
-                quit(session->game);
-                free(session);
-                exit(0);
+                return true;
             }
 
         case LOAD:
@@ -186,12 +184,8 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
     switch (command.cmd) {
         case UNDO_MOVE:
             if (command.validArg) {
-                if (session->mode != ONE_PLAYER) {
-                    printf("Undo command not available in 2 players mode\n");
-                    return false;
-                }
-                undoMove(session->game);
-                undoMove(session->game);
+                undo(session);
+                undo(session);
             }
             return false;
         case MOVE:
@@ -275,7 +269,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
         case QUIT:
             if (command.validArg) {
                 quit(session->game);
-                free(session);
+//                free(session);
                 return true;//TODO check how to exit
 //                exit(0);
             }
@@ -283,83 +277,112 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             printf("Invalid Command\n");
             return false;
     }
+    return false;
 }
 
-GameSession *sessionCreate(int historySize) {
-    GameSession *session = (GameSession *) malloc(sizeof(GameSession));
-    if (session == NULL) {
-        printf(MALLOC_ERROR);
-        return NULL;
-    }
-    session->game = gameCreate(historySize);
-    session->difficulty = 2;
-    session->mode = ONE_PLAYER;
-    session->userColor = WHITE_PLAYER;
+GameSession sessionCreate(int historySize) {
+    GameSession session;// = (GameSession *) malloc(sizeof(GameSession));
+//    if (session == NULL) {
+//        printf(MALLOC_ERROR);
+//        return NULL;
+//    }
+    session.game = gameCreate(historySize);
+    session.difficulty = 2;
+    session.mode = ONE_PLAYER;
+    session.userColor = WHITE_PLAYER;
     return session;
 }
 
-void settingState(GameSession *session) {
+int settingState(GameSession *session) {
     printf("Specify game setting or type 'start' to begin a game with the current setting:\n");
     ChessCommand command;
-    session = sessionCreate(HISTORYSIZE);
+    (*session) = sessionCreate(HISTORYSIZE);
     char commandLine[MAX_LINE_LENGTH];
     do {
         fgets(commandLine, MAX_LINE_LENGTH, stdin);
         command = parseLine(commandLine);
     } while (!processCommandSettings(session, command));
-//    int winner=gameState(session); //TODO what should we do here?
+    if (command.cmd == QUIT) {
+        quit(session->game);
+        free(session);
+        return 0;
+    }
+    return 1; // gameState
 }
-
-CHESS_COMMAND gameState(GameSession *session) {
-    if (session == NULL)
-        return INVALID_LINE;
+CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg,GameSession* session){
     char *playerColor;
+    playerColor = session->game->currentPlayer == WHITE_PLAYER ? "black" : "white"; // the opposite player
+    switch (msg) {
+        case MATE:
+            printf("Checkmate! %s player wins the game\n", playerColor);
+            return MATE;
+        case CHECK:
+            printf("Check!\n");
+            break;
+        case TIE:
+            printf("The game ends in a tie\n");
+            return TIE;
+        default:
+            break;
+    }
+    return CONTINUE;
+}
+CHESS_MESSAGE gameState(GameSession *session) {
+    if (session == NULL)
+        return INVALID_ARGUMENT;
     bool gameStop = false;
     char commandLine[MAX_LINE_LENGTH];
     ChessCommand command;
-    CHESS_MESSAGE msg;
+    CHESS_MESSAGE msg=INVALID_ARGUMENT;
+    char *playerColor;
+
     while (!gameStop) {
         printBoard(session->game);
-        playerColor = session->game == WHITE_PLAYER ? "white" : "black";
         do {
+            playerColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
             printf("%s player - enter your move:\n", playerColor);
             fgets(commandLine, MAX_LINE_LENGTH, stdin);
             command = parseLine(commandLine);
         } while (!processCommandGame(session, command));
         if (command.cmd == MOVE || command.cmd == CASTLE)
             changePlayer(session->game);
-        else if(command.cmd==RESET)
-            return RESET;
-        else if(command.cmd==QUIT)
-            return QUIT;
+        else if (command.cmd == RESET)
+            return RESET_GAME;
+        else if (command.cmd == QUIT)
+            return EXIT_GAME;
         msg = checkStatus(session->game);
-        switch (msg) {
-            case MATE:
-                printf("Checkmate! %s player wins the game\n", playerColor);
-                gameDestroy(&(session->game));
-                free(session);
-                exit(0);
-            case CHECK:
-                printf("Check!\n");
-                break;
-            case TIE:
-                printf("The game ends in a tie\n");
-                gameDestroy(&(session->game));
-                free(session);
-                exit(0);
-            default:
-                break;
-        }
+        gameStatus(msg,session);
+        if(msg==TIE || msg==MATE)
+            return msg;
+
         if (session->mode == ONE_PLAYER)//computer's turn
         {
-           moveNode move =bestMove(session->game,session->difficulty,session->difficulty==5);
-
-
-
+            moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
+            ChessGame *copy = gameCopy(session->game);
+            setMove(copy, move.source, move.destination);
+            Position *positions = isCastling(copy, move);
+            setMove(session->game, move.source, move.destination);
+            if (positions[0].row == INVALID_ROW) {
+                char *computerSoldier = getSoldierName(
+                        session->game->gameBoard[GET_ROW(move.destination)][GET_COLUMN(move.destination)]);
+                printf("Computer: move %s at <%d,%c> to <%d,%c>\n", computerSoldier, move.source.row,
+                       move.source.column, move.destination.row, move.destination.column);
+            } else {
+                Position kingPos = session->game->currentPlayer == WHITE_PLAYER ? session->game->whiteKingPos
+                                                                                : session->game->blackKingPos;
+                Position rookPosition;
+                rookPosition.row = session->game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+                rookPosition.column = (char) (kingPos.column == 'B' ? 'C' : 'F');
+                printf("Computer: castle King at <%d,y%c> and Rook at <%d,%c>\n", kingPos.row, kingPos.column,
+                       rookPosition.row, rookPosition.column);
+            }
+            gameDestroy(&copy);
+            changePlayer(session->game);
+            msg = checkStatus(session->game);
+            gameStatus(msg,session);
+            if(msg==TIE || msg==MATE)
+                gameStop=true;
         }
-        gameStop = true;//TODO Change it
+        }
+    return msg;
     }
-    return DEFAULT;
-
-}
-
