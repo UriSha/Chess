@@ -823,13 +823,14 @@ void printMoves(ChessGame *game, Position pos) {
     int positionCounter = getMoves(game, result, pos);
     result = (Position *) realloc(result, positionCounter * sizeof(Position));
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
+
     for (int i = 0; i < positionCounter; i++)
         movesArray[i] = (char *) malloc(sizeof(char) * 15);//15 is maximun length of a row
     int k = 0;
     char *castle1 = (char *) malloc(sizeof(char) * 15);
     char *castle2 = (char *) malloc(sizeof(char) * 15);
-    for (int i = 0; i < positionCounter; i++) {
-        movesArray[k++] = getStringFromPosition(result[i]);
+    for (int i = 0; i < positionCounter; i++,k++) {
+        movesArray[k] = getStringFromPosition(result[i]);
         char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
         int myKingInitRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
 
@@ -838,7 +839,7 @@ void printMoves(ChessGame *game, Position pos) {
         bool castleLeft = game->currentPlayer == WHITE_PLAYER ? (game->whiteCastle && !(game->leftWhiteRookMoved)) : (
                 game->blackCastle && !(game->leftBlackRookMoved));
 
-        if (game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == myKing) {
+        if (game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == myKing) {//if get_moves asks for king
             if (pos.column == KING_INITIAL_COL_CHAR && GET_ROW(pos) == myKingInitRow) {
                 if (GET_ROW(result[i]) == myKingInitRow) {
                     if (castleRight && GET_COLUMN(result[i]) == KING_INITIAL_COL_NUM + 2) {
@@ -853,7 +854,7 @@ void printMoves(ChessGame *game, Position pos) {
                     }
                 }
             }
-        } else if (movesArray[k - 1][3] == pos.column && movesArray[k - 1][1] - '0' == pos.row) {
+        } else if (movesArray[k][3] == pos.column && movesArray[k][1] - '0' == pos.row) { // if get_moves asks for rook
             sprintf(castle1, "castle <%d,%c>", result[i].row, pos.column);
             k--;
             continue;
@@ -877,6 +878,7 @@ void printMoves(ChessGame *game, Position pos) {
             movesArray[k][6] = '\0';
         }
         gameDestroy(&copy);
+
     }
     if (strcmp(castle1, "") != 0)
         movesArray[k++] = castle1;
