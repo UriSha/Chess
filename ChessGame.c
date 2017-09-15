@@ -946,6 +946,10 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
     }
     movePiece(game, lastMove->destination, lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->soldierDied;
+    if (lastMove->soldierDied != EMPTY_ENTRY){
+        char soldier = (char)(isupper(lastMove->soldierDied)==0 ? toupper(lastMove->soldierDied) : tolower(lastMove->soldierDied));
+        updateScore(soldier, game);
+    }
 
     return SUCCESS;
 }

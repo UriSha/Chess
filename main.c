@@ -21,7 +21,6 @@ int main() {
             gameStatus=0;
         if(msg==RESET_GAME){
             gameDestroy(&(gameSession->game));
-//            free(gameSession);
         }
     }
     gameDestroy(&(gameSession->game));
