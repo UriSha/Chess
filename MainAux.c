@@ -2,7 +2,7 @@
 #include "MainAux.h"
 
 
-bool undo(GameSession* session) {
+bool undo(GameSession *session) {
     if (session->game == NULL)
         return false;
     if (session->mode == TWO_PLAYER) {
@@ -126,30 +126,40 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
         case GAME_MODE:
             if (command.validArg) {
                 session->mode = command.argument;
-                return false;
-            }
+                char *howManyPlayers = command.argument == ONE_PLAYER ? "1 player" : "2 players";
+                printf("Game mode is set to %s\n", howManyPlayers);
+            } else
+                printf("Wrong game mode\n");
+            return false;
         case DIFFICULTY:
             if (command.validArg) {
                 if (session->mode == ONE_PLAYER) {
                     session->difficulty = command.argument;
-                    return false;
+                    printf("Difficulty is set to %d\n", command.argument);
                 }
-
-            }
+            } else if (session->mode == ONE_PLAYER)
+                printf("Wrong difficulty level. The value should be between 1 to 5\n");
+            else
+                printf("Invalid command\n");
+            return false;
         case USER_COLOR:
-            if (command.validArg) {
-                if (session->mode == ONE_PLAYER) {
-                    session->userColor = command.argument;
-                    return false;
-                }
-
+            if (command.validArg && session->mode == ONE_PLAYER) {
+                session->userColor = command.argument;
+                char * userColor = session->userColor == WHITE_PLAYER ? "white" : "black";
+                printf("User color is set to %s\n", userColor);
             }
+            else
+                printf("Invalid command\n");
+            return false;
+
         case DEFAULT:
             if (command.validArg) {
                 session->mode = 1;
                 session->difficulty = 2;
                 session->userColor = 1;
+                printf("Settings are set to default\n");
                 return false;
+
             }
         case PRINT_SETTING:
             if (command.validArg) {
@@ -169,7 +179,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
                 return true;
             }
         default:
-            printf("Invalid Command\n");
+            printf("Invalid command\n");
             return false;
 
 
@@ -309,7 +319,8 @@ int settingState(GameSession *session) {
     }
     return 1; // gameState
 }
-CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg,GameSession* session){
+
+CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg, GameSession *session) {
     char *playerColor;
     playerColor = session->game->currentPlayer == WHITE_PLAYER ? "black" : "white"; // the opposite player
     switch (msg) {
@@ -327,13 +338,14 @@ CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg,GameSession* session){
     }
     return CONTINUE;
 }
+
 CHESS_MESSAGE gameState(GameSession *session) {
     if (session == NULL)
         return INVALID_ARGUMENT;
     bool gameStop = false;
     char commandLine[MAX_LINE_LENGTH];
     ChessCommand command;
-    CHESS_MESSAGE msg=INVALID_ARGUMENT;
+    CHESS_MESSAGE msg = INVALID_ARGUMENT;
     char *playerColor;
 
     while (!gameStop) {
@@ -351,8 +363,8 @@ CHESS_MESSAGE gameState(GameSession *session) {
         else if (command.cmd == QUIT)
             return EXIT_GAME;
         msg = checkStatus(session->game);
-        gameStatus(msg,session);
-        if(msg==TIE || msg==MATE)
+        gameStatus(msg, session);
+        if (msg == TIE || msg == MATE)
             return msg;
 
         if (session->mode == ONE_PLAYER)//computer's turn
@@ -379,10 +391,10 @@ CHESS_MESSAGE gameState(GameSession *session) {
             gameDestroy(&copy);
             changePlayer(session->game);
             msg = checkStatus(session->game);
-            gameStatus(msg,session);
-            if(msg==TIE || msg==MATE)
-                gameStop=true;
+            gameStatus(msg, session);
+            if (msg == TIE || msg == MATE)
+                gameStop = true;
         }
-        }
-    return msg;
     }
+    return msg;
+}

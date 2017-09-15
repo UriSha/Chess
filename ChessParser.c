@@ -2,8 +2,6 @@
 #include "ChessParser.h"
 
 
-
-
 bool isInt(const char *str) {
     if (str[0] != 45 && (str[0] < 48 || str[0] > 57))
         return false;
@@ -24,7 +22,7 @@ Position getPosition(char *token) {
     res.row = INVALID_ROW;
     if (token == NULL || strlen(token) != 5)
         return res;
-    char test=token[3];
+    char test = token[3];
     if (token[0] == '<' && token[4] == '>') {
         if ((token[1] >= '1') && (token[1] <= '8')) {
 
@@ -82,7 +80,7 @@ CHESS_COMMAND getChessCommand(char *token) {
     if (strcmp(token, "start") == 0) {
         return START;
     }
-    if (strcmp(token, "castle") == 0){
+    if (strcmp(token, "castle") == 0) {
         return CASTLE;
     }
 
@@ -97,7 +95,7 @@ ChessCommand parseLine(const char *str) {
     char *token = strtok(str2, DELIMITER);
     ChessCommand result;
     result.cmd = getChessCommand(token);
-    result.validArg=false;
+    result.validArg = false;
     token = strtok(NULL, DELIMITER);
 
     if (token == '\0') {
@@ -110,14 +108,15 @@ ChessCommand parseLine(const char *str) {
         }
     } else if (isInt(token)) {
         int tokenInt = atoi(token);
-        if ((result.cmd == DIFFICULTY) && (1<=tokenInt && tokenInt<=5)) {
+        if ((result.cmd == DIFFICULTY) && (1 <= tokenInt && tokenInt <= 5)) {
             result.validArg = true;
-            result.argument=tokenInt;
-        }
-        else if(((result.cmd==GAME_MODE)||(result.cmd==USER_COLOR))&& (tokenInt==1 || tokenInt==2))
-        {
-            result.argument=tokenInt;
-            result.validArg=true;
+            result.argument = tokenInt;
+        } else if (result.cmd == GAME_MODE && (tokenInt == 1 || tokenInt == 2)) {
+            result.argument = tokenInt;
+            result.validArg = true;
+        } else if (result.cmd == USER_COLOR && (tokenInt == 0 || tokenInt == 1)) {
+            result.argument = tokenInt;
+            result.validArg = true;
         }
     } else if ((result.cmd == SAVE) || (result.cmd == LOAD)) {
         result.validArg = true;
@@ -126,20 +125,18 @@ ChessCommand parseLine(const char *str) {
         result.validArg = false;
     } else if (result.cmd == GET_MOVES || result.cmd == CASTLE) {
         Position pos = getPosition(token);
-        if (pos.row==INVALID_ROW) //don't need to check INVALID_COL
+        if (pos.row == INVALID_ROW) //don't need to check INVALID_COL
             result.validArg = false;
-        else{
+        else {
             result.source = pos;
             result.validArg = true;
 
         }
-    }
-    else if(result.cmd==MOVE)
-    {
+    } else if (result.cmd == MOVE) {
         Position source = getPosition(token);
-        token=strtok(NULL,DELIMITER);
+        token = strtok(NULL, DELIMITER);
         if (strcmp(token, "to") != 0)
-            result.validArg =false;
+            result.validArg = false;
         else {
             token = strtok(NULL, DELIMITER);
             Position destination = getPosition(token);
