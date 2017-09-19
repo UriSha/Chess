@@ -424,3 +424,4 @@ CHESS_MESSAGE gameState(GameSession *session) {
     }
     return msg;
 }
+
