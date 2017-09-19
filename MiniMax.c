@@ -2,6 +2,67 @@
 #include <limits.h>
 #include <stdbool.h>
 
+void updateScoreExpert(char soldierThreatened, int* score) {
+
+    switch (soldierThreatened) {
+        case PAWN_BLACK:
+        case PAWN_WHITE:
+            *score-=1;
+            break;
+        case ROOK_BLACK :
+        case ROOK_WHITE :
+            *score -=5;
+            break;
+        case KNIGHT_BLACK :
+        case KNIGHT_WHITE :
+            *score -=3;
+            break;
+        case BISHOP_BLACK :
+        case BISHOP_WHITE :
+           *score -= 3;
+            break;
+        case QUEEN_BLACK :
+        case QUEEN_WHITE :
+            *score += 9;
+            break;
+        case KING_BLACK :
+        case KING_WHITE :
+            *score -= 100;
+            break;
+        default :
+            return;
+    }
+
+
+}
+int expertLevel(ChessGame* game,int blackOrWhite){
+    int currentScore=game->score*blackOrWhite*5;
+    bool isWhite = blackOrWhite==1 ? true : false;
+    Position threat;
+    for(int i=0;i<GAME_SIZE;i++){
+        for(int j=0;j<GAME_SIZE;j++){
+            if(isWhite){
+                if(getPlayer(game->gameBoard[i][j])==WHITE_PLAYER){
+                    threat.row=i+1;
+                    threat.column='A'+j;
+                    if(myPositionUnderThreat(game,threat))
+                        updateScoreExpert(game->gameBoard[i][j],&currentScore);
+                }
+            }
+            else{
+                if(getPlayer(game->gameBoard[i][j])==BLACK_PLAYER){
+                    threat.row=i+1;
+                    threat.column='A'+j;
+                    if(myPositionUnderThreat(game,threat))
+                        updateScoreExpert(game->gameBoard[i][j],&currentScore);
+                }
+            }
+        }
+    }
+    return currentScore;
+
+
+}
 int scoringFunction(ChessGame *game, bool isExpertLevel) {
     int blackOrWhite = game->currentPlayer == WHITE_PLAYER ? 1 : -1;
     if (checkStatus(game) == MATE)
@@ -9,15 +70,7 @@ int scoringFunction(ChessGame *game, bool isExpertLevel) {
     if (!isExpertLevel)
         return game->score * blackOrWhite;
 
-//    int currentScore = game->score;
-//    bool isWhite = game->currentPlayer == WHITE_PLAYER ? true : false;
-//    for (int i = 0; i < GAME_SIZE; i++) {
-//        for (int j = 0; j < GAME_SIZE; j++) {
-//
-//        }
-//    }
-
-return 0;//TODO expert level
+return expertLevel(game,blackOrWhite);
 }
 
 MiniMaxNode *createNode(int alpha, int beta, bool isMaxType, ChessGame *copyOfGame) {
@@ -126,6 +179,8 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     bestMove.source = src;
     bestMove.destination = dest;
     bestMove.soldierDied = 'Z';
+    if(maxDepth==5)
+        maxDepth--;
     bool firstValid = true;
     int currentAlpha = INT_MIN;
     if (game == NULL || maxDepth < 1 || maxDepth > 4)
@@ -179,18 +234,4 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     return bestMove;
 }
 
-CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
 
-    if (game == NULL)
-        return INVALID_ARGUMENT;
-    moveNode move = bestMove(game, maxDepth, isExpertLevel);
-    char soldier = game->gameBoard[GET_ROW(move.source)][GET_COLUMN(move.source)];
-    char *soliderName = getSoldierName(soldier);
-
-
-    if (setMove(game, move.source, move.destination) == SUCCESS) {
-        printf("Computer: move %s at <x,y> to <i,j>\n", soliderName);
-    }
-    return SUCCESS;//TODO finish the function
-
-}
