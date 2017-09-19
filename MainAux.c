@@ -48,7 +48,9 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
     if (game == NULL)
         return false;
     FILE *saveFile = NULL;
-    saveFile = fopen(filePath, "w");
+    char path[MAX_LINE_LENGTH];
+    strcpy(path,filePath);
+    saveFile = fopen(path, "w+");
     if (saveFile == NULL) {
         printf("File cannot be created or modified\n");
         return false;
@@ -74,7 +76,9 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
 
 bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf problematic?
     FILE *loadedFile = NULL;
-    loadedFile = fopen(filePath, "r");
+    char path[MAX_LINE_LENGTH];
+    strcpy(path,filePath);
+    loadedFile = fopen(filePath, "r+");
     if (loadedFile == NULL) {
         printf("Error: File doesn’t exist or cannot be opened\n");
         return false;
@@ -92,7 +96,7 @@ bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf probl
         fgets(token, MAX_LINE_LENGTH, loadedFile);
         sscanf(token, "\t<difficulty>%d", &(gameSession->difficulty));
         fgets(token, MAX_LINE_LENGTH, loadedFile);
-        sscanf(token, "\t<user_color>%d", &(gameSession->game->currentPlayer));
+        sscanf(token, "\t<user_color>%d", &(gameSession->user_color));
 
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
