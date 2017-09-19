@@ -175,7 +175,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     int bestScoreSoFar = INT_MIN;
     Position src, dest;
     src.row = dest.row = 100;
-    src.column = src.column = 'Z';
+    src.column = dest.column = 'Z';
     bestMove.source = src;
     bestMove.destination = dest;
     bestMove.soldierDied = 'Z';
