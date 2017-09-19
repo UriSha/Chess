@@ -414,6 +414,7 @@ CHESS_MESSAGE gameState(GameSession *session) {
                 printf("Computer: castle King at <%d,y%c> and Rook at <%d,%c>\n", kingPos.row, kingPos.column,
                        rookPosition.row, rookPosition.column);
             }
+            free(positions);
             gameDestroy(&copy);
             changePlayer(session->game);
             msg = checkStatus(session->game);

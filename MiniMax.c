@@ -150,6 +150,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                             if (!root->isMaxType)
                                 changePlayer(copy);
                             undoMove(copy);
+                            nodeDestroy(child);
                         } else {
                             child = createNode(root->alpha, root->beta, 1 - root->isMaxType, copy);
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
@@ -160,6 +161,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                                 return;
                             }
                             undoMove(copy);
+                            nodeDestroy(child);
 
                         }
                     }
@@ -167,6 +169,8 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
             }
         }
     }
+    gameDestroy(&copy);
+
 }
 
 
