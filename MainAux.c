@@ -67,6 +67,16 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
     for (int i = GAME_SIZE; i > 0; i--)
         fprintf(saveFile, "\t\t<row_%d>%.8s</row_%d>\n", i, game->gameBoard[i - 1], i);
     fprintf(saveFile, "\t</board>\n");
+    fprintf(saveFile, "\t<general>\n");
+    fprintf(saveFile, "\t\t<whiteKingPos>%d,%c</whiteKingPos>\n", game->whiteKingPos.row,  game->whiteKingPos.column);
+    fprintf(saveFile, "\t\t<blackKingPos>%d,%c</blackKingPos>\n", game->blackKingPos.row,  game->blackKingPos.column);
+    fprintf(saveFile, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved>\n", game->rightWhiteRookMoved);
+    fprintf(saveFile, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved>\n", game->leftWhiteRookMoved);
+    fprintf(saveFile, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved>\n", game->rightBlackRookMoved);
+    fprintf(saveFile, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved>\n", game->leftBlackRookMoved);
+    fprintf(saveFile, "\t\t<whiteCastle>%d</whiteCastle>\n", game->whiteCastle);
+    fprintf(saveFile, "\t\t<blackCastle>%d</blackCastle>\n", game->blackCastle);
+    fprintf(saveFile, "\t</general>\n");
     fprintf(saveFile, "</game>\n");
 
     fclose(saveFile);
@@ -108,6 +118,25 @@ bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf probl
         for (int j = 0; j < GAME_SIZE; j++)
             gameSession->game->gameBoard[i - 1][j] = currentRow[j];
     }
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<whiteKingPos>%d,%c</whiteKingPos\n", &(gameSession->game->whiteKingPos.row),&(gameSession->game->whiteKingPos.column));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<blackKingPos>%d,%c</blackKingPos\n", &(gameSession->game->blackKingPos.row),&(gameSession->game->blackKingPos.column));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved\n", &(gameSession->game->rightWhiteRookMoved));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved\n", &(gameSession->game->leftWhiteRookMoved));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved\n", &(gameSession->game->rightBlackRookMoved));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved\n", &(gameSession->game->leftBlackRookMoved));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<whiteCastle>%d</whiteCastle\n", &(gameSession->game->whiteCastle));
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<blackCastle>%d</blackCastle\n", &(gameSession->game->blackCastle));
+
 
     return true;
 }
