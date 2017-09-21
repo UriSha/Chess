@@ -138,12 +138,12 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_WHITE;
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
             game->rightWhiteRookMoved = true;
-            game->whiteCastle = false;
+            game->whiteCastle = false;  // TODO why not outside the inner if?
         } else if (GET_COLUMN(game->whiteKingPos) - 3 == GET_COLUMN(dest)) {// left castling white player
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 2] = ROOK_WHITE;
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
             game->leftWhiteRookMoved = true;
-            game->whiteCastle = false;
+            game->whiteCastle = false;  // TODO why not outside the inner if?
         }
         game->whiteKingPos.row = dest.row;
         game->whiteKingPos.column = dest.column;
@@ -153,12 +153,12 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
         if (GET_COLUMN(game->blackKingPos) + 2 == GET_COLUMN(dest)) { // right castling black player
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_BLACK;
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
-            game->blackCastle = false;
+            game->blackCastle = false;  // TODO why not outside the inner if?
             game->rightBlackRookMoved = true;
         } else if (GET_COLUMN(game->blackKingPos) - 3 == GET_COLUMN(dest)) {// left castling black player
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 2] = ROOK_BLACK;
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
-            game->blackCastle = false;
+            game->blackCastle = false;  // TODO why not outside the inner if?
             game->leftBlackRookMoved = true;
         }
         game->blackKingPos.row = dest.row;
