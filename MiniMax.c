@@ -126,6 +126,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
     Position src, dest;
     ChessGame *copy = gameCopy(root->game);
     MiniMaxNode *child;
+//    int xdw;
     for (int row = 1; row <= GAME_SIZE; row++) {
         src.row = row;
         for (int col = 0; col < GAME_SIZE; col++) {
@@ -135,8 +136,29 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                 for (int j = 0; j < GAME_SIZE; j++) {
                     dest.column = 'A' + j;
                     if (isValidMove(copy, src, dest)) {
+//                        if (maxDepth == 2 && root->game->gameBoard[0][3] == KING_WHITE && j==4 && i==2 && col ==6 && row == 1){
+//                            xdw = 5;
+//                            printBoard(copy);
+//                        }
+//                        if (maxDepth == 3 && j==3 && i==1 && col ==4 && row == 1) {
+//                            xdw = 6;
+//                            printBoard(copy);
+//                        }
                         setMove(copy, src, dest);
+//                        if (maxDepth == 3 && j==3 && i==1 && col ==4 && row == 1) {
+//                            xdw = 7;
+//                            printBoard(copy);
+//                        }
+//                        if (maxDepth == 2 && root->game->gameBoard[0][3] == KING_WHITE && j==4 && i==2 && col ==6 && row == 1){
+//                            xdw = 5;
+//                            printBoard(copy);
+//                        }
+
                         if (maxDepth == 1) {
+//                            if (root->game->gameBoard[1][4] == KNIGHT_WHITE && j==4 && i==1 && col ==3 && row == 1) {
+//                                xdw = 4;
+//                                printBoard(copy);
+//                            }
                             if (!root->isMaxType)
                                 changePlayer(copy);
                             int moveScore = scoringFunction(copy, isExpertLevel);
@@ -152,6 +174,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                             undoMove(copy);
                             nodeDestroy(child);
                         } else {
+                            changePlayer(copy); //TODO this wasn't here!
                             child = createNode(root->alpha, root->beta, 1 - root->isMaxType, copy);
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
                             updateRoot(root, child);
@@ -159,6 +182,9 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                                 gameDestroy(&copy);
                                 nodeDestroy(child);
                                 return;
+                            }
+                            else {
+                                changePlayer(copy); //TODO this wasn't here!
                             }
                             undoMove(copy);
                             nodeDestroy(child);
