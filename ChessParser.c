@@ -17,10 +17,6 @@ bool isInt(const char *str) {
     return true;
 }
 
-bool isIntChar(char str) {
-    return !(str < '0' || str > '9');
-}
-
 bool isInFormat(char *token) {
     char *pointer = token;
     if (token == '\0')

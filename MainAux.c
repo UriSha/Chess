@@ -84,7 +84,7 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
 
 }
 
-bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf problematic?
+bool loadGame(char *filePath, GameSession *gameSession) {
     FILE *loadedFile = NULL;
     char path[MAX_LINE_LENGTH];
     strcpy(path,filePath);
@@ -213,7 +213,6 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
             }
         case START:
             if (command.validArg) {
-//                gameState(session);
                 return true;
             }
         default:
@@ -255,7 +254,6 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
                 printf("Illegal move\n");
                 return false;
             }
-//            changePlayer(session->game);
             return true;
         case CASTLE:
             if (!command.validArg) {
@@ -327,14 +325,12 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
         case RESET:
             if (command.validArg) {
                 resetSession(session);
-                return true;//TODO check how to start
+                return true;
             }
         case QUIT:
             if (command.validArg) {
                 quit(session->game);
-//                free(session);
-                return true;//TODO check how to exit
-//                exit(0);
+                return true;
             }
         default:
             printf("Invalid Command\n");
@@ -344,11 +340,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
 }
 
 GameSession sessionCreate(int historySize) {
-    GameSession session;// = (GameSession *) malloc(sizeof(GameSession));
-//    if (session == NULL) {
-//        printf(MALLOC_ERROR);
-//        return NULL;
-//    }
+    GameSession session;
     session.game = gameCreate(historySize);
     session.difficulty = 2;
     session.mode = ONE_PLAYER;
@@ -367,7 +359,6 @@ int settingState(GameSession *session) {
     } while (!processCommandSettings(session, command));
     if (command.cmd == QUIT) {
         quit(session->game);
-//        free(session);
         return 0;
     }
     return 1; // gameState

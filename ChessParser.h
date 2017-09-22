@@ -5,13 +5,15 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+//Definitions
 #define MALLOC_ERROR "Error: malloc has failed\n"
 #define MAX_LINE_LENGTH 1024
 #define DELIMITER " \t\r\n"
 #define INVALID_ROW 100
 #define INVALID_COL '\0'
 
-//a type used to represent a Game State command
+//a type used to represent a Game State or Setting State command
 typedef enum {
     UNDO_MOVE,
     MOVE,
@@ -31,7 +33,7 @@ typedef enum {
 } CHESS_COMMAND;
 
 
-//a type used to represent a chess game board pisition
+//a type used to represent a chess game board position
 typedef struct board_position {
     char column;
     int row;
@@ -58,7 +60,14 @@ typedef struct command_game {
  * true if the string represents a valid integer, and false otherwise.
  */
 bool isInt(const char* str);
-
+/**
+ * Checks if a token we got from a user is printed "by the rules"
+ * @param token - the string we got from the user
+ * @return
+ * True - if the format is right
+ * False - otherwise
+ */
+bool isInFormat(char* token);
 /**
  * parses a Position from a string input
  *
@@ -93,9 +102,6 @@ CHESS_COMMAND getChessCommand (char* token);
  *   path - path to a file, used for the saved games of the user
  */
 ChessCommand parseLine(const char* str);
-
-
-bool isInFormat(char* token);
 
 
 #endif
