@@ -120,6 +120,12 @@ bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf probl
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
+    if (strcmp(token, "</game>\r\n")==0){
+        gameSession->game->whiteKingPos = getKingPos(gameSession->game, WHITE_PLAYER);
+        gameSession->game->blackKingPos = getKingPos(gameSession->game, BLACK_PLAYER);
+        fclose(loadedFile);
+        return true;
+    }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     sscanf(token, "\t\t<whiteKingPos>%d,%c</whiteKingPos\n", &(gameSession->game->whiteKingPos.row),&(gameSession->game->whiteKingPos.column));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
@@ -137,7 +143,7 @@ bool loadGame(char *filePath, GameSession *gameSession) {// TODO is sscanf probl
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     sscanf(token, "\t\t<blackCastle>%d</blackCastle\n", &(gameSession->game->blackCastle));
 
-
+    fclose(loadedFile);
     return true;
 }
 

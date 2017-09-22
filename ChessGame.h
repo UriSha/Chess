@@ -109,7 +109,7 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
 
 CHESS_MESSAGE checkStatus(ChessGame *game);
 
-
+Position getKingPos(ChessGame *game, bool isWhiteKing);
 /**
  *
  *

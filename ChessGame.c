@@ -985,3 +985,22 @@ char *getSoldierName(char soldier) {
 
 }
 
+Position getKingPos(ChessGame *game, bool isWhiteKing){
+    Position kingPos;
+
+    kingPos.row = 100;
+    kingPos.column = 'Z';
+
+    char myKing = (char)(isWhiteKing ? KING_WHITE : KING_BLACK);
+    for (int i=0; i<GAME_SIZE;i++){
+        for (int j=0;j<GAME_SIZE;j++){
+            if (game->gameBoard[i][j] == myKing){
+                kingPos.row = i+1;
+                kingPos.column = j+'A';
+                return kingPos;
+            }
+        }
+    }
+    return kingPos;
+}
+
