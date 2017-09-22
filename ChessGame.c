@@ -888,7 +888,6 @@ void printMoves(ChessGame *game, Position pos) {
         printf("%s\n", movesArray[i]);
     for (int i = 0; i < positionCounter; i++)
         free(movesArray[i]);
-    free(movesArray);
 }
 
 Position *isCastling(ChessGame *game, moveNode move) {
