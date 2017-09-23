@@ -238,33 +238,145 @@ bool knightThreatsPosition(ChessGame *game, int row, int col);
  * False - otherwise
  */
 bool kingThreatsPosition(ChessGame *game, int row, int col);
-
+/**
+ * It's a help function that scans across diagonal and horizontal areas for threats
+ * Starts from a specific location
+ * We will call this function with different parameters in order to scan the whole area
+ * For threats from the opponent
+ * @param game  - The ChessGame
+ * @param rowPlusMinus - Will be either 1 , 0 or -1, it depends which function called this function
+ * @param colPlusMinus - Will be either 1 , 0 or -1, it depends which function called this function
+ * @param curRow - Which row we need to start search for threats
+ * @param curCol - Which col we need to start search for threats
+ * @return
+ * True - if there's a threat at the area we are looking, for the Position
+ * False - otherwise
+ */
 bool diagonalOrHorizontalThreat(ChessGame *game, int rowPlusMinus, int colPlusMinus, int curRow, int curCol);
-
+/**
+ * This function checks if there's an opponent queen, bishop or rook that threats our specific Position
+ * This fuction gets help from the other help functions above
+ * @param game
+ * @param row
+ * @param col
+ * @return
+ */
 bool QBRThreatsPosition(ChessGame *game, int row, int col);
-
+/**
+ * This is the main function that checks for a specific location, if there's any danger for him
+ * From other soldiers of the opponent.
+ * @param game  - The ChessGame
+ * @param pos   - The position we want to check
+ * @return
+ * True - If there's an actual threat
+ * False - otherwise
+ */
 bool myPositionUnderThreat(ChessGame *game, Position pos);
-
+/**
+ * Checks if the castling move we are trying to do is legal
+ * @param game -  The ChessGame
+ * @param src  - The source position of the king
+ * @param dest   - The destination position of the king
+ * @param isRightCastling - a flag that is true if the castling move is right castling
+ * @return
+ * True - If this specific castling move is legal
+ * False - otherwise
+ */
 bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a king
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_King(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a queen
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_Queen(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a knight
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_Knight(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a bishop
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_Bishop(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a rook
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_Rook(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal for a pawn
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove_Pawn(ChessGame *game, Position src, Position dest);
-
+/**
+ * Returns true if the move from the source Position to destination Position is legal
+ * First, checks what kind of soldier we have in the square and uses one of the above functions
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * True - if the move is legal
+ * False - otherwise
+ */
 bool isValidMove(ChessGame *game, Position src, Position dest);
-
+/**
+ * Updates the ChessGame score integer, in case soldier gets "killed" - for the scoring function
+ * @param soldierDied - will be one of the soldiers in the game, or an empty square
+ * @param game - The ChessGame
+ */
 void updateScore(char soldierDied, ChessGame *game);
-
+/**
+ * This function uses a lot of help functions, and placing the actual move in the game
+ * If the move is legal, the function moves the soldier from the source to destination Positions
+ * It also updates the score, updates the castling flags and adds the move to history
+ * @param game - The ChessGame
+ * @param src  - The source Position
+ * @param dest - The destination Position
+ * @return
+ * INVALID_ARGUMENT - If the game is NULL
+ * ILLEGAL_MOVE - If the move we are trying to do is illegal
+ * SUCCESS - otherwise
+ */
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
-
+/**
+ * a simple function that changes the current player inside the struct
+ * @param game - The ChessGame
+ */
 void changePlayer(ChessGame *game);
 
 //int getSoldierColor(char soldier); we have that function already!
