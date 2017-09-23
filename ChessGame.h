@@ -380,27 +380,88 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
 void changePlayer(ChessGame *game);
 
 //int getSoldierColor(char soldier); we have that function already!
-
+/**
+ * Returns true if there is a legal move for the current player.
+ * Gets help from the other functions, such as isValidMove and threats checking
+ * @param game - The ChessGame
+ * @return
+ * True - If there is a legal move to the current player
+ * False - otherwise
+ */
 bool areThereAnyMoves(ChessGame *game);
-
+/**
+ * Scanning the gameBoard and returns the appropriate message according to the gameBoard status
+ * @param game - The ChessGame
+ * @return
+ * INVALID_ARGUMENT - If the game is NULL
+ * CHECK - if the king of the current player is threatened
+ * MATE - if the king of the current player is threatened, and there are no legal moves
+ * TIE - if there are no legal moves for the current player, but the king is safe
+ * CONTINUE - if the king of the current player is safe, and there is at least one legal move
+ */
 CHESS_MESSAGE checkStatus(ChessGame *game);
-
+/**
+ * This function gets as a parameter a Position and returns a string, according to the format
+ * The format is <Int,Char>, the Int would be 1-8 and the Char would be A-H
+ * @param dest - The Position we are checking
+ * @return
+ * A string contains the right format according to the game
+ */
 char *getStringFromPosition(Position dest);
-
+/**
+ * Placing a move backwards, if the history is not empty.
+ * Takes the last move and just do it backwards, reviving a soldier that died if it needs to.
+ * @param game
+ * @return
+ * INVALID_ARGUMENT - If the game is NULL
+ * NO_HISTORY - if the history is empty (or the player did undoMove for 3 times in a row)
+ * SUCCESS - otherwise
+ */
 CHESS_MESSAGE undoMove(ChessGame *game);
-
+/**
+ * THis function gets as a parameter the char in the gameBoard and returns a string that contains
+ * The full name of the soldier, i.e 'M' == "Pawn"
+ * @param soldier - the char in the gameBoard
+ * @return
+ * A string that contains the soldier name
+ */
 char *getSoldierName(char soldier);
-
+/**
+ * This function returns the position of the current player's King
+ * @param game - The ChessGame
+ * @param isWhiteKing - a flag that indicates if the current player is WHITE_PLAYER or BLACK_PLAYER
+ * @return
+ * Position of the current player's King
+ */
 Position getKingPos(ChessGame *game, bool isWhiteKing);
 
 // bonus functions
-
+/**
+ * A help function that gets a Position and returns all the legal moves it can do
+ * @param game - THe ChessGame
+ * @param result - The list of legal moves
+ * @param pos - Position of the soldier we are checking
+ * @return
+ * a Position array with all the legal moves
+ */
 int getMoves(ChessGame *game, Position *result, Position pos);
-
+/**
+ * This function gets as a parameter a desired Position and
+ * Prints a list of all legal moves this soldier can do, according to the game rules and the gameBoard
+ * @param game - The ChessGame
+ * @param pos - A desired Position
+ */
 void printMoves(ChessGame *game, Position pos);
-
+/**
+ * This function gets a moveNode - a move that was played during the game, and checks if this move was
+ * Castling move. if yes:
+ * It returns the Position of the rook and the Position of the king, after the Castling move
+ * @param game - The ChessGame
+ * @param move - moveNode with a move that was played during the game
+ * @return
+ * an array of two Positions - that contains either invalid data or the Positions of the rook and king
+ */
 Position *isCastling(ChessGame *game, moveNode move);
-
 
 
 #endif //CHESS_CHESSGAME_H
