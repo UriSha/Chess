@@ -463,5 +463,11 @@ void printMoves(ChessGame *game, Position pos);
  */
 Position *isCastling(ChessGame *game, moveNode move);
 
-
+/**
+ * calculates the score of a given game
+ *
+ * @param game
+ * @return the score of the game
+ */
+int getScore(ChessGame *game);
 #endif //CHESS_CHESSGAME_H

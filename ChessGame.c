@@ -991,3 +991,40 @@ Position getKingPos(ChessGame *game, bool isWhiteKing) {
     return kingPos;
 }
 
+int getScore(ChessGame *game){
+    int score = 0;
+    char current;
+    for (int i=0; i<GAME_SIZE; i++){
+        for (int j = 0; j< GAME_SIZE; j++){
+            current = game->gameBoard[i][j];
+            if (current==PAWN_WHITE)
+                score++;
+            else if (current==PAWN_BLACK)
+                score--;
+            else if (current==PAWN_BLACK)
+                score--;
+            else if (current==ROOK_WHITE)
+                score+=5;
+            else if (current==ROOK_BLACK)
+                score-=5;
+            else if (current==KNIGHT_WHITE)
+                score+=3;
+            else if (current==KNIGHT_BLACK)
+                score-=3;
+            else if (current==BISHOP_WHITE)
+                score+=3;
+            else if (current==BISHOP_BLACK)
+                score-=3;
+            else if (current==QUEEN_WHITE)
+                score+=9;
+            else if (current==QUEEN_BLACK)
+                score-=9;
+            else if (current==KING_WHITE)
+                score+=100;
+            else if (current==KING_BLACK)
+                score-=100;
+
+        }
+    }
+    return score;
+}

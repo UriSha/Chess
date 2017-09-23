@@ -2,6 +2,7 @@
 #include "MainAux.h"
 
 
+
 bool undo(GameSession *session) {
     if (session->game == NULL)
         return false;
@@ -68,6 +69,7 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
         fprintf(saveFile, "\t\t<row_%d>%.8s</row_%d>\n", i, game->gameBoard[i - 1], i);
     fprintf(saveFile, "\t</board>\n");
     fprintf(saveFile, "\t<general>\n");
+    fprintf(saveFile, "\t\t<score>%d</score>\n", game->score);
     fprintf(saveFile, "\t\t<whiteKingPos>%d,%c</whiteKingPos>\n", game->whiteKingPos.row,  game->whiteKingPos.column);
     fprintf(saveFile, "\t\t<blackKingPos>%d,%c</blackKingPos>\n", game->blackKingPos.row,  game->blackKingPos.column);
     fprintf(saveFile, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved>\n", game->rightWhiteRookMoved);
@@ -123,9 +125,12 @@ bool loadGame(char *filePath, GameSession *gameSession) {
     if (strcmp(token, "</game>\r\n")==0){
         gameSession->game->whiteKingPos = getKingPos(gameSession->game, WHITE_PLAYER);
         gameSession->game->blackKingPos = getKingPos(gameSession->game, BLACK_PLAYER);
+        gameSession->game->score = getScore(gameSession->game);
         fclose(loadedFile);
         return true;
     }
+    fgets(token, MAX_LINE_LENGTH, loadedFile);
+    sscanf(token, "\t\t<score>%d</score>\n", &(gameSession->game->score));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     sscanf(token, "\t\t<whiteKingPos>%d,%c</whiteKingPos\n", &(gameSession->game->whiteKingPos.row),&(gameSession->game->whiteKingPos.column));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
