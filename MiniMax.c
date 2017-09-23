@@ -135,30 +135,23 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                 dest.row = i;
                 for (int j = 0; j < GAME_SIZE; j++) {
                     dest.column = 'A' + j;
+//                    if (maxDepth == 1 && j== 6 && i==1 && col == 3 && row == 1) {
+//                        int xer = 3;
+//                        printBoard(copy);
+//                    }
                     if (isValidMove(copy, src, dest)) {
-//                        if (maxDepth == 2 && root->game->gameBoard[0][3] == KING_WHITE && j==4 && i==2 && col ==6 && row == 1){
-//                            xdw = 5;
-//                            printBoard(copy);
-//                        }
-//                        if (maxDepth == 3 && j==3 && i==1 && col ==4 && row == 1) {
-//                            xdw = 6;
+//                        if (maxDepth == 2 && j== 1 && i==5 && col == 2 && row == 6) {
+//                            int xer = 3;
 //                            printBoard(copy);
 //                        }
                         setMove(copy, src, dest);
-//                        if (maxDepth == 3 && j==3 && i==1 && col ==4 && row == 1) {
-//                            xdw = 7;
-//                            printBoard(copy);
-//                        }
-//                        if (maxDepth == 2 && root->game->gameBoard[0][3] == KING_WHITE && j==4 && i==2 && col ==6 && row == 1){
-//                            xdw = 5;
+//                        if (maxDepth == 2 && j== 1 && i==5 && col == 2 && row == 6) {
+//                            int xer = 3;
 //                            printBoard(copy);
 //                        }
 
+
                         if (maxDepth == 1) {
-//                            if (root->game->gameBoard[1][4] == KNIGHT_WHITE && j==4 && i==1 && col ==3 && row == 1) {
-//                                xdw = 4;
-//                                printBoard(copy);
-//                            }
                             if (!root->isMaxType)
                                 changePlayer(copy);
                             int moveScore = scoringFunction(copy, isExpertLevel);
@@ -232,6 +225,8 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                             firstValid = false;
                         }
                         setMove(copy, src, dest);
+//                        if (j==4 && i==3 && col == 6 && row ==5)
+//                            printBoard(copy);
 
                         if (maxDepth == 1) {// no recursion
                             int moveScore = scoringFunction(copy, isExpertLevel);

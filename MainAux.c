@@ -45,8 +45,8 @@ void resetSession(GameSession *session) {
 
 }
 
-bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int userColor) {
-    if (game == NULL)
+bool saveGame(char *filePath,  GameSession *session) { //TODO what about saving the history?
+    if (session->game == NULL)
         return false;
     FILE *saveFile = NULL;
     char path[MAX_LINE_LENGTH];
@@ -58,26 +58,26 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
     }
     fprintf(saveFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     fprintf(saveFile, "<game>\n");
-    fprintf(saveFile, "\t<current_turn>%d</current_turn>\n", game->currentPlayer);
-    fprintf(saveFile, "\t<game_mode>%d</game_mode> \n", mode);
-    if (mode == 1) {
-        fprintf(saveFile, "\t<difficulty>%d</difficulty>\n", difficulty);
-        fprintf(saveFile, "\t<user_color>%d</user_color>\n", userColor);
+    fprintf(saveFile, "\t<current_turn>%d</current_turn>\n", session->game->currentPlayer);
+    fprintf(saveFile, "\t<game_mode>%d</game_mode> \n", session->mode);
+    if (session->mode == 1) {
+        fprintf(saveFile, "\t<difficulty>%d</difficulty>\n", session->difficulty);
+        fprintf(saveFile, "\t<user_color>%d</user_color>\n", session->user_color);
     }
     fprintf(saveFile, "\t<board>\n");
     for (int i = GAME_SIZE; i > 0; i--)
-        fprintf(saveFile, "\t\t<row_%d>%.8s</row_%d>\n", i, game->gameBoard[i - 1], i);
+        fprintf(saveFile, "\t\t<row_%d>%.8s</row_%d>\n", i, session->game->gameBoard[i - 1], i);
     fprintf(saveFile, "\t</board>\n");
     fprintf(saveFile, "\t<general>\n");
-    fprintf(saveFile, "\t\t<score>%d</score>\n", game->score);
-    fprintf(saveFile, "\t\t<whiteKingPos>%d,%c</whiteKingPos>\n", game->whiteKingPos.row,  game->whiteKingPos.column);
-    fprintf(saveFile, "\t\t<blackKingPos>%d,%c</blackKingPos>\n", game->blackKingPos.row,  game->blackKingPos.column);
-    fprintf(saveFile, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved>\n", game->rightWhiteRookMoved);
-    fprintf(saveFile, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved>\n", game->leftWhiteRookMoved);
-    fprintf(saveFile, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved>\n", game->rightBlackRookMoved);
-    fprintf(saveFile, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved>\n", game->leftBlackRookMoved);
-    fprintf(saveFile, "\t\t<whiteCastle>%d</whiteCastle>\n", game->whiteCastle);
-    fprintf(saveFile, "\t\t<blackCastle>%d</blackCastle>\n", game->blackCastle);
+    fprintf(saveFile, "\t\t<score>%d</score>\n", session->game->score);
+    fprintf(saveFile, "\t\t<whiteKingPos>%d,%c</whiteKingPos>\n", session->game->whiteKingPos.row,  session->game->whiteKingPos.column);
+    fprintf(saveFile, "\t\t<blackKingPos>%d,%c</blackKingPos>\n", session->game->blackKingPos.row,  session->game->blackKingPos.column);
+    fprintf(saveFile, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved>\n", session->game->rightWhiteRookMoved);
+    fprintf(saveFile, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved>\n", session->game->leftWhiteRookMoved);
+    fprintf(saveFile, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved>\n", session->game->rightBlackRookMoved);
+    fprintf(saveFile, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved>\n", session->game->leftBlackRookMoved);
+    fprintf(saveFile, "\t\t<whiteCastle>%d</whiteCastle>\n", session->game->whiteCastle);
+    fprintf(saveFile, "\t\t<blackCastle>%d</blackCastle>\n", session->game->blackCastle);
     fprintf(saveFile, "\t</general>\n");
     fprintf(saveFile, "</game>\n");
 
@@ -86,7 +86,7 @@ bool saveGame(char *filePath, ChessGame *game, int mode, int difficulty, int use
 
 }
 
-bool loadGame(char *filePath, GameSession *gameSession) {
+bool loadGame(char *filePath, GameSession *session) {
     FILE *loadedFile = NULL;
     char path[MAX_LINE_LENGTH];
     strcpy(path,filePath);
@@ -96,19 +96,19 @@ bool loadGame(char *filePath, GameSession *gameSession) {
         return false;
     }
     char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
-    gameDestroy(&(gameSession->game));
-    gameSession->game = gameCreate(HISTORYSIZE);
+    gameDestroy(&(session->game));
+    session->game = gameCreate(HISTORYSIZE);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t<current_turn>%d", &(gameSession->game->currentPlayer));
+    sscanf(token, "\t<current_turn>%d", &(session->game->currentPlayer));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t<game_mode>%d", &(gameSession->mode));
-    if (gameSession->mode == ONE_PLAYER) {
+    sscanf(token, "\t<game_mode>%d", &(session->mode));
+    if (session->mode == ONE_PLAYER) {
         fgets(token, MAX_LINE_LENGTH, loadedFile);
-        sscanf(token, "\t<difficulty>%d", &(gameSession->difficulty));
+        sscanf(token, "\t<difficulty>%d", &(session->difficulty));
         fgets(token, MAX_LINE_LENGTH, loadedFile);
-        sscanf(token, "\t<user_color>%d", &(gameSession->user_color));
+        sscanf(token, "\t<user_color>%d", &(session->user_color));
 
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
@@ -118,35 +118,35 @@ bool loadGame(char *filePath, GameSession *gameSession) {
         fgets(token, MAX_LINE_LENGTH, loadedFile);
         sscanf(token, "\t\t<row_%d>%s</row_%d>\n", &i, currentRow, &i);
         for (int j = 0; j < GAME_SIZE; j++)
-            gameSession->game->gameBoard[i - 1][j] = currentRow[j];
+            session->game->gameBoard[i - 1][j] = currentRow[j];
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    if (strcmp(token, "</game>\r\n")==0){
-        gameSession->game->whiteKingPos = getKingPos(gameSession->game, WHITE_PLAYER);
-        gameSession->game->blackKingPos = getKingPos(gameSession->game, BLACK_PLAYER);
-        gameSession->game->score = getScore(gameSession->game);
+    if (strcmp(token, "</game>\r\n")==0){ // for basic xml files (without our implementation's extra information)
+        session->game->whiteKingPos = getKingPos(session->game, WHITE_PLAYER);
+        session->game->blackKingPos = getKingPos(session->game, BLACK_PLAYER);
+        session->game->score = getScore(session->game);
         fclose(loadedFile);
         return true;
     }
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<score>%d</score>\n", &(gameSession->game->score));
+    sscanf(token, "\t\t<score>%d</score>\n", &(session->game->score));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<whiteKingPos>%d,%c</whiteKingPos\n", &(gameSession->game->whiteKingPos.row),&(gameSession->game->whiteKingPos.column));
+    sscanf(token, "\t\t<whiteKingPos>%d,%c</whiteKingPos\n", &(session->game->whiteKingPos.row),&(session->game->whiteKingPos.column));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<blackKingPos>%d,%c</blackKingPos\n", &(gameSession->game->blackKingPos.row),&(gameSession->game->blackKingPos.column));
+    sscanf(token, "\t\t<blackKingPos>%d,%c</blackKingPos\n", &(session->game->blackKingPos.row),&(session->game->blackKingPos.column));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved\n", &(gameSession->game->rightWhiteRookMoved));
+    sscanf(token, "\t\t<rightWhiteRookMoved>%d</rightWhiteRookMoved\n", &(session->game->rightWhiteRookMoved));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved\n", &(gameSession->game->leftWhiteRookMoved));
+    sscanf(token, "\t\t<leftWhiteRookMoved>%d</leftWhiteRookMoved\n", &(session->game->leftWhiteRookMoved));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved\n", &(gameSession->game->rightBlackRookMoved));
+    sscanf(token, "\t\t<rightBlackRookMoved>%d</rightBlackRookMoved\n", &(session->game->rightBlackRookMoved));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved\n", &(gameSession->game->leftBlackRookMoved));
+    sscanf(token, "\t\t<leftBlackRookMoved>%d</leftBlackRookMoved\n", &(session->game->leftBlackRookMoved));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<whiteCastle>%d</whiteCastle\n", &(gameSession->game->whiteCastle));
+    sscanf(token, "\t\t<whiteCastle>%d</whiteCastle\n", &(session->game->whiteCastle));
     fgets(token, MAX_LINE_LENGTH, loadedFile);
-    sscanf(token, "\t\t<blackCastle>%d</blackCastle\n", &(gameSession->game->blackCastle));
+    sscanf(token, "\t\t<blackCastle>%d</blackCastle\n", &(session->game->blackCastle));
 
     fclose(loadedFile);
     return true;
@@ -323,7 +323,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
             return false;
         case SAVE:
             if (command.validArg) {
-                saveGame(command.path, session->game, session->mode, session->difficulty, session->game->currentPlayer);
+                saveGame(command.path, session);
                 return false;
             }
 
@@ -369,30 +369,30 @@ int settingState(GameSession *session) {
     return 1; // gameState
 }
 
-CHESS_MESSAGE gameStatus(CHESS_MESSAGE msg, GameSession *session) {
+void gameStatus(CHESS_MESSAGE msg, GameSession *session) {
     char *playerColor;
     playerColor = session->game->currentPlayer== WHITE_PLAYER ? "black" : "white"; // the opposite player
     char *threatenColor = strcmp(playerColor, "white")==0 ? "black" : "white";
     switch (msg) {
         case MATE:
             printf("Checkmate! %s player wins the game\n", playerColor);
-            return MATE;
+            return;
         case CHECK:
             if (session->user_color==session->game->currentPlayer)
                 printf("Check!\n");
             else
                 printf("Check: %s King is threatened!\n", threatenColor);
-            break;
+            return;
         case TIE:
             if (session->user_color==session->game->currentPlayer)
                 printf("The game ends in a tie\n");
             else
                 printf("The game is tied\n");
-            return TIE;
+            return;
         default:
             break;
     }
-    return CONTINUE;
+    return;
 }
 
 CHESS_MESSAGE gameState(GameSession *session) {

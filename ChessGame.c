@@ -371,13 +371,14 @@ bool isValidMove_King(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return false;
     if (dest.row == src.row) {//possible Castling
+        int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
         bool rightCastle = game->currentPlayer == WHITE_PLAYER ? (game->whiteCastle && !(game->rightWhiteRookMoved)) : (
                 game->blackCastle && !(game->rightBlackRookMoved));
         bool leftCastle = game->currentPlayer == WHITE_PLAYER ? (game->whiteCastle && !(game->leftWhiteRookMoved)) : (
                 game->blackCastle && !(game->leftBlackRookMoved));
-        if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM + 2)
+        if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM + 2 && src.column == KING_INITIAL_COL_CHAR && src.row == myRow) // TODO can place the check here
             return legalCastling(game, src, dest, 1);
-        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 3)
+        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 3  && src.column == KING_INITIAL_COL_CHAR && src.row == myRow) // TODO can place the check here
             return legalCastling(game, src, dest, 0);
     }
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
