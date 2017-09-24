@@ -41,7 +41,7 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src,
     }
     if (event == MAIN_NEW_GAME) {
         (*session)=sessionCreate(HISTORYSIZE);
-        windowHide(src->mainWin->window);
+        mainWindowDestroy(src->mainWin);
         src->settingsWin = settingsWindowCreate();
         if (src->settingsWin == NULL ) {
             printf("Couldn't move to settings window\n");
@@ -51,8 +51,8 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src,
     }
     if(event==SETTINGS_BACK)
     {
-        windowHide(src->settingsWin->window);
-        windowShow(src->mainWin->window);
+        settingsWindowDestroy(src->settingsWin);
+        src->mainWin = mainWindowCreate();
         src->activeWin=MAIN_WINDOW_ACTIVE;
     }
     if(event==SETTINGS_START){}//TODO Start_window
