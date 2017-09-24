@@ -3,7 +3,6 @@
 #define CHESS_GUIMANAGER_H
 
 #include "GuiWindows.h"
-#include "MainAux.h"
 
 typedef enum{
     MAIN_WINDOW_ACTIVE,

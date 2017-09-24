@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <stdbool.h>
 #include <SDL_video.h>
+#include "MainAux.h"
 
 #define GAME_WIDTH 800
 #define GAME_HEIGHT 600

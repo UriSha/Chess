@@ -49,20 +49,49 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src,
         }
         src->activeWin = SETTINGS_WINDOW_ACTIVE;
     }
-    else if(event==SETTINGS_BACK)
+    if(event==SETTINGS_BACK)
     {
         windowHide(src->settingsWin->window);
         windowShow(src->mainWin->window);
         src->activeWin=MAIN_WINDOW_ACTIVE;
     }
+    if(event==SETTINGS_START){}//TODO Start_window
     if(event==SETTINGS_1PLAYER)
     {
         session->mode=ONE_PLAYER;
         src->settingsWin->is1player=true;
-//        openRestOfSettings();//TODO open the rest of the settings function
     }
     if (event==SETTINGS_2PLAYER){
-
+        session->mode=TWO_PLAYER;
+        src->settingsWin->is1player=false;
+    }
+    if(event==SETTINGS_1DIFF){
+        session->difficulty=1;
+        src->settingsWin->diff=1;
+    }
+    if(event==SETTINGS_2DIFF){
+        session->difficulty=2;
+        src->settingsWin->diff=2;
+    }
+    if(event==SETTINGS_3DIFF){
+        session->difficulty=3;
+        src->settingsWin->diff=3;
+    }
+    if(event==SETTINGS_4DIFF){
+        session->difficulty=4;
+        src->settingsWin->diff=4;
+    }
+    if(event==SETTINGS_5DIFF){
+        session->difficulty=5;
+        src->settingsWin->diff=5;
+    }
+    if(event==SETTINGS_USERCOLOR_0){
+        session->user_color=BLACK_PLAYER;
+        src->settingsWin->user_color=0;
+    }
+    if(event==SETTINGS_USERCOLOR_1){
+        session->user_color=WHITE_PLAYER;
+        src->settingsWin->user_color=1;
     }
     if (event == MAIN_QUIT) {
         return MANAGER_QUTT;
