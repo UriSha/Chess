@@ -138,31 +138,33 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_WHITE;
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
             game->rightWhiteRookMoved = true;
-            game->whiteCastle = false;  // TODO why not outside the inner if?
+//            game->whiteCastle = false;  // TODO why not outside the inner if?
         } else if (GET_COLUMN(game->whiteKingPos) - 3 == GET_COLUMN(dest)) {// left castling white player
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 2] = ROOK_WHITE;
             game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
             game->leftWhiteRookMoved = true;
-            game->whiteCastle = false;  // TODO why not outside the inner if?
+//            game->whiteCastle = false;  // TODO why not outside the inner if?
         }
         game->whiteKingPos.row = dest.row;
         game->whiteKingPos.column = dest.column;
+        game->whiteCastle = false;
 
 
     } else if (srcSoldier == KING_BLACK) {
         if (GET_COLUMN(game->blackKingPos) + 2 == GET_COLUMN(dest)) { // right castling black player
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_BLACK;
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
-            game->blackCastle = false;  // TODO why not outside the inner if?
+//            game->blackCastle = false;  // TODO why not outside the inner if?
             game->rightBlackRookMoved = true;
         } else if (GET_COLUMN(game->blackKingPos) - 3 == GET_COLUMN(dest)) {// left castling black player
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 2] = ROOK_BLACK;
             game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
-            game->blackCastle = false;  // TODO why not outside the inner if?
+//            game->blackCastle = false;  // TODO why not outside the inner if?
             game->leftBlackRookMoved = true;
         }
         game->blackKingPos.row = dest.row;
         game->blackKingPos.column = dest.column;
+        game->blackCastle = false;
     }
     if (srcSoldier == ROOK_WHITE) {
         if (src.column == 'H' && src.row == WHITE_INITIAL_ROW)//Right Rook White moved
@@ -378,7 +380,7 @@ bool isValidMove_King(ChessGame *game, Position src, Position dest) {
                 game->blackCastle && !(game->leftBlackRookMoved));
         if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM + 2 && src.column == KING_INITIAL_COL_CHAR && src.row == myRow) // TODO can place the check here
             return legalCastling(game, src, dest, 1);
-        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 3  && src.column == KING_INITIAL_COL_CHAR && src.row == myRow) // TODO can place the check here
+        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 3 && src.column == KING_INITIAL_COL_CHAR && src.row == myRow) // TODO can place the check here
             return legalCastling(game, src, dest, 0);
     }
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
@@ -929,7 +931,7 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
         return NO_HISTORY;
     moveNode *lastMove = removeRecentMove(game->history);
     Position *rookPositions = isCastling(game, *lastMove);
-    if (rookPositions[0].row != INVALID_ROW) {
+    if (rookPositions[0].row != INVALID_ROW) {  // for castling move
 
         movePiece(game, rookPositions[0], rookPositions[1]);
     }
@@ -940,6 +942,16 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
         char soldier = (char) (isupper(lastMove->soldierDied) == 0 ? toupper(lastMove->soldierDied) : tolower(
                 lastMove->soldierDied));
         updateScore(soldier, game);
+    }
+    if (lastMove->source.row == WHITE_INITIAL_ROW && lastMove->source.column ==KING_INITIAL_COL_CHAR){
+        if (game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM] == KING_WHITE){
+            game->whiteCastle = true;
+        }
+    }
+    if (lastMove->source.row == BLACK_INITIAL_ROW && lastMove->source.column ==KING_INITIAL_COL_CHAR){
+        if (game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM] == KING_BLACK){
+            game->blackCastle = true;
+        }
     }
     free(rookPositions);
     return SUCCESS;
