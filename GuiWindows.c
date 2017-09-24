@@ -1,19 +1,19 @@
 #include <stdbool.h>
 #include "GuiWindows.h"
 int isClickOnNew(int x, int y) {
-    if ((x >= 75 && x <= 234) && (y >= 100 && y <= 150)) {
+    if ((x >= WINDOW_WIDTH/2-80 && x <= WINDOW_WIDTH/2+82) && (y >= 100 && y <= 150)) {
         return 1;
     }
     return 0;
 }
 int isClickOnLoad(int x, int y) {
-    if ((x >= 75 && x <= 237) && (y >= 170 && y <= 220)) {
+    if ((x >= WINDOW_WIDTH/2-80 && x <=WINDOW_WIDTH/2+82) && (y >= 170 && y <= 220)) {
         return 1;
     }
     return 0;
 }
 int isClickOnQuit(int x, int y) {
-    if ((x >= 75 && x <= 168) && (y >= 240 && y <= 290)) {
+    if ((x >= WINDOW_WIDTH/2-46 && x <= WINDOW_WIDTH/2+46) && (y >= 240 && y <= 290)) {
         return 1;
     }
     return 0;
@@ -78,52 +78,6 @@ mainWin* mainWindowCreate() {
         return NULL;
     if(!loadImageMainWindow("../images/quit.bmp", res,&(res->quitTexture)))
         return NULL;
-//    loadingSurface = SDL_LoadBMP("../images/new.bmp");
-//    if (loadingSurface == NULL ) {
-//        mainWindowDestroy(res);
-//        printf("couldn't create new.bmp surface\n");
-//        return NULL ;
-//    }
-//    res->newTexture = SDL_CreateTextureFromSurface(res->mainRenderer,
-//                                                     loadingSurface);
-//    if (res->newTexture == NULL ) {
-//        SDL_FreeSurface(loadingSurface);
-//        mainWindowDestroy(res);
-//        printf("couldn't create new.bmp texture\n");
-//        return NULL ;
-//    }
-//    SDL_FreeSurface(loadingSurface);
-//
-//    loadingSurface = SDL_LoadBMP("../images/load.bmp");
-//    if (loadingSurface == NULL ) {
-//        mainWindowDestroy(res);
-//        printf("couldn't create load.bmp surface\n");
-//        return NULL ;
-//    }
-//    res->loadTexture = SDL_CreateTextureFromSurface(res->mainRenderer,
-//                                                    loadingSurface);
-//    if (res->loadTexture == NULL ) {
-//        SDL_FreeSurface(loadingSurface);
-//        mainWindowDestroy(res);
-//        printf("couldn't create load.bmp texture\n");
-//        return NULL ;
-//    }
-//    SDL_FreeSurface(loadingSurface);
-//    loadingSurface = SDL_LoadBMP("../images/quit.bmp");
-//    if (loadingSurface == NULL ) {
-//        mainWindowDestroy(res);
-//        printf("couldn't create quit.bmp surface\n");
-//        return NULL ;
-//    }
-//    res->quitTexture = SDL_CreateTextureFromSurface(res->mainRenderer,
-//                                                    loadingSurface);
-//    if (res->quitTexture == NULL ) {
-//        SDL_FreeSurface(loadingSurface);
-//        mainWindowDestroy(res);
-//        printf("couldn't create quit.bmp texture\n");
-//        return NULL ;
-//    }
-//    SDL_FreeSurface(loadingSurface);
     return res;
 }
 
@@ -152,9 +106,9 @@ void mainWindowDraw(mainWin *src) {
     if(src==NULL){
         return;
     }
-    SDL_Rect newR = { .x = 75, .y = 100, .h = 50, .w = 159 };
-    SDL_Rect loadR = { .x = 75, .y = 170, .h = 50, .w = 162 };
-    SDL_Rect quitR = { .x = 75, .y = 240, .h = 50, .w = 93 };
+    SDL_Rect newR = { .x = WINDOW_WIDTH/2-80, .y = 100, .h = 50, .w = 159 };
+    SDL_Rect loadR = { .x = WINDOW_WIDTH/2-80, .y = 170, .h = 50, .w = 162 };
+    SDL_Rect quitR = { .x = WINDOW_WIDTH/2-46, .y = 240, .h = 50, .w = 93 };
     SDL_SetRenderDrawColor(src->mainRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->mainRenderer);
     SDL_RenderCopy(src->mainRenderer, src->newTexture, NULL, &newR);
@@ -277,28 +231,111 @@ settingsWin *settingsWindowCreate() {
     res->is1player=true;
     res->diff=2;
     res->user_color=1;
-    if(!loadImageSettingsWindow("../images/new.bmp", res, &(res->difficulty1Texture)))
-        return NULL;
     if(!loadImageSettingsWindow("../images/back.bmp", res, &(res->backTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/start.bmp", res, &(res->startTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/gameMode.bmp", res, &(res->gameModeTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/difficulty.bmp", res, &(res->difficultyTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/userColor.bmp", res, &(res->userColorTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/white.bmp", res, &(res->whiteTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/whiteFade.bmp", res, &(res->whiteFadeTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/black.bmp", res, &(res->blackTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/blackFade.bmp", res, &(res->blackFadeTexture)))
         return NULL;
     if(!loadImageSettingsWindow("../images/player1.bmp", res, &(res->player1Texture)))
         return NULL;
     if(!loadImageSettingsWindow("../images/player2.bmp", res, &(res->player2Texture)))
         return NULL;
-    if(!loadImageSettingsWindow("../images/init.bmp", res, &(res->initTexture)))
+    if(!loadImageSettingsWindow("../images/player1Fade.bmp", res, &(res->player1FadeTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/player2Fade.bmp", res, &(res->player2FadeTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/init.bmp", res, &(res->logoTexture)))
         return NULL;
     if(!loadImageSettingsWindow("../images/moderateFade.bmp", res, &(res->difficulty3FTexture)))
         return NULL;
     if(!loadImageSettingsWindow("../images/moderate.bmp", res, &(res->difficulty3Texture)))
-        return NULL;//TODO load all the rest
+        return NULL;
+    if(!loadImageSettingsWindow("../images/noobFade.bmp", res, &(res->difficulty1FTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/noob.bmp", res, &(res->difficulty1Texture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/easyFade.bmp", res, &(res->difficulty2FTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/easy.bmp", res, &(res->difficulty2Texture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/hardFade.bmp", res, &(res->difficulty4FTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/hard.bmp", res, &(res->difficulty4Texture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/expertFade.bmp", res, &(res->difficulty5FTexture)))
+        return NULL;
+    if(!loadImageSettingsWindow("../images/expert.bmp", res, &(res->difficulty5Texture)))
+        return NULL;
     return res;
 }
 void settingsWindowDestroy(settingsWin *src) {//TODO finish this function
     if (!src) {
         return;
     }
-    if (src->difficulty1Texture != NULL ) {
+    if (src->gameModeTexture != NULL ) {
+        SDL_DestroyTexture(src->gameModeTexture);
+    }if (src->difficultyTexture != NULL ) {
+        SDL_DestroyTexture(src->difficultyTexture);
+    }if (src->userColorTexture != NULL ) {
+        SDL_DestroyTexture(src->userColorTexture);
+    }if (src->logoTexture != NULL ) {
+        SDL_DestroyTexture(src->logoTexture);
+    }if (src->player1Texture != NULL ) {
+        SDL_DestroyTexture(src->player1Texture);
+    }if (src->player2Texture != NULL ) {
+        SDL_DestroyTexture(src->player2Texture);
+    }if (src->player2FadeTexture != NULL ) {
+        SDL_DestroyTexture(src->player2FadeTexture);
+    }if (src->player1FadeTexture != NULL ) {
+        SDL_DestroyTexture(src->player1FadeTexture);
+    }if (src->difficulty1Texture != NULL ) {
         SDL_DestroyTexture(src->difficulty1Texture);
+    }if (src->difficulty2Texture != NULL ) {
+        SDL_DestroyTexture(src->difficulty2Texture);
+    }if (src->difficulty3Texture != NULL ) {
+        SDL_DestroyTexture(src->difficulty3Texture);
+    }if (src->difficulty4Texture != NULL ) {
+        SDL_DestroyTexture(src->difficulty4Texture);
+    }if (src->difficulty5Texture != NULL ) {
+        SDL_DestroyTexture(src->difficulty5Texture);
+    }if (src->difficulty1FTexture != NULL ) {
+        SDL_DestroyTexture(src->difficulty1FTexture);
+    }if (src->difficulty2FTexture != NULL ) {
+        SDL_DestroyTexture(src->difficulty2FTexture);
+    }if (src->difficulty3FTexture != NULL ) {
+        SDL_DestroyTexture(src->difficulty3FTexture);
+    }if (src->difficulty4FTexture != NULL ) {
+        SDL_DestroyTexture(src->difficulty4FTexture);
+    }if (src->difficulty5FTexture != NULL ) {
+        SDL_DestroyTexture(src->difficulty5FTexture);
+    }if (src->whiteTexture != NULL ) {
+        SDL_DestroyTexture(src->whiteTexture);
+    }if (src->whiteFadeTexture != NULL ) {
+        SDL_DestroyTexture(src->whiteFadeTexture);
+    }if (src->blackTexture != NULL ) {
+        SDL_DestroyTexture(src->blackTexture);
+    }if (src->blackFadeTexture != NULL ) {
+        SDL_DestroyTexture(src->blackFadeTexture);
+    }if (src->startTexture != NULL ) {
+        SDL_DestroyTexture(src->startTexture);
+    }if (src->backTexture != NULL ) {
+        SDL_DestroyTexture(src->backTexture);
+    }
+    if (src->newRenderer != NULL ) {
+        SDL_DestroyRenderer(src->newRenderer);
     }
     if (src->window != NULL ) {
         SDL_DestroyWindow(src->window);
@@ -309,28 +346,45 @@ void settingsWindowDraw(settingsWin *src) {
     if(src==NULL){
         return;
     }
-    SDL_Rect backR = { .x = 0, .y = (GAME_HEIGHT-48), .h = 48, .w =108 };
-    SDL_Rect player1R = { .x = 200, .y =150, .h = 50, .w =123 };
-    SDL_Rect player2R = { .x = 400, .y =150, .h = 50, .w =133 };
     SDL_Rect logoR = { .x = GAME_WIDTH/2-100, .y =0, .h = 112, .w =200 };
-//    SDL_Rect diff1R = { .x = 0, .y = (GAME_WIDTH-50), .h = 50, .w =110 };
-//    SDL_Rect diff2R = { .x = 75, .y =240, .h = 50, .w =123 };
-    SDL_Rect diff3R = { .x = GAME_WIDTH/2-69, .y =220, .h = 54, .w =138 };
-//    SDL_Rect diff4R = { .x = 200, .y =0, .h = 112, .w =200 };
-//    SDL_Rect diff5R = { .x = 0, .y = (GAME_WIDTH-50), .h = 50, .w =110 };
-//    SDL_Rect color0R = { .x = 75, .y =240, .h = 50, .w =123 };
-//    SDL_Rect color1R = { .x = 75, .y =310, .h = 50, .w =133 };
+    SDL_Rect playerHeader = { .x = 30, .y =130, .h = 48, .w =162 };
+    SDL_Rect player1R = { .x = 295, .y =130, .h = 54, .w =127 };
+    SDL_Rect player2R = { .x = 490, .y =130, .h = 54, .w =137 };
+    SDL_Rect diffHeader = { .x = 30, .y =300, .h = 48, .w =135 };
+    SDL_Rect diff1R = { .x = 215, .y = 245, .h = 54, .w =95 };
+    SDL_Rect diff2R = { .x = 410, .y =245, .h = 54, .w =88 };
+    SDL_Rect diff3R = { .x = 595, .y =245, .h = 54, .w =138 };
+    SDL_Rect diff4R = { .x = 300, .y =325, .h = 54, .w =91 };
+    SDL_Rect diff5R = { .x = 500, .y = 325, .h = 54, .w =108 };
+    SDL_Rect colorHeader = { .x = 30, .y =460, .h = 48, .w =147 };
+    SDL_Rect color0R = { .x = 295, .y =460, .h = 54, .w =102 };
+    SDL_Rect color1R = { .x = 505, .y =460, .h = 54, .w =96 };
+    SDL_Rect backR = { .x = 0, .y = (GAME_HEIGHT-48), .h = 48, .w =108 };
+    SDL_Rect startR = { .x = GAME_WIDTH-110, .y = (GAME_HEIGHT-48), .h = 48, .w =110 };
 //TODO add more difficulties and user_color
     SDL_SetRenderDrawColor(src->newRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->newRenderer);
-    SDL_RenderCopy(src->newRenderer, src->backTexture, NULL, &backR);
+    SDL_RenderCopy(src->newRenderer, src->logoTexture, NULL, &logoR);
+    SDL_RenderCopy(src->newRenderer, src->gameModeTexture, NULL, &playerHeader);
     SDL_RenderCopy(src->newRenderer, src->player1Texture, NULL, &player1R);
-    SDL_RenderCopy(src->newRenderer, src->player2Texture, NULL, &player2R);
-    if( src->diff!=3 || src->is1player==false)
-        SDL_RenderCopy(src->newRenderer, src->difficulty3FTexture, NULL, &diff3R);
-    else
-        SDL_RenderCopy(src->newRenderer, src->difficulty3Texture, NULL, &diff3R);
-    SDL_RenderCopy(src->newRenderer, src->initTexture, NULL, &logoR);
+    SDL_RenderCopy(src->newRenderer, src->player2FadeTexture, NULL, &player2R);
+    SDL_RenderCopy(src->newRenderer, src->difficultyTexture, NULL, &diffHeader);
+    SDL_RenderCopy(src->newRenderer, src->difficulty1FTexture, NULL, &diff1R);
+    SDL_RenderCopy(src->newRenderer, src->difficulty2Texture, NULL, &diff2R);
+    SDL_RenderCopy(src->newRenderer, src->difficulty3FTexture, NULL, &diff3R);
+    SDL_RenderCopy(src->newRenderer, src->difficulty4FTexture, NULL, &diff4R);
+    SDL_RenderCopy(src->newRenderer, src->difficulty5FTexture, NULL, &diff5R);
+    SDL_RenderCopy(src->newRenderer, src->userColorTexture, NULL, &colorHeader);
+    SDL_RenderCopy(src->newRenderer, src->whiteTexture, NULL, &color0R);
+    SDL_RenderCopy(src->newRenderer, src->blackFadeTexture, NULL, &color1R);
+    SDL_RenderCopy(src->newRenderer, src->backTexture, NULL, &backR);
+    SDL_RenderCopy(src->newRenderer, src->startTexture, NULL, &startR);
+//    if( src->diff!=3 || src->is1player==false) {
+//        SDL_RenderCopy(src->newRenderer, src->difficulty3FTexture, NULL, &diff3R);
+//    }
+//    else {
+//        SDL_RenderCopy(src->newRenderer, src->difficulty3Texture, NULL, &diff3R);
+//    }
 //    SDL_RenderCopy(src->mainRenderer, src->quitTexture, NULL, &quitR);
     SDL_RenderPresent(src->newRenderer);
 }

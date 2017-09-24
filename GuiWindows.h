@@ -28,9 +28,14 @@ typedef struct {
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *newRenderer;
-    SDL_Texture *initTexture;
+    SDL_Texture *gameModeTexture;
+    SDL_Texture *difficultyTexture;
+    SDL_Texture *userColorTexture;
+    SDL_Texture *logoTexture;
     SDL_Texture *player1Texture;
     SDL_Texture *player2Texture;
+    SDL_Texture *player2FadeTexture;
+    SDL_Texture *player1FadeTexture;
     SDL_Texture *difficulty1Texture;
     SDL_Texture *difficulty2Texture;
     SDL_Texture *difficulty3Texture;
@@ -41,7 +46,10 @@ typedef struct {
     SDL_Texture *difficulty3FTexture;
     SDL_Texture *difficulty4FTexture;
     SDL_Texture *difficulty5FTexture;
-    SDL_Texture *userColorTexture;
+    SDL_Texture *whiteTexture;
+    SDL_Texture *whiteFadeTexture;
+    SDL_Texture *blackTexture;
+    SDL_Texture *blackFadeTexture;
     SDL_Texture *startTexture;
     SDL_Texture *backTexture;
     bool is1player;
