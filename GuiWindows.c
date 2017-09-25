@@ -604,6 +604,22 @@ int isSolt5Clicked(int x, int y, int availableSlots) {
     return 0;
 }
 
+int getNumOfSlots(){
+    FILE *numOfSlotsFile = NULL;
+    numOfSlotsFile = fopen("numOfSlots.xml", "r+");
+    if (numOfSlotsFile == NULL) {
+        printf("Error: File doesn’t exist or cannot be opened\n");
+        return false;
+    }
+    char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
+    int result;
+
+    fgets(token, MAX_LINE_LENGTH, numOfSlotsFile);
+    fgets(token, MAX_LINE_LENGTH, numOfSlotsFile);
+    sscanf(token, "<validSlots>%d</validSlots>", &(result));
+    fclose(numOfSlotsFile);
+    return result;
+}
 loadGameWin *loadGameWindowCreate() {
     loadGameWin *res = NULL;
     res = (loadGameWin *) malloc(sizeof(loadGameWin));
@@ -635,7 +651,7 @@ loadGameWin *loadGameWindowCreate() {
         return NULL;
     }
     res->chosenSlot = 0;
-    res->availableSlots = 5;
+    res->availableSlots = getNumOfSlots();
 //    res->user_color = 1;
     if (!loadImageLoadWindow("../images/back.bmp", res, &(res->backTexture)))
         return NULL;
