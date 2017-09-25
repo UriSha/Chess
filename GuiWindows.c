@@ -160,7 +160,7 @@ bool loadImageSettingsWindow(char *path, settingsWin *src, SDL_Texture **texture
         printf("Couldn't create surface\n");
         return false;
     }
-    (*texture) = SDL_CreateTextureFromSurface(src->newRenderer, loadingSurface);
+    (*texture) = SDL_CreateTextureFromSurface(src->settingsRenderer, loadingSurface);
     if ((*texture) == NULL) {
         SDL_FreeSurface(loadingSurface);
         settingsWindowDestroy(src);
@@ -286,9 +286,9 @@ settingsWin *settingsWindowCreate() {
         printf("Could not create window: %s\n", SDL_GetError());
         return NULL;
     }
-    res->newRenderer = SDL_CreateRenderer(res->window, -1,
+    res->settingsRenderer = SDL_CreateRenderer(res->window, -1,
                                           SDL_RENDERER_ACCELERATED);
-    if (res->newRenderer == NULL) {
+    if (res->settingsRenderer == NULL) {
         // In the case that the window could not be made...
         settingsWindowDestroy(res);
         printf("Could not create window: %s\n", SDL_GetError());
@@ -301,11 +301,11 @@ settingsWin *settingsWindowCreate() {
         return NULL;
     if (!loadImageSettingsWindow("../images/start.bmp", res, &(res->startTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/gameMode.bmp", res, &(res->gameModeTexture)))
+    if (!loadImageSettingsWindow("../images/gameModeBig.bmp", res, &(res->gameModeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/difficulty.bmp", res, &(res->difficultyTexture)))
+    if (!loadImageSettingsWindow("../images/difficultyBig.bmp", res, &(res->difficultyTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/userColor.bmp", res, &(res->userColorTexture)))
+    if (!loadImageSettingsWindow("../images/userColorBig.bmp", res, &(res->userColorTexture)))
         return NULL;
     if (!loadImageSettingsWindow("../images/white.bmp", res, &(res->whiteTexture)))
         return NULL;
@@ -424,8 +424,8 @@ void settingsWindowDestroy(settingsWin *src) {//TODO finish this function
     if (src->backTexture != NULL) {
         SDL_DestroyTexture(src->backTexture);
     }
-    if (src->newRenderer != NULL) {
-        SDL_DestroyRenderer(src->newRenderer);
+    if (src->settingsRenderer != NULL) {
+        SDL_DestroyRenderer(src->settingsRenderer);
     }
     if (src->window != NULL) {
         SDL_DestroyWindow(src->window);
@@ -438,65 +438,66 @@ void settingsWindowDraw(settingsWin *src) {
         return;
     }
     SDL_Rect logoR = {.x = GAME_WIDTH / 2 - 100, .y =0, .h = 112, .w =200};
-    SDL_Rect playerHeader = {.x = 30, .y =130, .h = 48, .w =162};
+//    SDL_Rect playerHeader = {.x = 30, .y =130, .h = 48, .w =162};
+    SDL_Rect playerHeader = {.x = 10, .y =125, .h = 56, .w =216};
     SDL_Rect player1R = {.x = 295, .y =130, .h = 54, .w =127};
     SDL_Rect player2R = {.x = 490, .y =130, .h = 54, .w =137};
-    SDL_Rect diffHeader = {.x = 30, .y =300, .h = 48, .w =135};
+    SDL_Rect diffHeader = {.x = 10, .y =285, .h = 56, .w =178};
     SDL_Rect diff1R = {.x = 215, .y = 245, .h = 54, .w =95};
     SDL_Rect diff2R = {.x = 410, .y =245, .h = 54, .w =88};
-    SDL_Rect diff3R = {.x = 595, .y =245, .h = 54, .w =138};
-    SDL_Rect diff4R = {.x = 300, .y =325, .h = 54, .w =91};
+    SDL_Rect diff3R = {.x = 585, .y =245, .h = 54, .w =138};
+    SDL_Rect diff4R = {.x = 310, .y =325, .h = 54, .w =91};
     SDL_Rect diff5R = {.x = 500, .y = 325, .h = 54, .w =108};
-    SDL_Rect colorHeader = {.x = 30, .y =460, .h = 48, .w =147};
+    SDL_Rect colorHeader = {.x = 10, .y =455, .h = 56, .w =200};
     SDL_Rect color1R = {.x = 295, .y =460, .h = 54, .w =102};
     SDL_Rect color0R = {.x = 505, .y =460, .h = 54, .w =96};
     SDL_Rect backR = {.x = 0, .y = (GAME_HEIGHT - 48), .h = 48, .w =108};
     SDL_Rect startR = {.x = GAME_WIDTH - 110, .y = (GAME_HEIGHT - 48), .h = 48, .w =110};
-    SDL_SetRenderDrawColor(src->newRenderer, 0, 0, 0, 0);
-    SDL_RenderClear(src->newRenderer);
-    SDL_RenderCopy(src->newRenderer, src->logoTexture, NULL, &logoR);
-    SDL_RenderCopy(src->newRenderer, src->gameModeTexture, NULL, &playerHeader);
+    SDL_SetRenderDrawColor(src->settingsRenderer, 0, 0, 0, 0);
+    SDL_RenderClear(src->settingsRenderer);
+    SDL_RenderCopy(src->settingsRenderer, src->logoTexture, NULL, &logoR);
+    SDL_RenderCopy(src->settingsRenderer, src->gameModeTexture, NULL, &playerHeader);
     if (src->is1player) {
-        SDL_RenderCopy(src->newRenderer, src->player1Texture, NULL, &player1R);
-        SDL_RenderCopy(src->newRenderer, src->player2FadeTexture, NULL, &player2R);
+        SDL_RenderCopy(src->settingsRenderer, src->player1Texture, NULL, &player1R);
+        SDL_RenderCopy(src->settingsRenderer, src->player2FadeTexture, NULL, &player2R);
     } else {
-        SDL_RenderCopy(src->newRenderer, src->player1FadeTexture, NULL, &player1R);
-        SDL_RenderCopy(src->newRenderer, src->player2Texture, NULL, &player2R);
+        SDL_RenderCopy(src->settingsRenderer, src->player1FadeTexture, NULL, &player1R);
+        SDL_RenderCopy(src->settingsRenderer, src->player2Texture, NULL, &player2R);
     }
-    SDL_RenderCopy(src->newRenderer, src->difficultyTexture, NULL, &diffHeader);
+    SDL_RenderCopy(src->settingsRenderer, src->difficultyTexture, NULL, &diffHeader);
     if (src->is1player && src->diff == 1)
-        SDL_RenderCopy(src->newRenderer, src->difficulty1Texture, NULL, &diff1R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty1Texture, NULL, &diff1R);
     else
-        SDL_RenderCopy(src->newRenderer, src->difficulty1FTexture, NULL, &diff1R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty1FTexture, NULL, &diff1R);
     if (src->is1player && src->diff == 2)
-        SDL_RenderCopy(src->newRenderer, src->difficulty2Texture, NULL, &diff2R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty2Texture, NULL, &diff2R);
     else
-        SDL_RenderCopy(src->newRenderer, src->difficulty2FTexture, NULL, &diff2R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty2FTexture, NULL, &diff2R);
     if (src->is1player && src->diff == 3)
-        SDL_RenderCopy(src->newRenderer, src->difficulty3Texture, NULL, &diff3R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty3Texture, NULL, &diff3R);
     else
-        SDL_RenderCopy(src->newRenderer, src->difficulty3FTexture, NULL, &diff3R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty3FTexture, NULL, &diff3R);
     if (src->is1player && src->diff == 4)
-        SDL_RenderCopy(src->newRenderer, src->difficulty4Texture, NULL, &diff4R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty4Texture, NULL, &diff4R);
     else
-        SDL_RenderCopy(src->newRenderer, src->difficulty4FTexture, NULL, &diff4R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty4FTexture, NULL, &diff4R);
     if (src->is1player && src->diff == 5)
-        SDL_RenderCopy(src->newRenderer, src->difficulty5Texture, NULL, &diff5R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty5Texture, NULL, &diff5R);
     else
-        SDL_RenderCopy(src->newRenderer, src->difficulty5FTexture, NULL, &diff5R);
+        SDL_RenderCopy(src->settingsRenderer, src->difficulty5FTexture, NULL, &diff5R);
 
-    SDL_RenderCopy(src->newRenderer, src->userColorTexture, NULL, &colorHeader);
+    SDL_RenderCopy(src->settingsRenderer, src->userColorTexture, NULL, &colorHeader);
     if (src->is1player && src->user_color == 1)
-        SDL_RenderCopy(src->newRenderer, src->whiteTexture, NULL, &color1R);
+        SDL_RenderCopy(src->settingsRenderer, src->whiteTexture, NULL, &color1R);
     else
-        SDL_RenderCopy(src->newRenderer, src->whiteFadeTexture, NULL, &color1R);
+        SDL_RenderCopy(src->settingsRenderer, src->whiteFadeTexture, NULL, &color1R);
     if (src->is1player && src->user_color == 0)
-        SDL_RenderCopy(src->newRenderer, src->blackTexture, NULL, &color0R);
+        SDL_RenderCopy(src->settingsRenderer, src->blackTexture, NULL, &color0R);
     else
-        SDL_RenderCopy(src->newRenderer, src->blackFadeTexture, NULL, &color0R);
-    SDL_RenderCopy(src->newRenderer, src->backTexture, NULL, &backR);
-    SDL_RenderCopy(src->newRenderer, src->startTexture, NULL, &startR);
-    SDL_RenderPresent(src->newRenderer);
+        SDL_RenderCopy(src->settingsRenderer, src->blackFadeTexture, NULL, &color0R);
+    SDL_RenderCopy(src->settingsRenderer, src->backTexture, NULL, &backR);
+    SDL_RenderCopy(src->settingsRenderer, src->startTexture, NULL, &startR);
+    SDL_RenderPresent(src->settingsRenderer);
 }
 
 EVENT settingsWindowHandleEvent(settingsWin *src, SDL_Event *event) {
@@ -527,6 +528,289 @@ EVENT settingsWindowHandleEvent(settingsWin *src, SDL_Event *event) {
                 return SETTINGS_USERCOLOR_0;
             if(isWhiteClicked(event->button.x, event->button.y,src->is1player))
                 return SETTINGS_USERCOLOR_1;
+
+        case SDL_WINDOWEVENT:
+            if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
+                return MAIN_QUIT;
+            }
+            break;
+        default:
+            return NONE;
+    }
+    return NONE;
+}
+
+bool loadImageLoadWindow(char *path, loadGameWin *src, SDL_Texture **texture){
+    SDL_Surface *loadingSurface = NULL;
+    loadingSurface = SDL_LoadBMP(path);
+    if (loadingSurface == NULL) {
+        loadGameWindowDestroy(src);
+        printf("Couldn't create surface\n");
+        return false;
+    }
+    (*texture) = SDL_CreateTextureFromSurface(src->loadRenderer, loadingSurface);
+    if ((*texture) == NULL) {
+        SDL_FreeSurface(loadingSurface);
+        loadGameWindowDestroy(src);
+        printf("Couldn't create texture\n");
+        return false;
+    }
+    SDL_FreeSurface(loadingSurface);
+    return true;
+}
+
+int isSolt1Clicked(int x, int y, int availableSlots) {
+    if (availableSlots >= 1) {
+        if ((x >= GAME_WIDTH/2-54 && x <= GAME_WIDTH/2+54) && (y >= 195 && y <= 248)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int isSolt2Clicked(int x, int y, int availableSlots) {
+    if (availableSlots >= 2) {
+        if ((x >= GAME_WIDTH/2-54 && x <= GAME_WIDTH/2+54) && (y >= 270 && y <= 323)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int isSolt3Clicked(int x, int y, int availableSlots) {
+    if (availableSlots >= 3) {
+        if ((x >= GAME_WIDTH/2-54 && x <= GAME_WIDTH/2+54) && (y >= 345 && y <= 398)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int isSolt4Clicked(int x, int y, int availableSlots) {
+    if (availableSlots >= 4) {
+        if ((x >= GAME_WIDTH/2-54 && x <= GAME_WIDTH/2+54) && (y >= 420 && y <= 473)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int isSolt5Clicked(int x, int y, int availableSlots) {
+    if (availableSlots >= 5) {
+        if ((x >= GAME_WIDTH/2-54 && x <= GAME_WIDTH/2+54) && (y >= 495 && y <= 548)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+loadGameWin *loadGameWindowCreate() {
+    loadGameWin *res = NULL;
+    res = (loadGameWin *) malloc(sizeof(loadGameWin));
+    if (res == NULL) {//TODO Malloc error
+        return NULL;
+    }
+
+    // Create an application window with the following settings:
+    res->window = SDL_CreateWindow("Load game", // window title
+                                   SDL_WINDOWPOS_CENTERED,           // initial x position
+                                   SDL_WINDOWPOS_CENTERED,           // initial y position
+                                   GAME_WIDTH,                               //
+                                   GAME_HEIGHT,                               //
+                                   SDL_WINDOW_OPENGL                  // flags - see below
+    );
+
+    // Check that the window was successfully created
+    if (res->window == NULL) {
+        loadGameWindowDestroy(res);
+        printf("Could not create window: %s\n", SDL_GetError());
+        return NULL;
+    }
+    res->loadRenderer = SDL_CreateRenderer(res->window, -1,
+                                               SDL_RENDERER_ACCELERATED);
+    if (res->loadRenderer == NULL) {
+        // In the case that the window could not be made...
+        loadGameWindowDestroy(res);
+        printf("Could not create window: %s\n", SDL_GetError());
+        return NULL;
+    }
+    res->chosenSlot = 0;
+    res->availableSlots = 5;
+//    res->user_color = 1;
+    if (!loadImageLoadWindow("../images/back.bmp", res, &(res->backTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/start.bmp", res, &(res->startTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/init.bmp", res, &(res->logoTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/loadGame.bmp", res, &(res->headerTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot1.bmp", res, &(res->load1Texture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot1Fade.bmp", res, &(res->load1FadeTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot2.bmp", res, &(res->load2Texture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot2Fade.bmp", res, &(res->load2FadeTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot3.bmp", res, &(res->load3Texture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot3Fade.bmp", res, &(res->load3FadeTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot4.bmp", res, &(res->load4Texture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot4Fade.bmp", res, &(res->load4FadeTexture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot5.bmp", res, &(res->load5Texture)))
+        return NULL;
+    if (!loadImageLoadWindow("../images/slot5Fade.bmp", res, &(res->load5FadeTexture)))
+        return NULL;
+    return res;
+}
+
+
+void loadGameWindowDestroy(loadGameWin *src){
+        if (!src) {
+            return;
+        }
+        if (src->headerTexture != NULL) {
+            SDL_DestroyTexture(src->headerTexture);
+        }
+        if (src->logoTexture != NULL) {
+            SDL_DestroyTexture(src->logoTexture);
+        }
+        if (src->load1Texture != NULL) {
+            SDL_DestroyTexture(src->load1Texture);
+        }
+        if (src->load2Texture != NULL) {
+            SDL_DestroyTexture(src->load2Texture);
+        }
+        if (src->load3Texture != NULL) {
+            SDL_DestroyTexture(src->load3Texture);
+        }
+        if (src->load4Texture != NULL) {
+            SDL_DestroyTexture(src->load4Texture);
+        }
+        if (src->load5Texture != NULL) {
+            SDL_DestroyTexture(src->load5Texture);
+        }
+        if (src->startTexture != NULL) {
+            SDL_DestroyTexture(src->startTexture);
+        }
+        if (src->backTexture != NULL) {
+            SDL_DestroyTexture(src->backTexture);
+        }
+        if (src->loadRenderer != NULL) {
+            SDL_DestroyRenderer(src->loadRenderer);
+        }
+        if (src->window != NULL) {
+            SDL_DestroyWindow(src->window);
+        }
+        free(src);
+    }
+
+
+void loadGameWindowDraw(loadGameWin *src){
+    if (src == NULL) {
+        return;
+    }
+    SDL_Rect logoR = {.x = GAME_WIDTH / 2 - 100, .y =0, .h = 112, .w =200};
+    SDL_Rect headerR = {.x = GAME_WIDTH/2-98, .y =120, .h = 56, .w =196};
+    SDL_Rect slot1R = {.x = GAME_WIDTH/2-54, .y =195, .h = 53, .w =108};
+    SDL_Rect slot2R = {.x = GAME_WIDTH/2-54, .y =270, .h = 53, .w =108};
+    SDL_Rect slot3R = {.x = GAME_WIDTH/2-54, .y =345, .h = 53, .w =108};
+    SDL_Rect slot4R = {.x = GAME_WIDTH/2-54, .y =420, .h = 53, .w =108};
+    SDL_Rect slot5R = {.x = GAME_WIDTH/2-54, .y =495, .h = 53, .w =108};
+    SDL_Rect backR = {.x = 0, .y = (GAME_HEIGHT - 48), .h = 48, .w =108};
+    SDL_Rect startR = {.x = GAME_WIDTH - 110, .y = (GAME_HEIGHT - 48), .h = 48, .w =110};
+    SDL_SetRenderDrawColor(src->loadRenderer, 0, 0, 0, 0);
+    SDL_RenderClear(src->loadRenderer);
+    SDL_RenderCopy(src->loadRenderer, src->logoTexture, NULL, &logoR);
+    SDL_RenderCopy(src->loadRenderer, src->headerTexture, NULL, &headerR);
+
+
+    if (src->availableSlots >= 1) {
+        if (src->chosenSlot == 1)
+            SDL_RenderCopy(src->loadRenderer, src->load1Texture, NULL, &slot1R);
+        else
+            SDL_RenderCopy(src->loadRenderer, src->load1FadeTexture, NULL, &slot1R);
+        if (src->availableSlots >= 2) {
+            if (src->chosenSlot == 2)
+                SDL_RenderCopy(src->loadRenderer, src->load2Texture, NULL, &slot2R);
+            else
+                SDL_RenderCopy(src->loadRenderer, src->load2FadeTexture, NULL, &slot2R);
+            if (src->availableSlots >= 3) {
+                if (src->chosenSlot == 3)
+                    SDL_RenderCopy(src->loadRenderer, src->load3Texture, NULL, &slot3R);
+                else
+                    SDL_RenderCopy(src->loadRenderer, src->load3FadeTexture, NULL, &slot3R);
+                if (src->availableSlots >= 4) {
+                    if (src->chosenSlot == 4)
+                        SDL_RenderCopy(src->loadRenderer, src->load4Texture, NULL, &slot4R);
+                    else
+                        SDL_RenderCopy(src->loadRenderer, src->load4FadeTexture, NULL, &slot4R);
+                    if (src->availableSlots >= 5) {
+                        if (src->chosenSlot == 5)
+                            SDL_RenderCopy(src->loadRenderer, src->load5Texture, NULL, &slot5R);
+                        else
+                            SDL_RenderCopy(src->loadRenderer, src->load5FadeTexture, NULL, &slot5R);
+                    }
+                }
+            }
+        }
+
+    }
+
+
+//    SDL_RenderCopy(src->loadRenderer, src->load1Texture, NULL, &slot1R);
+//    SDL_RenderCopy(src->loadRenderer, src->load2Texture, NULL, &slot2R);
+//    SDL_RenderCopy(src->loadRenderer, src->load3Texture, NULL, &slot3R);
+//    SDL_RenderCopy(src->loadRenderer, src->load4Texture, NULL, &slot4R);
+//    SDL_RenderCopy(src->loadRenderer, src->load5Texture, NULL, &slot5R);
+
+    SDL_RenderCopy(src->loadRenderer, src->backTexture, NULL, &backR);
+    SDL_RenderCopy(src->loadRenderer, src->startTexture, NULL, &startR);
+    SDL_RenderPresent(src->loadRenderer);
+}
+
+EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event){
+    if (!event) {
+        return GUI_INVALID_ARGUMENT;
+    }
+    switch (event->type) {
+        case SDL_MOUSEBUTTONUP:
+            if (isClickOnBack(event->button.x, event->button.y))
+                return LOAD_BACK;
+            if(isClickOnStart(event->button.x,event->button.y))
+                return LOAD_START;
+            if(isSolt1Clicked(event->button.x,event->button.y, src->availableSlots))
+                return LOAD_1SLOT;
+            if(isSolt2Clicked(event->button.x,event->button.y, src->availableSlots))
+                return LOAD_2SLOT;
+            if(isSolt3Clicked(event->button.x,event->button.y, src->availableSlots))
+                return LOAD_3SLOT;
+            if(isSolt4Clicked(event->button.x,event->button.y, src->availableSlots))
+                return LOAD_4SLOT;
+            if(isSolt5Clicked(event->button.x,event->button.y, src->availableSlots))
+                return LOAD_5SLOT;
+//            if (isClickOnPlayer1(event->button.x, event->button.y)) //TODO continue here
+//                return SETTINGS_1PLAYER;
+//            if(isClickOnPlayer2(event->button.x, event->button.y))
+//                return SETTINGS_2PLAYER;
+//            if(isNoobClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_1DIFF;
+//            if(isEasyClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_2DIFF;
+//            if(isModerateClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_3DIFF;
+//            if(isHardClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_4DIFF;
+//            if(isExpertClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_5DIFF;
+//            if(isBlackClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_USERCOLOR_0;
+//            if(isWhiteClicked(event->button.x, event->button.y,src->is1player))
+//                return SETTINGS_USERCOLOR_1;
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {

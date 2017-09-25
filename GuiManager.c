@@ -15,14 +15,16 @@ GuiManager* ManagerCreate() {
     res->activeWin = MAIN_WINDOW_ACTIVE;
     return res;
 }
-void ManagerDestroy(GuiManager* src) {
-    if (!src) {
+void ManagerDestroy(GuiManager* src) { // TODO find useges
+    if (!src)
         return;
-    }
-//    if (src->activeWin == GAME_WINDOW_ACTIVE) {
-//        spGameWindowDestroy(src->gameWin);
-//    }
-    mainWindowDestroy(src->mainWin);
+//    if (src->activeWin == MAIN_WINDOW_ACTIVE)
+//        mainWindowDestroy(src->mainWin);
+//    if (src->activeWin == SETTINGS_WINDOW_ACTIVE)
+//        settingsWindowDestroy(src->settingsWin);
+//    if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE)
+//        loadGameWindowDestroy(src->loadGameWin);
+//    mainWindowDestroy(src->mainWin);
     free(src);
 }
 void ManagerDraw(GuiManager* manager) {
@@ -33,6 +35,8 @@ void ManagerDraw(GuiManager* manager) {
         mainWindowDraw(manager->mainWin);
     }else if(manager->activeWin == SETTINGS_WINDOW_ACTIVE){
         settingsWindowDraw(manager->settingsWin);
+    }else if (manager->activeWin == LOAD_GAME_WINDOW_ACTIVE){
+        loadGameWindowDraw(manager->loadGameWin);
     }
 }
 MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src, EVENT event) {
@@ -48,6 +52,36 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src,
             return MANAGER_QUTT;
         }
         src->activeWin = SETTINGS_WINDOW_ACTIVE;
+    }
+    if (event==MAIN_LOAD_GAME){
+        mainWindowDestroy(src->mainWin);
+        src->loadGameWin = loadGameWindowCreate();
+        if (src->loadGameWin == NULL ) {
+            printf("Couldn't move to settings window\n");
+            return MANAGER_QUTT;
+        }
+        src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
+    }
+    if(event==LOAD_BACK)
+    {
+        loadGameWindowDestroy(src->loadGameWin);
+        src->mainWin = mainWindowCreate();
+        src->activeWin=MAIN_WINDOW_ACTIVE;
+    }
+    if(event==LOAD_1SLOT){
+        src->loadGameWin->chosenSlot = 1;
+    }
+    if(event==LOAD_2SLOT){
+        src->loadGameWin->chosenSlot = 2;
+    }
+    if(event==LOAD_3SLOT){
+        src->loadGameWin->chosenSlot = 3;
+    }
+    if(event==LOAD_4SLOT){
+        src->loadGameWin->chosenSlot = 4;
+    }
+    if(event==LOAD_5SLOT){
+        src->loadGameWin->chosenSlot = 5;
     }
     if(event==SETTINGS_BACK)
     {
@@ -130,6 +164,9 @@ MANAGER_EVENET ManagerHandleEvent(GameSession* session,GuiManager* src, SDL_Even
     } if(src->activeWin == SETTINGS_WINDOW_ACTIVE){
         EVENT gameEvent = settingsWindowHandleEvent(src->settingsWin, event);
 //        ManagerDraw(src);
+        return handleManagerDueToMainEvent(session,src, gameEvent);
+    } if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE){
+        EVENT gameEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
         return handleManagerDueToMainEvent(session,src, gameEvent);
     }
     return MANAGER_NONE;
