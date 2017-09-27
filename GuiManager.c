@@ -29,7 +29,7 @@ void ManagerDestroy(GuiManager *src) { // TODO find useges
     free(src);
 }
 
-void ManagerDraw(GuiManager *manager) {
+void ManagerDraw(GuiManager *manager, GameSession* session) {
     if (!manager) {
         return;
     }
@@ -40,7 +40,7 @@ void ManagerDraw(GuiManager *manager) {
     } else if (manager->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         loadGameWindowDraw(manager->loadGameWin);
     } else if (manager->activeWin == GAME_WINDOW_ACTIVE) {
-        gameWindowDraw(manager->gameWin);
+        gameWindowDraw(manager->gameWin,session);
     }
 }
 
@@ -59,6 +59,7 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src
         src->activeWin = SETTINGS_WINDOW_ACTIVE;
     }
     if (event == MAIN_LOAD_GAME) {
+        (*session) = sessionCreate(HISTORYSIZE);
         mainWindowDestroy(src->mainWin);
         src->loadGameWin = loadGameWindowCreate();
         src->loadGameWin->fromMainMenu = true;//TODO do this also in gameWindow with false parameter
@@ -69,6 +70,11 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
     if (event == LOAD_BACK) {
+        if(src->loadGameWin->fromMainMenu)
+        {
+            gameDestroy(&(session->game));
+            free(session);
+        }
         loadGameWindowDestroy(src->loadGameWin);
         src->mainWin = mainWindowCreate();
         src->activeWin = MAIN_WINDOW_ACTIVE;
@@ -95,15 +101,26 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src
         loadGame(path, session);
         loadGameWindowDestroy(src->loadGameWin);
         src->gameWin = gameWindowCreate(session);
+        if (src->gameWin == NULL) {
+            printf("ERROR: Couldn't move to game window\n");
+            return MANAGER_QUIT;
+        }
         src->activeWin = GAME_WINDOW_ACTIVE;
     }
     if (event == SETTINGS_BACK) {
+        gameDestroy(&(session->game));
+        free(session);
         settingsWindowDestroy(src->settingsWin);
         src->mainWin = mainWindowCreate();
         src->activeWin = MAIN_WINDOW_ACTIVE;
     }
     if (event == SETTINGS_START) {
+        settingsWindowDestroy(src->settingsWin);
         src->gameWin = gameWindowCreate(session);
+        if (src->gameWin == NULL) {
+            printf("ERROR: Couldn't move to game window\n");
+            return MANAGER_QUIT;
+        }
         src->activeWin = GAME_WINDOW_ACTIVE;
     }
     if (event == SETTINGS_1PLAYER) {
@@ -190,7 +207,7 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {
         EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
-        return handleManagerDueToGameEvent(src, event);
+        return handleManagerDueToGameEvent(src, gameEvent);
     }
     return MANAGER_NONE;
 }

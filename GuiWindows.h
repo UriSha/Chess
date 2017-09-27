@@ -12,6 +12,8 @@
 #define GAME_HEIGHT 600
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
+#define GAMEBOARD_X 20
+#define GAMEBOARD_Y 40
 
 
 typedef enum {
@@ -164,7 +166,7 @@ EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event);
 //Game Window
 gameWin *gameWindowCreate(GameSession *session);
 
-void gameWindowDraw(gameWin *src);
+void gameWindowDraw(gameWin *src,GameSession* session);
 
 void gameWindowDestroy(gameWin *src);
 

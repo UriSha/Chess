@@ -45,7 +45,7 @@ void guiMode(){
             break;
         }
 
-        ManagerDraw(manager);
+        ManagerDraw(manager,gameSession);
     }
     ManagerDestroy(manager);
     SDL_Quit();

@@ -28,7 +28,7 @@ GuiManager* ManagerCreate();
 
 void ManagerDestroy(GuiManager* src);
 
-void ManagerDraw(GuiManager* src);
+void ManagerDraw(GuiManager* src, GameSession* session);
 
 MANAGER_EVENET ManagerHandleEvent(GameSession* session,GuiManager* src, SDL_Event* event) ;
 

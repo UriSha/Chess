@@ -879,8 +879,8 @@ gameWin *gameWindowCreate(GameSession* session) {
     res->window = SDL_CreateWindow("Blood and Honor", // window title
                                    SDL_WINDOWPOS_CENTERED,           // initial x position
                                    SDL_WINDOWPOS_CENTERED,           // initial y position
-                                   GAME_HEIGHT,                               //
                                    GAME_WIDTH,                               //
+                                   GAME_HEIGHT,                               //
                                    SDL_WINDOW_OPENGL                  // flags - see below
     );
 
@@ -902,11 +902,32 @@ gameWin *gameWindowCreate(GameSession* session) {
         return NULL;
     if (!loadImageGameWindow("../images/whitePawn.bmp", res, &(res->pawnWhiteTexture)))
         return NULL;
+    if (!loadImageGameWindow("../images/blackPawn.bmp", res, &(res->pawnBlackTexture)))//
+        return NULL;
+    if (!loadImageGameWindow("../images/whiteBishop.bmp", res, &(res->bishopWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/blackBishop.bmp", res, &(res->bishopBlackTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/whiteKnight.bmp", res, &(res->knightWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/blackKnight.bmp", res, &(res->knightBlackTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/whiteRook.bmp", res, &(res->rookWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/blackRook.bmp", res, &(res->rookBlackTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/whiteQueen.bmp", res, &(res->queenWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/blackQueen.bmp", res, &(res->queenBlackTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/whiteKing.bmp", res, &(res->kingWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/blackKing.bmp", res, &(res->kingBlackTexture)))
+        return NULL;
     if (!loadImageGameWindow("../images/loadGame.bmp", res, &(res->loadTexture)))
         return NULL;
     return res;
 }
-
 void gameWindowDestroy(gameWin *src) {
     if (!src) {
         return;
@@ -917,24 +938,107 @@ void gameWindowDestroy(gameWin *src) {
     if (src->pawnWhiteTexture != NULL) {
         SDL_DestroyTexture(src->pawnWhiteTexture);
     }
+    if (src->pawnBlackTexture != NULL) {
+        SDL_DestroyTexture(src->pawnBlackTexture);
+    }
+    if (src->knightWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->knightWhiteTexture);
+    }
+    if (src->knightBlackTexture != NULL) {
+        SDL_DestroyTexture(src->knightBlackTexture);
+    }
+    if (src->bishopWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->bishopWhiteTexture);
+    }
+    if (src->bishopBlackTexture != NULL) {
+        SDL_DestroyTexture(src->bishopBlackTexture);
+    }
+    if (src->rookWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->rookWhiteTexture);
+    }
+    if (src->rookBlackTexture != NULL) {
+        SDL_DestroyTexture(src->rookBlackTexture);
+    }
+    if (src->queenWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->queenWhiteTexture);
+    }
+    if (src->queenBlackTexture != NULL) {
+        SDL_DestroyTexture(src->queenBlackTexture);
+    }
+    if (src->kingWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->kingWhiteTexture);
+    }if (src->kingBlackTexture != NULL) {
+        SDL_DestroyTexture(src->kingBlackTexture);
+    }
     if (src->loadTexture != NULL) {
         SDL_DestroyTexture(src->loadTexture);
     }
 
     free(src);
 }
+SDL_Texture *getTexture(gameWin* gameWin, char soldier){
+    switch(soldier)
+    {
+        case KING_BLACK:
+            return gameWin->kingBlackTexture;
+        case KING_WHITE:
+            return gameWin->kingWhiteTexture;
+        case QUEEN_BLACK:
+            return gameWin->queenBlackTexture;
+        case QUEEN_WHITE:
+            return gameWin->queenWhiteTexture;
+        case ROOK_BLACK:
+            return gameWin->rookBlackTexture;
+        case ROOK_WHITE:
+            return gameWin->rookWhiteTexture;
+        case BISHOP_BLACK:
+            return gameWin->bishopBlackTexture;
+        case BISHOP_WHITE:
+            return gameWin->bishopWhiteTexture;
+        case KNIGHT_BLACK:
+            return gameWin->knightBlackTexture;
+        case KNIGHT_WHITE:
+            return gameWin->knightWhiteTexture;
+        case PAWN_BLACK:
+            return gameWin->pawnBlackTexture;
+        case PAWN_WHITE:
+            return gameWin->pawnWhiteTexture;
+        default:
+            return NULL;
+    }
 
-void gameWindowDraw(gameWin *src) {
+}
+void gameWindowDraw(gameWin *src, GameSession * session) {
     if (src == NULL) {
         return;
     }
-    SDL_Rect boardR = {.x = 0, .y = 0, .h = 480, .w = 480};
-    SDL_Rect pawnWhiteR = {.x = GAME_HEIGHT-120, .y = 0, .h = 60, .w = 60};
+    SDL_Rect boardR = {.x = GAMEBOARD_X, .y = GAMEBOARD_Y, .h = 480, .w = 480};
+    SDL_Rect soldiers[8][8];
+    for(int i=0;i<GAME_SIZE;i++)
+    {
+        for (int j=0;j<GAME_SIZE;j++)
+        {
+            soldiers[i][j].x=GAMEBOARD_X+(j*60);
+            soldiers[i][j].y=GAMEBOARD_Y+(i*60);
+            soldiers[i][j].h=60;
+            soldiers[i][j].w=60;
+        }
+    }
+//    SDL_Rect pawnWhiteR = {.x = GAMEBOARD_X, .y = GAMEBOARD_Y+6*60, .h = 60, .w = 60};
     SDL_Rect loadR = {.x =500, .y = 240, .h = 56, .w = 196};
     SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->gameRenderer);
     SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
-    SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &pawnWhiteR);
+    for(int i=0;i<GAME_SIZE;i++)
+    {
+        for (int j=0;j<GAME_SIZE;j++){
+            if (session->game->gameBoard[i][j] != EMPTY_ENTRY)
+                SDL_RenderCopy(src->gameRenderer, getTexture(src,session->game->gameBoard[i][j]),
+                               NULL, &soldiers[7-i][j]);
+        }
+//            SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &soldiers[i][j]);
+    }
+//        SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &pawns[i]);
     SDL_RenderCopy(src->gameRenderer, src->loadTexture, NULL, &loadR);
     SDL_RenderPresent(src->gameRenderer);
 }
