@@ -41,7 +41,7 @@ void guiMode(){
     SDL_Event event;
     while (1) {
         SDL_WaitEvent(&event);
-        if (ManagerHandleEvent(gameSession,manager, &event) == MANAGER_QUTT) {
+        if (ManagerHandleEvent(gameSession,manager, &event) == MANAGER_QUIT) {
             break;
         }
 
@@ -51,7 +51,8 @@ void guiMode(){
     SDL_Quit();
 }
 int main(int argc, char** argv) {
-//    guiMode();
-    consoleMode();
+    guiMode();
+//    consoleMode();
+//rename("2.xml","1.xml");
 
 }

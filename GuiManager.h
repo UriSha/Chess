@@ -12,12 +12,12 @@ typedef enum{
 }ACTIVE_WINDOW;
 
 typedef enum{
-    MANAGER_QUTT,
+    MANAGER_QUIT,
     MANAGER_NONE,
 }MANAGER_EVENET;
 
 typedef struct {
-//    GameWin* gameWin;
+    gameWin* gameWin;
     mainWin* mainWin;
     settingsWin* settingsWin;
     loadGameWin* loadGameWin;

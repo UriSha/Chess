@@ -1,21 +1,22 @@
 #include "GuiManager.h"
 #include "GuiWindows.h"
 
-GuiManager* ManagerCreate() {
-    GuiManager* res = (GuiManager*) malloc(sizeof(GuiManager));
-    if (res == NULL ) {
-        return NULL ;
+GuiManager *ManagerCreate() {
+    GuiManager *res = (GuiManager *) malloc(sizeof(GuiManager));
+    if (res == NULL) {
+        return NULL;
     }
     res->mainWin = mainWindowCreate();
-    if (res->mainWin == NULL ) {
+    if (res->mainWin == NULL) {
         free(res);
-        return NULL ;
+        return NULL;
     }
 //    res->gameWin = NULL;
     res->activeWin = MAIN_WINDOW_ACTIVE;
     return res;
 }
-void ManagerDestroy(GuiManager* src) { // TODO find useges
+
+void ManagerDestroy(GuiManager *src) { // TODO find useges
     if (!src)
         return;
 //    if (src->activeWin == MAIN_WINDOW_ACTIVE)
@@ -27,113 +28,127 @@ void ManagerDestroy(GuiManager* src) { // TODO find useges
 //    mainWindowDestroy(src->mainWin);
     free(src);
 }
-void ManagerDraw(GuiManager* manager) {
+
+void ManagerDraw(GuiManager *manager) {
     if (!manager) {
         return;
     }
     if (manager->activeWin == MAIN_WINDOW_ACTIVE) {
         mainWindowDraw(manager->mainWin);
-    }else if(manager->activeWin == SETTINGS_WINDOW_ACTIVE){
+    } else if (manager->activeWin == SETTINGS_WINDOW_ACTIVE) {
         settingsWindowDraw(manager->settingsWin);
-    }else if (manager->activeWin == LOAD_GAME_WINDOW_ACTIVE){
+    } else if (manager->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         loadGameWindowDraw(manager->loadGameWin);
+    } else if (manager->activeWin == GAME_WINDOW_ACTIVE) {
+        gameWindowDraw(manager->gameWin);
     }
 }
-MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src, EVENT event) {
-    if (src == NULL ) {
+
+MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event) {
+    if (src == NULL) {
         return MANAGER_NONE;
     }
     if (event == MAIN_NEW_GAME) {
-        (*session)=sessionCreate(HISTORYSIZE);
+        (*session) = sessionCreate(HISTORYSIZE);
         mainWindowDestroy(src->mainWin);
         src->settingsWin = settingsWindowCreate();
-        if (src->settingsWin == NULL ) {
+        if (src->settingsWin == NULL) {
             printf("Couldn't move to settings window\n");
-            return MANAGER_QUTT;
+            return MANAGER_QUIT;
         }
         src->activeWin = SETTINGS_WINDOW_ACTIVE;
     }
-    if (event==MAIN_LOAD_GAME){
+    if (event == MAIN_LOAD_GAME) {
         mainWindowDestroy(src->mainWin);
         src->loadGameWin = loadGameWindowCreate();
-        if (src->loadGameWin == NULL ) {
+        src->loadGameWin->fromMainMenu = true;//TODO do this also in gameWindow with false parameter
+        if (src->loadGameWin == NULL) {
             printf("Couldn't move to settings window\n");
-            return MANAGER_QUTT;
+            return MANAGER_QUIT;
         }
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-    if(event==LOAD_BACK)
-    {
+    if (event == LOAD_BACK) {
         loadGameWindowDestroy(src->loadGameWin);
         src->mainWin = mainWindowCreate();
-        src->activeWin=MAIN_WINDOW_ACTIVE;
+        src->activeWin = MAIN_WINDOW_ACTIVE;
     }
-    if(event==LOAD_1SLOT){
+    if (event == LOAD_1SLOT) {
         src->loadGameWin->chosenSlot = 1;
+
     }
-    if(event==LOAD_2SLOT){
+    if (event == LOAD_2SLOT) {
         src->loadGameWin->chosenSlot = 2;
     }
-    if(event==LOAD_3SLOT){
+    if (event == LOAD_3SLOT) {
         src->loadGameWin->chosenSlot = 3;
     }
-    if(event==LOAD_4SLOT){
+    if (event == LOAD_4SLOT) {
         src->loadGameWin->chosenSlot = 4;
     }
-    if(event==LOAD_5SLOT){
+    if (event == LOAD_5SLOT) {
         src->loadGameWin->chosenSlot = 5;
     }
-    if(event==SETTINGS_BACK)
-    {
+    if (event == LOAD_START) {
+        char path[6];
+        sprintf(path, "%d.xml", src->loadGameWin->chosenSlot);
+        loadGame(path, session);
+        loadGameWindowDestroy(src->loadGameWin);
+        src->gameWin = gameWindowCreate(session);
+        src->activeWin = GAME_WINDOW_ACTIVE;
+    }
+    if (event == SETTINGS_BACK) {
         settingsWindowDestroy(src->settingsWin);
         src->mainWin = mainWindowCreate();
-        src->activeWin=MAIN_WINDOW_ACTIVE;
+        src->activeWin = MAIN_WINDOW_ACTIVE;
     }
-    if(event==SETTINGS_START){}//TODO Start_window
-    if(event==SETTINGS_1PLAYER)
-    {
-        session->mode=ONE_PLAYER;
-        src->settingsWin->is1player=true;
+    if (event == SETTINGS_START) {
+        src->gameWin = gameWindowCreate(session);
+        src->activeWin = GAME_WINDOW_ACTIVE;
     }
-    if (event==SETTINGS_2PLAYER){
-        session->mode=TWO_PLAYER;
-        src->settingsWin->is1player=false;
+    if (event == SETTINGS_1PLAYER) {
+        session->mode = ONE_PLAYER;
+        src->settingsWin->is1player = true;
     }
-    if(event==SETTINGS_1DIFF){
-        session->difficulty=1;
-        src->settingsWin->diff=1;
+    if (event == SETTINGS_2PLAYER) {
+        session->mode = TWO_PLAYER;
+        src->settingsWin->is1player = false;
     }
-    if(event==SETTINGS_2DIFF){
-        session->difficulty=2;
-        src->settingsWin->diff=2;
+    if (event == SETTINGS_1DIFF) {
+        session->difficulty = 1;
+        src->settingsWin->diff = 1;
     }
-    if(event==SETTINGS_3DIFF){
-        session->difficulty=3;
-        src->settingsWin->diff=3;
+    if (event == SETTINGS_2DIFF) {
+        session->difficulty = 2;
+        src->settingsWin->diff = 2;
     }
-    if(event==SETTINGS_4DIFF){
-        session->difficulty=4;
-        src->settingsWin->diff=4;
+    if (event == SETTINGS_3DIFF) {
+        session->difficulty = 3;
+        src->settingsWin->diff = 3;
     }
-    if(event==SETTINGS_5DIFF){
-        session->difficulty=5;
-        src->settingsWin->diff=5;
+    if (event == SETTINGS_4DIFF) {
+        session->difficulty = 4;
+        src->settingsWin->diff = 4;
     }
-    if(event==SETTINGS_USERCOLOR_0){
-        session->user_color=BLACK_PLAYER;
-        src->settingsWin->user_color=0;
+    if (event == SETTINGS_5DIFF) {
+        session->difficulty = 5;
+        src->settingsWin->diff = 5;
     }
-    if(event==SETTINGS_USERCOLOR_1){
-        session->user_color=WHITE_PLAYER;
-        src->settingsWin->user_color=1;
+    if (event == SETTINGS_USERCOLOR_0) {
+        session->user_color = BLACK_PLAYER;
+        src->settingsWin->user_color = 0;
+    }
+    if (event == SETTINGS_USERCOLOR_1) {
+        session->user_color = WHITE_PLAYER;
+        src->settingsWin->user_color = 1;
     }
     if (event == MAIN_QUIT) {
-        return MANAGER_QUTT;
+        return MANAGER_QUIT;
     }
     return MANAGER_NONE;
 }
 
-//MANAGER_EVENET handleManagerDueToGameEvent(GuiManager* src){//,SP_GAME_EVENT event) {
+MANAGER_EVENET handleManagerDueToGameEvent(GuiManager *src, EVENT event) {
 //    if (event == SP_GAME_EVENT_NONE || src == NULL ) {
 //        return SP_MANAGER_NONE;
 //    }
@@ -147,27 +162,35 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession* session,GuiManager* src,
 //        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over",
 //                                 "it's a tie", NULL );
 //    }
-//    spGameWindowDestroy(src->gameWin);
+//    gameWindowDestroy(src->gameWin);
 //    src->gameWin = NULL;
 //    src->activeWin = MAIN_WINDOW_ACTIVE;
 //    windowShow(src->mainWin->window);
-//    return MANAGER_NONE;
-//}
+    if (event == GAME_QUIT)
+        return MANAGER_QUIT;
+    return MANAGER_NONE;
+}
 
-MANAGER_EVENET ManagerHandleEvent(GameSession* session,GuiManager* src, SDL_Event* event) {
-    if (src == NULL || event == NULL ) {
+MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event) {
+    if (src == NULL || event == NULL) {
         return MANAGER_NONE;
     }
     if (src->activeWin == MAIN_WINDOW_ACTIVE) {
         EVENT mainEvent = mainWindowHandleEvent(src->mainWin, event);
-        return handleManagerDueToMainEvent(session,src, mainEvent);
-    } if(src->activeWin == SETTINGS_WINDOW_ACTIVE){
+        return handleManagerDueToMainEvent(session, src, mainEvent);
+    }
+    if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
         EVENT gameEvent = settingsWindowHandleEvent(src->settingsWin, event);
 //        ManagerDraw(src);
-        return handleManagerDueToMainEvent(session,src, gameEvent);
-    } if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE){
+        return handleManagerDueToMainEvent(session, src, gameEvent);
+    }
+    if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         EVENT gameEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
-        return handleManagerDueToMainEvent(session,src, gameEvent);
+        return handleManagerDueToMainEvent(session, src, gameEvent);
+    }
+    if (src->activeWin == GAME_WINDOW_ACTIVE) {
+        EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
+        return handleManagerDueToGameEvent(src, event);
     }
     return MANAGER_NONE;
 }

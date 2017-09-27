@@ -13,11 +13,32 @@
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 400
 
+
 typedef enum {
-    MAIN_QUIT, MAIN_NEW_GAME, MAIN_LOAD_GAME, GUI_INVALID_ARGUMENT, NONE,
-    SETTINGS_BACK, SETTINGS_START, SETTINGS_1PLAYER, SETTINGS_2PLAYER, SETTINGS_1DIFF,  SETTINGS_2DIFF,
-    SETTINGS_3DIFF, SETTINGS_4DIFF, SETTINGS_5DIFF, SETTINGS_USERCOLOR_0, SETTINGS_USERCOLOR_1, LOAD_1SLOT,
-    LOAD_2SLOT, LOAD_3SLOT, LOAD_4SLOT, LOAD_5SLOT, LOAD_BACK, LOAD_START, // TODO what about back from load to somewhere else from main win
+    MAIN_QUIT,
+    MAIN_NEW_GAME,
+    MAIN_LOAD_GAME,
+    GUI_INVALID_ARGUMENT,
+    NONE,
+    SETTINGS_BACK,
+    SETTINGS_START,
+    SETTINGS_1PLAYER,
+    SETTINGS_2PLAYER,
+    SETTINGS_1DIFF,
+    SETTINGS_2DIFF,
+    SETTINGS_3DIFF,
+    SETTINGS_4DIFF,
+    SETTINGS_5DIFF,
+    SETTINGS_USERCOLOR_0,
+    SETTINGS_USERCOLOR_1,
+    LOAD_1SLOT,
+    LOAD_2SLOT,
+    LOAD_3SLOT,
+    LOAD_4SLOT,
+    LOAD_5SLOT,
+    LOAD_BACK,
+    LOAD_START,
+    GAME_QUIT // TODO what about back from load to somewhere else from main win
 } EVENT;
 typedef struct {
     SDL_Window *window;
@@ -82,16 +103,29 @@ typedef struct {
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *gameRenderer;
+    SDL_Texture *gameBoardTexture;
     SDL_Texture *restartTexture;
     SDL_Texture *saveTexture;
     SDL_Texture *loadTexture;
     SDL_Texture *undoTexture;
     SDL_Texture *mainMenuTexture;
     SDL_Texture *quitTexture;
+    SDL_Texture *pawnWhiteTexture;
+    SDL_Texture *pawnBlackTexture;
+    SDL_Texture *knightWhiteTexture;
+    SDL_Texture *knightBlackTexture;
+    SDL_Texture *bishopWhiteTexture;
+    SDL_Texture *bishopBlackTexture;
+    SDL_Texture *rookWhiteTexture;
+    SDL_Texture *rookBlackTexture;
+    SDL_Texture *queenWhiteTexture;
+    SDL_Texture *queenBlackTexture;
+    SDL_Texture *kingWhiteTexture;
+    SDL_Texture *kingBlackTexture;
 } gameWin;
 
 //Main Window
-bool loadImageMainWindow(char* path, mainWin* src,SDL_Texture ** texture);
+bool loadImageMainWindow(char *path, mainWin *src, SDL_Texture **texture);
 
 mainWin *mainWindowCreate();
 
@@ -128,5 +162,12 @@ void loadGameWindowDestroy(loadGameWin *src);
 EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event);
 
 //Game Window
+gameWin *gameWindowCreate(GameSession *session);
+
+void gameWindowDraw(gameWin *src);
+
+void gameWindowDestroy(gameWin *src);
+
+EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event);
 
 #endif //CHESS_GUIMAINWINDOW_H

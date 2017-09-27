@@ -45,7 +45,8 @@ bool loadImageMainWindow(char *path, mainWin *src, SDL_Texture **texture) {
 mainWin *mainWindowCreate() {
     mainWin *res = NULL;
     res = (mainWin *) malloc(sizeof(mainWin));
-    if (res == NULL) {//TODO Malloc error
+    if (res == NULL) {
+        printf("%s",MALLOC_ERROR);
         return NULL;
     }
 
@@ -268,7 +269,8 @@ int isWhiteClicked(int x, int y, bool is1Player) {
 settingsWin *settingsWindowCreate() {
     settingsWin *res = NULL;
     res = (settingsWin *) malloc(sizeof(settingsWin));
-    if (res == NULL) {//TODO Malloc error
+    if (res == NULL) {
+        printf("%s",MALLOC_ERROR);
         return NULL;
     }
 
@@ -559,7 +561,7 @@ bool loadImageLoadWindow(char *path, loadGameWin *src, SDL_Texture **texture) {
     return true;
 }
 
-int isSolt1Clicked(int x, int y, int availableSlots) {
+int isSlot1Clicked(int x, int y, int availableSlots) {
     if (availableSlots >= 1) {
         if ((x >= GAME_WIDTH / 2 - 54 && x <= GAME_WIDTH / 2 + 54) && (y >= 195 && y <= 248)) {
             return 1;
@@ -568,7 +570,7 @@ int isSolt1Clicked(int x, int y, int availableSlots) {
     return 0;
 }
 
-int isSolt2Clicked(int x, int y, int availableSlots) {
+int isSlot2Clicked(int x, int y, int availableSlots) {
     if (availableSlots >= 2) {
         if ((x >= GAME_WIDTH / 2 - 54 && x <= GAME_WIDTH / 2 + 54) && (y >= 270 && y <= 323)) {
             return 1;
@@ -577,7 +579,7 @@ int isSolt2Clicked(int x, int y, int availableSlots) {
     return 0;
 }
 
-int isSolt3Clicked(int x, int y, int availableSlots) {
+int isSlot3Clicked(int x, int y, int availableSlots) {
     if (availableSlots >= 3) {
         if ((x >= GAME_WIDTH / 2 - 54 && x <= GAME_WIDTH / 2 + 54) && (y >= 345 && y <= 398)) {
             return 1;
@@ -586,7 +588,7 @@ int isSolt3Clicked(int x, int y, int availableSlots) {
     return 0;
 }
 
-int isSolt4Clicked(int x, int y, int availableSlots) {
+int isSlot4Clicked(int x, int y, int availableSlots) {
     if (availableSlots >= 4) {
         if ((x >= GAME_WIDTH / 2 - 54 && x <= GAME_WIDTH / 2 + 54) && (y >= 420 && y <= 473)) {
             return 1;
@@ -595,7 +597,7 @@ int isSolt4Clicked(int x, int y, int availableSlots) {
     return 0;
 }
 
-int isSolt5Clicked(int x, int y, int availableSlots) {
+int isSlot5Clicked(int x, int y, int availableSlots) {
     if (availableSlots >= 5) {
         if ((x >= GAME_WIDTH / 2 - 54 && x <= GAME_WIDTH / 2 + 54) && (y >= 495 && y <= 548)) {
             return 1;
@@ -619,6 +621,15 @@ int getNumOfSlots() {
     sscanf(token, "<validSlots>%d</validSlots>", &(result));
     fclose(numOfSlotsFile);
     return result;
+}
+
+int isClickOnLoadGame(int x, int y,int chosenSlot){
+    if(chosenSlot!=0) {
+        if (x >= GAME_WIDTH-119 && x <= GAME_WIDTH && (y >= GAME_HEIGHT-48 && y<=GAME_HEIGHT)) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 loadGameWin *loadGameWindowCreate() {
@@ -656,7 +667,7 @@ loadGameWin *loadGameWindowCreate() {
     res->availableSlots = getNumOfSlots();
     if (!loadImageLoadWindow("../images/back.bmp", res, &(res->backTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/start.bmp", res, &(res->startTexture)))
+    if (!loadImageLoadWindow("../images/gameLoadWindow.bmp", res, &(res->startTexture)))
         return NULL;
     if (!loadImageLoadWindow("../images/init.bmp", res, &(res->logoTexture)))
         return NULL;
@@ -754,7 +765,7 @@ void loadGameWindowDraw(loadGameWin *src) {
     SDL_Rect slot4R = {.x = GAME_WIDTH / 2 - 54, .y =420, .h = 53, .w =108};
     SDL_Rect slot5R = {.x = GAME_WIDTH / 2 - 54, .y =495, .h = 53, .w =108};
     SDL_Rect backR = {.x = 0, .y = (GAME_HEIGHT - 48), .h = 48, .w =108};
-    SDL_Rect startR = {.x = GAME_WIDTH - 110, .y = (GAME_HEIGHT - 48), .h = 48, .w =110};
+    SDL_Rect startR = {.x = GAME_WIDTH - 119, .y = (GAME_HEIGHT - 48), .h = 48, .w =119};
     SDL_SetRenderDrawColor(src->loadRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->loadRenderer);
     SDL_RenderCopy(src->loadRenderer, src->logoTexture, NULL, &logoR);
@@ -813,36 +824,18 @@ EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event) {
         case SDL_MOUSEBUTTONUP:
             if (isClickOnBack(event->button.x, event->button.y))
                 return LOAD_BACK;
-            if (isClickOnStart(event->button.x, event->button.y))
+            if (isClickOnLoadGame(event->button.x, event->button.y,src->chosenSlot))
                 return LOAD_START;
-            if (isSolt1Clicked(event->button.x, event->button.y, src->availableSlots))
+            if (isSlot1Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_1SLOT;
-            if (isSolt2Clicked(event->button.x, event->button.y, src->availableSlots))
+            if (isSlot2Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_2SLOT;
-            if (isSolt3Clicked(event->button.x, event->button.y, src->availableSlots))
+            if (isSlot3Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_3SLOT;
-            if (isSolt4Clicked(event->button.x, event->button.y, src->availableSlots))
+            if (isSlot4Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_4SLOT;
-            if (isSolt5Clicked(event->button.x, event->button.y, src->availableSlots))
+            if (isSlot5Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_5SLOT;
-//            if (isClickOnPlayer1(event->button.x, event->button.y)) //TODO continue here
-//                return SETTINGS_1PLAYER;
-//            if(isClickOnPlayer2(event->button.x, event->button.y))
-//                return SETTINGS_2PLAYER;
-//            if(isNoobClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_1DIFF;
-//            if(isEasyClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_2DIFF;
-//            if(isModerateClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_3DIFF;
-//            if(isHardClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_4DIFF;
-//            if(isExpertClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_5DIFF;
-//            if(isBlackClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_USERCOLOR_0;
-//            if(isWhiteClicked(event->button.x, event->button.y,src->is1player))
-//                return SETTINGS_USERCOLOR_1;
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
@@ -855,4 +848,125 @@ EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event) {
     return NONE;
 }
 
+bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture) {
+    SDL_Surface *loadingSurface = NULL;
+    loadingSurface = SDL_LoadBMP(path);
+    if (loadingSurface == NULL) {
+        gameWindowDestroy(src);
+        printf("Couldn't create surface\n");
+        return false;
+    }
+    (*texture) = SDL_CreateTextureFromSurface(src->gameRenderer, loadingSurface);
+    if ((*texture) == NULL) {
+        SDL_FreeSurface(loadingSurface);
+        gameWindowDestroy(src);
+        printf("Couldn't create texture\n");
+        return false;
+    }
+    SDL_FreeSurface(loadingSurface);
+    return true;
+}
 
+gameWin *gameWindowCreate(GameSession* session) {
+    gameWin *res = NULL;
+    res = (gameWin *) malloc(sizeof(mainWin));
+    if (res == NULL) {
+        printf("%s",MALLOC_ERROR);
+        return NULL;
+    }
+
+    // Create an application window with the following settings:
+    res->window = SDL_CreateWindow("Blood and Honor", // window title
+                                   SDL_WINDOWPOS_CENTERED,           // initial x position
+                                   SDL_WINDOWPOS_CENTERED,           // initial y position
+                                   GAME_HEIGHT,                               //
+                                   GAME_WIDTH,                               //
+                                   SDL_WINDOW_OPENGL                  // flags - see below
+    );
+
+    // Check that the window was successfully created
+    if (res->window == NULL) {
+        gameWindowDestroy(res);
+        printf("Could not create window: %s\n", SDL_GetError());
+        return NULL;
+    }
+    res->gameRenderer = SDL_CreateRenderer(res->window, -1,
+                                           SDL_RENDERER_ACCELERATED);
+    if (res->gameRenderer == NULL) {
+        // In the case that the window could not be made...
+        gameWindowDestroy(res);
+        printf("Could not create window: %s\n", SDL_GetError());
+        return NULL;
+    }
+    if (!loadImageGameWindow("../images/board.bmp", res, &(res->gameBoardTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/whitePawn.bmp", res, &(res->pawnWhiteTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/loadGame.bmp", res, &(res->loadTexture)))
+        return NULL;
+    return res;
+}
+
+void gameWindowDestroy(gameWin *src) {
+    if (!src) {
+        return;
+    }
+    if (src->gameBoardTexture != NULL) {
+        SDL_DestroyTexture(src->gameBoardTexture);
+    }
+    if (src->pawnWhiteTexture != NULL) {
+        SDL_DestroyTexture(src->pawnWhiteTexture);
+    }
+    if (src->loadTexture != NULL) {
+        SDL_DestroyTexture(src->loadTexture);
+    }
+
+    free(src);
+}
+
+void gameWindowDraw(gameWin *src) {
+    if (src == NULL) {
+        return;
+    }
+    SDL_Rect boardR = {.x = 0, .y = 0, .h = 480, .w = 480};
+    SDL_Rect pawnWhiteR = {.x = GAME_HEIGHT-120, .y = 0, .h = 60, .w = 60};
+    SDL_Rect loadR = {.x =500, .y = 240, .h = 56, .w = 196};
+    SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
+    SDL_RenderClear(src->gameRenderer);
+    SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
+    SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &pawnWhiteR);
+    SDL_RenderCopy(src->gameRenderer, src->loadTexture, NULL, &loadR);
+    SDL_RenderPresent(src->gameRenderer);
+}
+
+EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event) {
+    if (!event) {
+        return GUI_INVALID_ARGUMENT;
+    }
+    switch (event->type) {
+//        case SDL_MOUSEBUTTONUP:
+//            if (isClickOnBack(event->button.x, event->button.y))
+//                return LOAD_BACK;
+//            if (isClickOnLoadGame(event->button.x, event->button.y,src->chosenSlot))
+//                return LOAD_START;
+//            if (isSlot1Clicked(event->button.x, event->button.y, src->availableSlots))
+//                return LOAD_1SLOT;
+//            if (isSlot2Clicked(event->button.x, event->button.y, src->availableSlots))
+//                return LOAD_2SLOT;
+//            if (isSlot3Clicked(event->button.x, event->button.y, src->availableSlots))
+//                return LOAD_3SLOT;
+//            if (isSlot4Clicked(event->button.x, event->button.y, src->availableSlots))
+//                return LOAD_4SLOT;
+//            if (isSlot5Clicked(event->button.x, event->button.y, src->availableSlots))
+//                return LOAD_5SLOT;
+
+        case SDL_WINDOWEVENT:
+            if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
+                return GAME_QUIT;
+            }
+            break;
+        default:
+            return NONE;
+    }
+    return NONE;
+}
