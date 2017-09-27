@@ -113,5 +113,4 @@ moveNode bestMove(ChessGame * game, int maxDepth,bool isExpertLevel);
  */
 int expertLevel(ChessGame* game,int blackOrWhite);
 
-CHESS_MESSAGE computerMove(ChessGame *game, int maxDepth,bool isExpertLevel); // TODO necessary?
 #endif //CHESS_MINIMAX_H

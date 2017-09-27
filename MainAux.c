@@ -1,8 +1,6 @@
 
 #include "MainAux.h"
 
-
-
 bool undo(GameSession *session) {
     if (session->game == NULL)
         return false;
@@ -96,6 +94,11 @@ bool loadGame(char *filePath, GameSession *session) {
         return false;
     }
     char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
+    if(token==NULL)
+    {
+        printf("%s",MALLOC_ERROR);
+        return false;
+    }
     gameDestroy(&(session->game));
     session->game = gameCreate(HISTORYSIZE);
     fgets(token, MAX_LINE_LENGTH, loadedFile);
@@ -456,4 +459,3 @@ CHESS_MESSAGE gameState(GameSession *session) {
     }
     return msg;
 }
-

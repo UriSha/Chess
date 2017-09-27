@@ -1,9 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "ChessGame.h"
-#include "ChessParser.h"
 #include "ChessHistory.h"
+
+
 
 ChessHistory *createChessHistory(int maxSize) {
     if (maxSize <= 0) {

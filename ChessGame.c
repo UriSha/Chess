@@ -768,6 +768,11 @@ CHESS_MESSAGE checkStatus(ChessGame *game) {
 
 char *getStringFromPosition(Position dest) {
     char *result = (char *) malloc(sizeof(char) * 15);
+    if(result==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return NULL;
+    }
     result[0] = '<';
     result[4] = '>';
     result[1] = (char) (dest.row + '0');
@@ -810,17 +815,49 @@ void printMoves(ChessGame *game, Position pos) {
     if (game == NULL)
         return;
     Position *result = (Position *) malloc(28 * sizeof(Position));//28 is approximately the maximum number of moves
+    if(result==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return;
+    }
     int positionCounter = getMoves(game, result, pos);
     result = (Position *) realloc(result, positionCounter * sizeof(Position));
+    if(result==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return;
+    }
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
-
-    for (int i = 0; i < positionCounter; i++)
+    if(movesArray==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return;
+    }
+    for (int i = 0; i < positionCounter; i++) {
         movesArray[i] = (char *) malloc(sizeof(char) * 15);//15 is maximun length of a row
+        if(movesArray[i]==NULL)
+        {
+            printf("%s", MALLOC_ERROR);
+            return;
+        }
+    }
     int k = 0;
     char *castle1 = (char *) malloc(sizeof(char) * 15);
+    if(castle1==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return;
+    }
     char *castle2 = (char *) malloc(sizeof(char) * 15);
+    if(castle2==NULL)
+    {
+        printf("%s", MALLOC_ERROR);
+        return;
+    }
     for (int i = 0; i < positionCounter; i++, k++) {
         movesArray[k] = getStringFromPosition(result[i]);
+        if(movesArray[k]==NULL)
+            return;
         char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
         int myKingInitRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
 
@@ -878,6 +915,9 @@ void printMoves(ChessGame *game, Position pos) {
         printf("%s\n", movesArray[i]);
     for (int i = 0; i < positionCounter; i++)
         free(movesArray[i]);
+    free(castle1);
+    free(castle2);
+    free(result);
 }
 
 Position *isCastling(ChessGame *game, moveNode move) {
@@ -935,7 +975,6 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
 
         movePiece(game, rookPositions[0], rookPositions[1]);
     }
-
     movePiece(game, lastMove->destination, lastMove->source);
     game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->soldierDied;
     if (lastMove->soldierDied != EMPTY_ENTRY) {

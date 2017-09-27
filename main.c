@@ -51,7 +51,7 @@ void guiMode(){
     SDL_Quit();
 }
 int main(int argc, char** argv) {
-    guiMode();
-//    consoleMode();
-    return 0;
+//    guiMode();
+    consoleMode();
+
 }

@@ -76,7 +76,19 @@ typedef struct {
     SDL_Texture *backTexture;
     int chosenSlot;
     int availableSlots;
+    int fromMainMenu;
 } loadGameWin;
+
+typedef struct {
+    SDL_Window *window;
+    SDL_Renderer *gameRenderer;
+    SDL_Texture *restartTexture;
+    SDL_Texture *saveTexture;
+    SDL_Texture *loadTexture;
+    SDL_Texture *undoTexture;
+    SDL_Texture *mainMenuTexture;
+    SDL_Texture *quitTexture;
+} gameWin;
 
 //Main Window
 bool loadImageMainWindow(char* path, mainWin* src,SDL_Texture ** texture);
@@ -114,5 +126,7 @@ void loadGameWindowDraw(loadGameWin *src);
 void loadGameWindowDestroy(loadGameWin *src);
 
 EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event);
+
+//Game Window
 
 #endif //CHESS_GUIMAINWINDOW_H

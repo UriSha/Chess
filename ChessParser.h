@@ -35,8 +35,8 @@ typedef enum {
 
 //a type used to represent a chess game board position
 typedef struct board_position {
-    char column;
-    int row;
+    char column;  // A to H
+    int row;     // 1 to 8
 } Position;
 
 //a new type that is used to encapsulate a parsed line of a game state

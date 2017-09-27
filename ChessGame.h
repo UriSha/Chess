@@ -82,12 +82,12 @@ typedef struct chess_struct {
     int score;
     Position whiteKingPos;
     Position blackKingPos;
-    bool rightWhiteRookMoved;
-    bool leftWhiteRookMoved;
-    bool rightBlackRookMoved;
-    bool leftBlackRookMoved;
-    bool whiteCastle;
-    bool blackCastle;
+    int rightWhiteRookMoved;
+    int leftWhiteRookMoved;
+    int rightBlackRookMoved;
+    int leftBlackRookMoved;
+    int whiteCastle;
+    int blackCastle;
 } ChessGame;
 
 /**
@@ -379,7 +379,6 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest);
  */
 void changePlayer(ChessGame *game);
 
-//int getSoldierColor(char soldier); we have that function already!
 /**
  * Returns true if there is a legal move for the current player.
  * Gets help from the other functions, such as isValidMove and threats checking

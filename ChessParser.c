@@ -48,7 +48,6 @@ Position getPosition(char *token) {
     res.row = INVALID_ROW;
     if (token == NULL || strlen(token) != 5)
         return res;
-//    char test = token[3];
     if (token[0] == '<' && token[4] == '>') {
         if ((token[1] >= '1') && (token[1] <= '8')) {
 

@@ -1,33 +1,32 @@
 #include "MiniMax.h"
 #include <limits.h>
-#include <stdbool.h>
 
-void updateScoreExpert(char soldierThreatened, int* score) {
+void updateScoreExpert(char soldierThreatened, int *score) {
 
     switch (soldierThreatened) {
         case PAWN_BLACK:
         case PAWN_WHITE:
-            *score-=1;
+            *score -= 1;
             break;
         case ROOK_BLACK :
         case ROOK_WHITE :
-            *score -=5;
+            *score -= 5;
             break;
         case KNIGHT_BLACK :
         case KNIGHT_WHITE :
-            *score -=3;
+            *score -= 3;
             break;
         case BISHOP_BLACK :
         case BISHOP_WHITE :
-           *score -= 3;
+            *score -= 3;
             break;
         case QUEEN_BLACK :
         case QUEEN_WHITE :
-            *score += 9;
+            *score -= 9;
             break;
         case KING_BLACK :
         case KING_WHITE :
-            *score -= 100;
+            *score -= 40;
             break;
         default :
             return;
@@ -35,26 +34,26 @@ void updateScoreExpert(char soldierThreatened, int* score) {
 
 
 }
-int expertLevel(ChessGame* game,int blackOrWhite){
-    int currentScore=game->score*blackOrWhite*5;
-    bool isWhite = blackOrWhite==1 ? true : false;
+
+int expertLevel(ChessGame *game, int blackOrWhite) {
+    int currentScore = game->score * blackOrWhite * 5;
+    bool isWhite = blackOrWhite == 1 ? true : false;
     Position threat;
-    for(int i=0;i<GAME_SIZE;i++){
-        for(int j=0;j<GAME_SIZE;j++){
-            if(isWhite){
-                if(getPlayer(game->gameBoard[i][j])==WHITE_PLAYER){
-                    threat.row=i+1;
-                    threat.column='A'+j;
-                    if(myPositionUnderThreat(game,threat))
-                        updateScoreExpert(game->gameBoard[i][j],&currentScore);
+    for (int i = 0; i < GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
+            if (isWhite) {
+                if (getPlayer(game->gameBoard[i][j]) == WHITE_PLAYER) {
+                    threat.row = i + 1;
+                    threat.column = 'A' + j;
+                    if (myPositionUnderThreat(game, threat))
+                        updateScoreExpert(game->gameBoard[i][j], &currentScore);
                 }
-            }
-            else{
-                if(getPlayer(game->gameBoard[i][j])==BLACK_PLAYER){
-                    threat.row=i+1;
-                    threat.column='A'+j;
-                    if(myPositionUnderThreat(game,threat))
-                        updateScoreExpert(game->gameBoard[i][j],&currentScore);
+            } else {
+                if (getPlayer(game->gameBoard[i][j]) == BLACK_PLAYER) {
+                    threat.row = i + 1;
+                    threat.column = 'A' + j;
+                    if (myPositionUnderThreat(game, threat))
+                        updateScoreExpert(game->gameBoard[i][j], &currentScore);
                 }
             }
         }
@@ -63,6 +62,7 @@ int expertLevel(ChessGame* game,int blackOrWhite){
 
 
 }
+
 int scoringFunction(ChessGame *game, bool isExpertLevel) {
     int blackOrWhite = game->currentPlayer == WHITE_PLAYER ? 1 : -1;
     if (checkStatus(game) == MATE)
@@ -70,7 +70,7 @@ int scoringFunction(ChessGame *game, bool isExpertLevel) {
     if (!isExpertLevel)
         return game->score * blackOrWhite;
 
-return expertLevel(game,blackOrWhite);
+    return expertLevel(game, blackOrWhite);
 }
 
 MiniMaxNode *createNode(int alpha, int beta, bool isMaxType, ChessGame *copyOfGame) {
@@ -126,7 +126,6 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
     Position src, dest;
     ChessGame *copy = gameCopy(root->game);
     MiniMaxNode *child;
-//    int xdw;
     for (int row = 1; row <= GAME_SIZE; row++) {
         src.row = row;
         for (int col = 0; col < GAME_SIZE; col++) {
@@ -135,22 +134,9 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                 dest.row = i;
                 for (int j = 0; j < GAME_SIZE; j++) {
                     dest.column = 'A' + j;
-//                    if (maxDepth == 1 && j== 6 && i==1 && col == 3 && row == 1) {
-//                        int xer = 3;
-//                        printBoard(copy);
-//                    }
+
                     if (isValidMove(copy, src, dest)) {
-//                        if (maxDepth == 2 && j== 1 && i==5 && col == 2 && row == 6) {
-//                            int xer = 3;
-//                            printBoard(copy);
-//                        }
                         setMove(copy, src, dest);
-//                        if (maxDepth == 2 && j== 1 && i==5 && col == 2 && row == 6) {
-//                            int xer = 3;
-//                            printBoard(copy);
-//                        }
-
-
                         if (maxDepth == 1) {
                             if (!root->isMaxType)
                                 changePlayer(copy);
@@ -167,7 +153,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                             undoMove(copy);
                             nodeDestroy(child);
                         } else {
-                            changePlayer(copy); //TODO this wasn't here!
+                            changePlayer(copy);
                             child = createNode(root->alpha, root->beta, 1 - root->isMaxType, copy);
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
                             updateRoot(root, child);
@@ -176,12 +162,9 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
                                 nodeDestroy(child);
                                 return;
                             }
-                            else {
-                                changePlayer(copy); //TODO this wasn't here!
-                            }
+                            changePlayer(copy);
                             undoMove(copy);
                             nodeDestroy(child);
-
                         }
                     }
                 }
@@ -189,9 +172,7 @@ void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
         }
     }
     gameDestroy(&copy);
-
 }
-
 
 moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     moveNode bestMove;
@@ -202,7 +183,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     bestMove.source = src;
     bestMove.destination = dest;
     bestMove.soldierDied = 'Z';
-    if(maxDepth==5)
+    if (maxDepth == 5)
         maxDepth--;
     bool firstValid = true;
     int currentAlpha = INT_MIN;
@@ -225,8 +206,6 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                             firstValid = false;
                         }
                         setMove(copy, src, dest);
-//                        if (j==4 && i==3 && col == 6 && row ==5)
-//                            printBoard(copy);
 
                         if (maxDepth == 1) {// no recursion
                             int moveScore = scoringFunction(copy, isExpertLevel);
@@ -247,7 +226,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                                 bestMove.destination = dest;
                             }
                             changePlayer(copy);
-                            nodeDestroy(child); //TODO is this causing any bugs??
+                            nodeDestroy(child);
                         }
                         undoMove(copy);
                     }
@@ -258,5 +237,3 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     gameDestroy(&copy);
     return bestMove;
 }
-
-
