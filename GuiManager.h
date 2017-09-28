@@ -4,6 +4,8 @@
 
 #include "GuiWindows.h"
 
+#define MAX_NUM_OF_SLOTS 5
+
 typedef enum {
     MAIN_WINDOW_ACTIVE,
     SETTINGS_WINDOW_ACTIVE,
@@ -39,5 +41,7 @@ MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager 
 MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event);
 
 MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event);
+
+bool saveFromGameWindow(GameSession *session, gameWin *gameWin);
 
 #endif //CHESS_GUIMANAGER_H

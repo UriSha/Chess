@@ -1,5 +1,6 @@
 #include "GuiManager.h"
 
+
 GuiManager *ManagerCreate() {
     GuiManager *res = (GuiManager *) malloc(sizeof(GuiManager));
     if (res == NULL) {
@@ -219,12 +220,26 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src,
         src->loadGameWin = loadGameWindowCreate();
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-    if (event == UNDO_MOVE){
+    if (event == GAME_UNDO){
         if (undo(session))
             undo(session);
+        src->gameWin->isSaved = false;
     }
     if (event == GAME_SAVE){
 
+    }
+    if (event == GAME_MAINMENU_SAVED){
+
+
+    }
+    if (event == GAME_MAINMENU_UNSAVED){
+
+
+    }
+    if (event == GAME_RESTART){
+        gameDestroy(&(session->game));
+        session->game = gameCreate(HISTORYSIZE);
+        src->gameWin->isSaved = false;
     }
 //    if (event == SP_GAME_EVENT_X_WON) {
 //        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over", "X won",
@@ -240,7 +255,11 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src,
 //    src->gameWin = NULL;
 //    src->activeWin = MAIN_WINDOW_ACTIVE;
 //    windowShow(src->mainWin->window);
-    if (event == GAME_QUIT) {
+    if (event == GAME_QUIT_SAVED) {
+        gameDestroy((&(session->game)));
+        return MANAGER_QUIT;
+    }
+    if (event == GAME_QUIT_UNSAVED) {
         gameDestroy((&(session->game)));
         return MANAGER_QUIT;
     }
@@ -270,3 +289,66 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
     return MANAGER_NONE;
 }
 
+int askWhetherToSave(GameSession* session) {
+    const SDL_MessageBoxButtonData buttons[] = {
+            {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Yes"},
+            {0,                                       1, "No"},
+            {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "Cancel"},
+    };
+    const SDL_MessageBoxColorScheme colorScheme = {
+            {
+                    /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+                    {192, 192, 192},
+                    /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+                    {0, 0, 0},
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+                    {0, 0, 0},
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+                    {192, 192, 192},
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+                    {90, 139, 199}
+            }
+    };
+    const SDL_MessageBoxData messageBoxData = {
+            SDL_MESSAGEBOX_INFORMATION,
+            NULL,
+            "You are about to quit the game", /* .title */
+            "Do you want to save the current game?", /* .message */
+            SDL_arraysize(buttons), /* .numOfButtons */
+            buttons, /* .buttons */
+            &colorScheme /* .colorScheme */
+    };
+    int buttonID;
+    if (SDL_ShowMessageBox(&messageBoxData, &buttonID) < 0) {
+        SDL_Log("Error displaying message box");
+        return 0;
+    }
+    switch (buttonID) {
+        case 0:
+//            saveGame(session);
+            return 1;
+        case 1:
+            return 1;
+        case 2:
+            return 0;
+        default:
+            break;
+    }
+    return 0;
+}
+
+bool saveFromGameWindow(GameSession *session, gameWin *gameWin){
+    FILE *numOfSlots = NULL;
+    numOfSlots = fopen("../numOfSlots.xml", "w+");
+    int validSlots;
+    char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
+    if(token==NULL)
+    {
+        printf("%s",MALLOC_ERROR);
+        return false;
+    }
+    fgets(token, MAX_LINE_LENGTH, numOfSlots);
+    fscanf(numOfSlots,"<validSlots>%d",&validSlots);
+
+
+}
