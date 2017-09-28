@@ -880,6 +880,36 @@ int isClickedOnUndo(int x, int y, GameSession *session) {
     }
     return 0;
 }
+int isClickedOnRestartGame(int x, int y) {
+    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        return 1;
+    }
+    return 0;
+}
+int isClickedOnSaveGame(int x, int y) {
+    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        return 1;
+    }
+    return 0;
+}
+int isClickedOnLoadGame(int x, int y) {
+    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        return 1;
+    }
+    return 0;
+}
+int isClickedOnMainMenu(int x, int y) {
+    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        return 1;
+    }
+    return 0;
+}
+int isClickedOnQuitGame(int x, int y) {
+    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        return 1;
+    }
+    return 0;
+}
 
 gameWin *gameWindowCreate(GameSession *session) {
     gameWin *res = NULL;
@@ -1110,9 +1140,9 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     SDL_RenderPresent(src->gameRenderer);
 }
 
-EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event) {
+GAME_EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event) {
     if (!event) {
-        return GUI_INVALID_ARGUMENT;
+        return GAME_INVALID;
     }
     switch (event->type) {
 //        case SDL_MOUSEBUTTONUP:

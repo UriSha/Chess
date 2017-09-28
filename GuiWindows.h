@@ -51,7 +51,8 @@ typedef enum{
     GAME_SAVE,
     GAME_LOAD,
     GAME_MOVE,
-    GAME_NONE
+    GAME_NONE,
+    GAME_INVALID
 }GAME_EVENT;
 typedef struct {
     SDL_Window *window;
@@ -186,6 +187,6 @@ void gameWindowDraw(gameWin *src, GameSession *session);
 
 void gameWindowDestroy(gameWin *src);
 
-EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event);
+GAME_EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event);
 
 #endif //CHESS_GUIMAINWINDOW_H
