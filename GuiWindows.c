@@ -1201,7 +1201,7 @@ void drag(SDL_Event *event, gameWin *src){
 
     double distance = getDistance(srcX, srcY, event->button.x , event->button.y);
 
-    if (distance > 24){
+    if (distance > 20){
         src->movingRect.x = event->button.x - (TILE_SIZE / 2);
         src->movingRect.y = event->button.y - (TILE_SIZE / 2);
     }
