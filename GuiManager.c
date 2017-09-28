@@ -195,7 +195,7 @@ MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src
     }
     if (event == LOAD_START) {
         char path[6];
-        sprintf(path, "%d.xml", src->loadGameWin->chosenSlot);
+        sprintf(path, "%d.xml",(src->loadGameWin->availableSlots-src->loadGameWin->chosenSlot+1));
         loadGame(path, session);
         loadGameWindowDestroy(src->loadGameWin);
         src->loadGameWin = NULL;
@@ -327,7 +327,8 @@ int askWhetherToSave(GameSession *session,gameWin* src) {
     switch (buttonID) {
         case 0:
             if(saveFromGameWindow(session))
-                src->isSaved=true;
+                src->isSaved = true;
+
             return 1;
         case 1:
             return 1;
@@ -341,7 +342,7 @@ int askWhetherToSave(GameSession *session,gameWin* src) {
 
 bool saveFromGameWindow(GameSession *session) {
     FILE *numOfSlots = NULL;
-    numOfSlots = fopen("numOfSlots.xml", "a+");
+    numOfSlots = fopen("numOfSlots.xml", "r+");
     int validSlots;
     char *filePath=(char*)malloc(sizeof(char)*6);
     char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
@@ -364,11 +365,16 @@ bool saveFromGameWindow(GameSession *session) {
         free(secondPath);
     }
     saveGame(filePath, session);
-    fseek(numOfSlots, 0, SEEK_SET);
-    fgets(token, MAX_LINE_LENGTH, numOfSlots);
-    fprintf(numOfSlots, "<validSlots>%d</validSlots>",
+    FILE* newSlotsFile=NULL;
+    newSlotsFile = fopen("newSlotsFile.xml", "w+");
+    fprintf(newSlotsFile,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    fprintf(newSlotsFile, "<validSlots>%d</validSlots>",
             validSlots == MAX_NUM_OF_SLOTS ? MAX_NUM_OF_SLOTS : validSlots + 1);
+    fclose(newSlotsFile);
+    rename("newSlotsFile.xml","numOfSlots.xml");
     free(filePath);
     free(token);
+
     fclose(numOfSlots);
+    return true;
 }

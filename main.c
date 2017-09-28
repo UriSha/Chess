@@ -53,23 +53,5 @@ void guiMode(){
 }
 int main(int argc, char** argv) {
     guiMode();
-//    consoleMode();
-//rename("2.xml","1.xml");
-    FILE *numOfSlots = NULL;
-    numOfSlots = fopen("numOfSlots.xml", "a+");
-    int validSlots;
-    char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
-    if(token==NULL)
-    {
-        printf("%s",MALLOC_ERROR);
-        return false;
-    }
-//    fgets(token, MAX_LINE_LENGTH, numOfSlots);
-    fscanf(numOfSlots,"<validSlots>%d",&validSlots);
-    if (validSlots < MAX_NUM_OF_SLOTS){
-
-    }
-
-    fclose(numOfSlots);
-
+return 0;
 }
