@@ -1291,7 +1291,7 @@ bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
         int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW-1 : BLACK_INITIAL_ROW-1;
         if (isCastlingGameWindow(session,srcPos,curDest, myRow)){
             if (soldier == KING_BLACK || soldier == KING_WHITE) {
-                int column = GET_COLUMN(curDest) == 'C' ? 0 : GAME_SIZE-1;
+                int column = curDest.column == 'C' ? 0 : GAME_SIZE-1;
                 src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + column] = src->purple;
             }
             else{
