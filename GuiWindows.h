@@ -14,6 +14,8 @@
 #define WINDOW_HEIGHT 400
 #define GAMEBOARD_X 20
 #define GAMEBOARD_Y 40
+#define ACTUAL_BOARD_SIZE 480
+#define TILE_SIZE 60
 
 
 typedef enum {
@@ -140,6 +142,10 @@ typedef struct {
     SDL_Texture *queenBlackTexture;
     SDL_Texture *kingWhiteTexture;
     SDL_Texture *kingBlackTexture;
+    SDL_Rect movingRect;
+    Position moveSrc;
+    Position moveDest;
+    int currentlyDragged;
     int isSaved;
 } gameWin;
 

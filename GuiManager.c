@@ -230,37 +230,36 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src
             src->gameWin->isSaved=true;
     }
     if (event == GAME_MAINMENU_SAVED) {
-
-
+        gameDestroy(&(session->game));
+        (*session)=sessionCreate(HISTORYSIZE);
+        gameWindowDestroy(src->gameWin);
+        src->gameWin=NULL;
+        src->mainWin=mainWindowCreate();
+        src->activeWin=MAIN_WINDOW_ACTIVE;
     }
     if (event == GAME_MAINMENU_UNSAVED) {
-
-
+        if(askWhetherToSave(session,src->gameWin))
+        {
+            gameDestroy(&(session->game));
+            (*session)=sessionCreate(HISTORYSIZE);
+            gameWindowDestroy(src->gameWin);
+            src->gameWin=NULL;
+            src->mainWin=mainWindowCreate();
+            src->activeWin=MAIN_WINDOW_ACTIVE;
+        }
     }
     if (event == GAME_RESTART) {
         gameDestroy(&(session->game));
         session->game = gameCreate(HISTORYSIZE);
         src->gameWin->isSaved = false;
     }
-//    if (event == SP_GAME_EVENT_X_WON) {
-//        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over", "X won",
-//                                 NULL );
-//    } else if (event == SP_GAME_EVENT_O_WON) {
-//        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over", "O won",
-//                                 NULL );
-//    } else if (event == SP_GAME_EVENT_TIE) {
-//        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over",
-//                                 "it's a tie", NULL );
-//    }
-//    gameWindowDestroy(src->gameWin);
-//    src->gameWin = NULL;
-//    src->activeWin = MAIN_WINDOW_ACTIVE;
-//    windowShow(src->mainWin->window);
-    if (event == GAME_QUIT_SAVED) {
-        gameDestroy((&(session->game)));
-        return MANAGER_QUIT;
+    if(event==GAME_QUIT_UNSAVED){
+        if(askWhetherToSave(session,src->gameWin)){
+            gameDestroy((&(session->game)));
+            return MANAGER_QUIT;
+        }
     }
-    if (event == GAME_QUIT_UNSAVED) {
+    if (event == GAME_QUIT_SAVED) {
         gameDestroy((&(session->game)));
         return MANAGER_QUIT;
     }

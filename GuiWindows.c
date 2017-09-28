@@ -949,6 +949,8 @@ gameWin *gameWindowCreate(GameSession *session) {
         printf("Could not create window: %s\n", SDL_GetError());
         return NULL;
     }
+    res->movingRect.w = TILE_SIZE;
+    res->movingRect.h = TILE_SIZE;
     if (!loadImageGameWindow("../images/board.bmp", res, &(res->gameBoardTexture)))
         return NULL;
     if (!loadImageGameWindow("../images/whitePawn.bmp", res, &(res->pawnWhiteTexture)))
@@ -1116,10 +1118,10 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     SDL_Rect soldiers[8][8];
     for (int i = 0; i < GAME_SIZE; i++) {
         for (int j = 0; j < GAME_SIZE; j++) {
-            soldiers[i][j].x = GAMEBOARD_X + (j * 60);
-            soldiers[i][j].y = GAMEBOARD_Y + (i * 60);
-            soldiers[i][j].h = 60;
-            soldiers[i][j].w = 60;
+            soldiers[i][j].x = GAMEBOARD_X + (j * TILE_SIZE);
+            soldiers[i][j].y = GAMEBOARD_Y + (i * TILE_SIZE);
+            soldiers[i][j].h = TILE_SIZE;
+            soldiers[i][j].w = TILE_SIZE;
         }
     }
     SDL_Rect undoR = {.x =550, .y = GAMEBOARD_Y + 10, .h = 53, .w =101};
@@ -1133,11 +1135,17 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
     for (int i = 0; i < GAME_SIZE; i++) {
         for (int j = 0; j < GAME_SIZE; j++) {
-            if (session->game->gameBoard[i][j] != EMPTY_ENTRY)
+            if (session->game->gameBoard[i][j] != EMPTY_ENTRY) {
+                if (GET_ROW(src->moveSrc) == GAME_SIZE - i-1)
                 SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
                                NULL, &soldiers[7 - i][j]);
+            }
         }
     }
+
+
+
+
     if (session->mode == ONE_PLAYER) {
         if (session->game->history->actualSize > 0)
             SDL_RenderCopy(src->gameRenderer, src->undoTexture, NULL, &undoR);
@@ -1157,30 +1165,103 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     SDL_RenderPresent(src->gameRenderer);
 }
 
+bool isClickedOnBoard(int x, int y) {
+    if (x >= GAMEBOARD_X && x <= GAMEBOARD_X + ACTUAL_BOARD_SIZE)
+        return (y >= GAMEBOARD_Y && y <= GAMEBOARD_Y + ACTUAL_BOARD_SIZE);
+    return false;
+}
+
+int getClickRow(int x) {
+    if (x >= GAMEBOARD_X && x <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
+        return (x - GAMEBOARD_X) / TILE_SIZE + 1;
+    }
+    return INVALID_ROW;
+}
+
+char getClickCol(int y) {
+    if (y >= GAMEBOARD_X && y <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
+        return (char) ('A' + (y - GAMEBOARD_Y) / TILE_SIZE);
+    }
+    return INVALID_COL;
+}
+
+double getDistance(int x1, int y1, int x2, int y2){
+    return pow((y1-y2)*(y1-y2)+(x1-x2)*(x1-x2), 0.5);
+}
+
+void drag(SDL_Event *event, gameWin *src){
+    int srcX = src->movingRect.x + (TILE_SIZE/2);
+    int srcY = src->movingRect.y + (TILE_SIZE/2);
+
+    double distance = getDistance(srcX, srcY, event->button.x , event->button.y);
+
+    if (distance > 24){
+        src->movingRect.x = event->button.x - (TILE_SIZE / 2);
+        src->movingRect.y = event->button.y - (TILE_SIZE / 2);
+    }
+
+}
 GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *event) {
     if (!event) {
         return GAME_INVALID;
     }
     switch (event->type) {
         case SDL_MOUSEBUTTONUP:
-            if (isClickedOnUndo(event->button.x, event->button.y, session))
-                return GAME_UNDO;
-            if (isClickedOnRestartGame(event->button.x, event->button.y))
-                return GAME_RESTART;
-            if (isClickedOnSaveGame(event->button.x, event->button.y,src))
-                return GAME_SAVE;
-            if (isClickedOnLoadGame(event->button.x, event->button.y))
-                return GAME_LOAD;
-            if (isClickedOnMainMenu(event->button.x, event->button.y)) {
-                if (src->isSaved)
-                    return GAME_MAINMENU_SAVED;
-                return GAME_MAINMENU_UNSAVED;
+            if (event->button.button == SDL_BUTTON_LEFT) {
+                if (isClickedOnUndo(event->button.x, event->button.y, session))
+                    return GAME_UNDO;
+                if (isClickedOnRestartGame(event->button.x, event->button.y))
+                    return GAME_RESTART;
+                if (isClickedOnSaveGame(event->button.x, event->button.y, src))
+                    return GAME_SAVE;
+                if (isClickedOnLoadGame(event->button.x, event->button.y))
+                    return GAME_LOAD;
+                if (isClickedOnMainMenu(event->button.x, event->button.y)) {
+                    if (src->isSaved)
+                        return GAME_MAINMENU_SAVED;
+                    return GAME_MAINMENU_UNSAVED;
+                }
+                if (isClickedOnQuitGame(event->button.x, event->button.y)) {
+                    if (src->isSaved)
+                        return GAME_QUIT_SAVED;
+                    return GAME_QUIT_UNSAVED;
+                }
+                if (isClickedOnBoard(event->button.x, event->button.y) && src->currentlyDragged) {
+                    src->currentlyDragged = 0;
+                    src->moveDest.row = getClickRow(event->button.x);
+                    src->moveDest.column = getClickCol(event->button.y);
+                    return GAME_MOVE;
+
+                }
+            } else if (event->button.button == SDL_BUTTON_RIGHT) {
+                //TODO get_moves
             }
-            if (isClickedOnQuitGame(event->button.x, event->button.y)) {
-                if (src->isSaved)
-                    return GAME_QUIT_SAVED;
-                return GAME_QUIT_UNSAVED;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if (event->button.button == SDL_BUTTON_LEFT) {
+                if (isClickedOnBoard(event->button.x, event->button.y)) {
+                    char soldier = session->game->gameBoard[GET_ROW(src->moveSrc)][GET_COLUMN(src->moveSrc)];
+                    if (getPlayer(soldier) == session->game->currentPlayer) {
+                        src->moveSrc.row = getClickRow(event->button.x);
+                        src->moveSrc.column = getClickCol(event->button.y);
+                        src->currentlyDragged = 1;
+                        src->movingRect.x = event->button.x - (TILE_SIZE / 2);
+                        src->movingRect.y = event->button.y - (TILE_SIZE / 2);
+                    }
+                } else
+                    src->currentlyDragged = 0;
             }
+            break;
+        case SDL_MOUSEMOTION:
+            if (src->currentlyDragged && isClickedOnBoard(event->button.x,event->button.y))
+                drag(event, src);
+            else{
+                src->currentlyDragged =0;
+                src->moveSrc.row = INVALID_ROW;
+                src->moveSrc.column = INVALID_COL;
+
+            }
+
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
