@@ -16,7 +16,10 @@ typedef enum {
 typedef enum {
     MANAGER_QUIT,
     MANAGER_NONE,
-} MANAGER_EVENET;
+    MANAGER_CHECK,
+    MANAGER_TIE,
+    MANAGER_MATE,
+} MANAGER_EVENT;
 
 typedef struct {
     gameWin *gameWin;
@@ -32,15 +35,15 @@ void ManagerDestroy(GuiManager *src);
 
 void ManagerDraw(GuiManager *src, GameSession *session);
 
-MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event);
+MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event);
 
-MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event);
 
-MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event);
 
-MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event);
 
-MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event);
+MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event);
 
 bool saveFromGameWindow(GameSession *session);
 int askWhetherToSave(GameSession *session,gameWin* src);

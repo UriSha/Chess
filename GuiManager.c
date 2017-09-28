@@ -64,7 +64,7 @@ void ManagerDraw(GuiManager *manager, GameSession *session) {
     }
 }
 
-MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
@@ -97,7 +97,7 @@ MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
@@ -167,7 +167,7 @@ MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager 
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (event == LOAD_BACK) {
         if (src->loadGameWin->fromMainMenu) {
             gameDestroy(&(session->game));
@@ -218,7 +218,7 @@ MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
+MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
     if (event == GAME_LOAD) {
         gameWindowDestroy(src->gameWin);
         src->gameWin = NULL;
@@ -270,19 +270,63 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src
     }
     if (event == GAME_MOVE) {
         if (setMove(session->game, src->gameWin->moveSrc, src->gameWin->moveDest) == SUCCESS) {
-//        MANAGER_EVENET managerEvent=checkWinner() TODO checkStatus and simpleBox
             changePlayer(session->game);
+            CHESS_MESSAGE msg=checkStatus(session->game);
+            if(msg==TIE){
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Tie",
+                                         "The game is tied!",src->gameWin->window);
+                return MANAGER_QUIT;
+            }
+            if(msg==MATE) {
+                char *playerColor;
+                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
+                char message[MAX_LINE_LENGTH];
+                sprintf(message,"Checkmate! %s player wins the game",playerColor);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Mate",
+                                         message,src->gameWin->window);
+                return MANAGER_QUIT;
+            }
+            if(msg==CHECK) {
+                char *playerColor;
+                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
+                char message[MAX_LINE_LENGTH];
+                sprintf(message,"Check: %s King is threatened!",playerColor);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Check",
+                                         message,src->gameWin->window);
+
+            }
+
             if (session->mode == ONE_PLAYER) {
                 moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
                 setMove(session->game, move.source, move.destination);
                 changePlayer(session->game);
+                CHESS_MESSAGE msg=checkStatus(session->game);
+                if(msg==TIE){
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Tie",
+                                             "The game is tied!",src->gameWin->window);
+                    return MANAGER_QUIT;
+                }
+                if(msg==MATE) {
+                    char *playerColor;
+                    playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
+                    char message[MAX_LINE_LENGTH];
+                    sprintf(message,"Checkmate! %s player wins the game",playerColor);
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Mate",
+                                             message,src->gameWin->window);
+                    return MANAGER_QUIT;
+                }
+                if(msg==CHECK) {
+
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Check",
+                                             "Check!",src->gameWin->window);
+                }
             }
         }
     }
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event) {
+MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event) {
     if (src == NULL || event == NULL) {
         return MANAGER_NONE;
     }
