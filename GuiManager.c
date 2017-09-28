@@ -219,9 +219,13 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src,
         src->loadGameWin = loadGameWindowCreate();
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-//    if (event == SP_GAME_EVENT_NONE || src == NULL ) {
-//        return SP_MANAGER_NONE;
-//    }
+    if (event == UNDO_MOVE){
+        if (undo(session))
+            undo(session);
+    }
+    if (event == GAME_SAVE){
+
+    }
 //    if (event == SP_GAME_EVENT_X_WON) {
 //        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game over", "X won",
 //                                 NULL );
