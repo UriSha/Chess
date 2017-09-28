@@ -102,6 +102,7 @@ void mainWindowDestroy(mainWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
+    src=NULL;
 }
 
 void mainWindowDraw(mainWin *src) {
@@ -351,7 +352,7 @@ settingsWin *settingsWindowCreate() {
     return res;
 }
 
-void settingsWindowDestroy(settingsWin *src) {//TODO finish this function
+void settingsWindowDestroy(settingsWin *src) {
     if (!src) {
         return;
     }
@@ -434,6 +435,7 @@ void settingsWindowDestroy(settingsWin *src) {//TODO finish this function
         SDL_DestroyWindow(src->window);
     }
     free(src);
+    src=NULL;
 }
 
 void settingsWindowDraw(settingsWin *src) {
@@ -750,6 +752,7 @@ void loadGameWindowDestroy(loadGameWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
+    src=NULL;
 }
 
 
@@ -867,9 +870,9 @@ bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture) {
     return true;
 }
 
-gameWin *gameWindowCreate(GameSession* session) {
+gameWin *gameWindowCreate(GameSession* session){
     gameWin *res = NULL;
-    res = (gameWin *) malloc(sizeof(mainWin));
+    res = (gameWin *) malloc(sizeof(gameWin));
     if (res == NULL) {
         printf("%s",MALLOC_ERROR);
         return NULL;
@@ -980,8 +983,8 @@ void gameWindowDestroy(gameWin *src) {
         SDL_DestroyWindow(src->window);
     }
 
-
     free(src);
+    src=NULL;
 }
 SDL_Texture *getTexture(gameWin* gameWin, char soldier){
     switch(soldier)

@@ -32,5 +32,5 @@ void ManagerDraw(GuiManager* src, GameSession* session);
 
 MANAGER_EVENET ManagerHandleEvent(GameSession* session,GuiManager* src, SDL_Event* event) ;
 
-
+MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src, EVENT event);
 #endif //CHESS_GUIMANAGER_H

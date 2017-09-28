@@ -40,7 +40,7 @@ typedef enum {
     LOAD_5SLOT,
     LOAD_BACK,
     LOAD_START,
-    GAME_QUIT // TODO what about back from load to somewhere else from main win
+    GAME_QUIT
 } EVENT;
 typedef struct {
     SDL_Window *window;
@@ -164,9 +164,13 @@ void loadGameWindowDestroy(loadGameWin *src);
 EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event);
 
 //Game Window
+bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture);
+
 gameWin *gameWindowCreate(GameSession *session);
 
-void gameWindowDraw(gameWin *src,GameSession* session);
+SDL_Texture *getTexture(gameWin *gameWin, char soldier);
+
+void gameWindowDraw(gameWin *src, GameSession *session);
 
 void gameWindowDestroy(gameWin *src);
 
