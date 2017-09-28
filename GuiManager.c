@@ -89,44 +89,15 @@ MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *sr
         }
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-    if (event == LOAD_BACK) {
-        if(src->loadGameWin->fromMainMenu)
-        {
-            gameDestroy(&(session->game));
-        }
-        loadGameWindowDestroy(src->loadGameWin);
-        src->loadGameWin=NULL;
-        src->mainWin = mainWindowCreate();
-        src->activeWin = MAIN_WINDOW_ACTIVE;
+    if (event == MAIN_QUIT) {
+        return MANAGER_QUIT;
     }
-    if (event == LOAD_1SLOT) {
-        src->loadGameWin->chosenSlot = 1;
+    return MANAGER_NONE;
+}
 
-    }
-    if (event == LOAD_2SLOT) {
-        src->loadGameWin->chosenSlot = 2;
-    }
-    if (event == LOAD_3SLOT) {
-        src->loadGameWin->chosenSlot = 3;
-    }
-    if (event == LOAD_4SLOT) {
-        src->loadGameWin->chosenSlot = 4;
-    }
-    if (event == LOAD_5SLOT) {
-        src->loadGameWin->chosenSlot = 5;
-    }
-    if (event == LOAD_START) {
-        char path[6];
-        sprintf(path, "%d.xml", src->loadGameWin->chosenSlot);
-        loadGame(path, session);
-        loadGameWindowDestroy(src->loadGameWin);
-        src->loadGameWin=NULL;
-        src->gameWin = gameWindowCreate(session);
-        if (src->gameWin == NULL) {
-            printf("ERROR: Couldn't move to game window\n");
-            return MANAGER_QUIT;
-        }
-        src->activeWin = GAME_WINDOW_ACTIVE;
+MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event){
+    if (src == NULL) {
+        return MANAGER_NONE;
     }
     if (event == SETTINGS_BACK) {
         gameDestroy(&(session->game));
@@ -181,13 +152,73 @@ MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *sr
         session->user_color = WHITE_PLAYER;
         src->settingsWin->user_color = 1;
     }
-    if (event == MAIN_QUIT) {
+    if (event == SEETINGS_QUIT){
+        gameDestroy(&(session->game));
+        return MANAGER_QUIT;
+    }
+
+    return MANAGER_NONE;
+}
+
+MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event){
+    if (event == LOAD_BACK) {
+        if(src->loadGameWin->fromMainMenu) {
+            gameDestroy(&(session->game));
+            loadGameWindowDestroy(src->loadGameWin);
+            src->loadGameWin = NULL;
+            src->mainWin = mainWindowCreate();
+            src->activeWin = MAIN_WINDOW_ACTIVE;
+        }
+        else{
+            loadGameWindowDestroy(src->loadGameWin);
+            src->loadGameWin = NULL;
+            src->gameWin = gameWindowCreate(session);
+            src->activeWin = GAME_WINDOW_ACTIVE;
+        }
+    }
+    if (event == LOAD_1SLOT) {
+        src->loadGameWin->chosenSlot = 1;
+
+    }
+    if (event == LOAD_2SLOT) {
+        src->loadGameWin->chosenSlot = 2;
+    }
+    if (event == LOAD_3SLOT) {
+        src->loadGameWin->chosenSlot = 3;
+    }
+    if (event == LOAD_4SLOT) {
+        src->loadGameWin->chosenSlot = 4;
+    }
+    if (event == LOAD_5SLOT) {
+        src->loadGameWin->chosenSlot = 5;
+    }
+    if (event == LOAD_START) {
+        char path[6];
+        sprintf(path, "%d.xml", src->loadGameWin->chosenSlot);
+        loadGame(path, session);
+        loadGameWindowDestroy(src->loadGameWin);
+        src->loadGameWin=NULL;
+        src->gameWin = gameWindowCreate(session);
+        if (src->gameWin == NULL) {
+            printf("ERROR: Couldn't move to game window\n");
+            return MANAGER_QUIT;
+        }
+        src->activeWin = GAME_WINDOW_ACTIVE;
+    }
+    if (event == LOAD_QUIT) {
+        gameDestroy(&(session->game));
         return MANAGER_QUIT;
     }
     return MANAGER_NONE;
 }
 
 MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src, GAME_EVENT event) {
+    if (event == GAME_LOAD){
+        gameWindowDestroy(src->gameWin);
+        src->gameWin = NULL;
+        src->loadGameWin = loadGameWindowCreate();
+        src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
+    }
 //    if (event == SP_GAME_EVENT_NONE || src == NULL ) {
 //        return SP_MANAGER_NONE;
 //    }
@@ -222,14 +253,14 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
     }
     if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
         EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
-        return handleManagerDueToMainEvent(session, src, settingsEvent);
+        return handleManagerDueToSettingsEvent(session, src, settingsEvent);
     }
     if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
-        return handleManagerDueToMainEvent( session,src, loadEvent);
+        return handleManagerDueToLoadEvent( session,src, loadEvent);
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {
-        GAME_EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
+        GAME_EVENT gameEvent = gameWindowHandleEvent(session, src->gameWin, event);
         return handleManagerDueToGameEvent(session, src, gameEvent);
     }
     return MANAGER_NONE;
