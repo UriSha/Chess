@@ -1251,6 +1251,20 @@ void drag(SDL_Event *event, gameWin *src) {
 
 }
 
+bool isCastlingGameWindow(GameSession *session, Position source, Position dest,int myRow){
+    if (dest.column==source.column && dest.row ==source.row)
+        return true;
+    if (source.row-1 == myRow && source.column==KING_INITIAL_COL_CHAR){
+        if (dest.row-1 == myRow){
+            if (dest.column == 'C' || dest.column == 'G')
+                return true;
+        }
+    }
+    return false;
+
+
+
+}
 
 bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
     int row = getClickRow(event->button.y);
@@ -1273,14 +1287,28 @@ bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
 
     for (int i = 0; i < numOfMoves; i++) {
         curDest = movesList[i];
-        //TODO more colors
-        src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->yellow;
-        soldierAtSite = session->game->gameBoard[GET_ROW(curDest)][GET_COLUMN(curDest)];
-        if (soldierAtSite != EMPTY_ENTRY)
-            src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->green;
-        setMove(copy, srcPos, curDest);
-        if (myPositionUnderThreat(copy, curDest))
-            src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->red;
+
+        int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW-1 : BLACK_INITIAL_ROW-1;
+        if (isCastlingGameWindow(session,srcPos,curDest, myRow)){
+            if (soldier == KING_BLACK || soldier == KING_WHITE) {
+                int column = GET_COLUMN(curDest) == 'C' ? 0 : GAME_SIZE-1;
+                src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + column] = src->purple;
+            }
+            else{
+
+                src->movesGrid[myRow * sizeof(SDL_Texture *) + KING_INITIAL_COL_NUM] = src->purple;
+            }
+
+        }
+        else {
+            src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->yellow;
+            soldierAtSite = session->game->gameBoard[GET_ROW(curDest)][GET_COLUMN(curDest)];
+            if (soldierAtSite != EMPTY_ENTRY)
+                src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->green;
+            setMove(copy, srcPos, curDest);
+            if (myPositionUnderThreat(copy, curDest))
+                src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->red;
+        }
         undoMove(copy);
 
     }
