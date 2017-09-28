@@ -48,6 +48,7 @@ void guiMode(){
         ManagerDraw(manager,gameSession);
     }
     ManagerDestroy(manager);
+    free(gameSession);
     SDL_Quit();
 }
 int main(int argc, char** argv) {

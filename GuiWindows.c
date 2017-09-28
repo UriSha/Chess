@@ -973,6 +973,13 @@ void gameWindowDestroy(gameWin *src) {
     if (src->loadTexture != NULL) {
         SDL_DestroyTexture(src->loadTexture);
     }
+    if (src->gameRenderer != NULL) {
+        SDL_DestroyRenderer(src->gameRenderer);
+    }
+    if (src->window != NULL) {
+        SDL_DestroyWindow(src->window);
+    }
+
 
     free(src);
 }
@@ -1024,7 +1031,6 @@ void gameWindowDraw(gameWin *src, GameSession * session) {
             soldiers[i][j].w=60;
         }
     }
-//    SDL_Rect pawnWhiteR = {.x = GAMEBOARD_X, .y = GAMEBOARD_Y+6*60, .h = 60, .w = 60};
     SDL_Rect loadR = {.x =500, .y = 240, .h = 56, .w = 196};
     SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->gameRenderer);
@@ -1036,9 +1042,7 @@ void gameWindowDraw(gameWin *src, GameSession * session) {
                 SDL_RenderCopy(src->gameRenderer, getTexture(src,session->game->gameBoard[i][j]),
                                NULL, &soldiers[7-i][j]);
         }
-//            SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &soldiers[i][j]);
     }
-//        SDL_RenderCopy(src->gameRenderer, src->pawnWhiteTexture, NULL, &pawns[i]);
     SDL_RenderCopy(src->gameRenderer, src->loadTexture, NULL, &loadR);
     SDL_RenderPresent(src->gameRenderer);
 }

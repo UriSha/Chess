@@ -197,13 +197,13 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
         return handleManagerDueToMainEvent(session, src, mainEvent);
     }
     if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
-        EVENT gameEvent = settingsWindowHandleEvent(src->settingsWin, event);
+        EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
 //        ManagerDraw(src);
-        return handleManagerDueToMainEvent(session, src, gameEvent);
+        return handleManagerDueToMainEvent(session, src, settingsEvent);
     }
     if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
-        EVENT gameEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
-        return handleManagerDueToMainEvent(session, src, gameEvent);
+        EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
+        return handleManagerDueToMainEvent(session, src, loadEvent);
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {
         EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
