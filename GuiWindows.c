@@ -874,38 +874,38 @@ int isClickedOnUndo(int x, int y, GameSession *session) {
     if (session == NULL)
         return 0;
     if (session->game->history->actualSize > 0) {
-        if ((x >= 500 && x <= 601) && (y >= GAMEBOARD_Y && y <= GAMEBOARD_Y+53)) {
+        if ((x >= 550 && x <= 651) && (y >= GAMEBOARD_Y+10 && y <= GAMEBOARD_Y+63)) {
             return 1;
         }
     }
     return 0;
 }
 int isClickedOnRestartGame(int x, int y) {
-    if ((x >= 500 && x <= 673) && (y >= GAMEBOARD_Y+60 && y <= GAMEBOARD_Y+113)) {
+    if ((x >= 550 && x <= 723) && (y >= GAMEBOARD_Y+90 && y <= GAMEBOARD_Y+143)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnSaveGame(int x, int y) {
-    if ((x >= 500 && x <= 651) && (y >= GAMEBOARD_Y+120 && y <= GAMEBOARD_Y+173)) {
+    if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y+170 && y <= GAMEBOARD_Y+223)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnLoadGame(int x, int y) {
-    if ((x >= 500 && x <= 655) && (y >= GAMEBOARD_Y+180 && y <= GAMEBOARD_Y+233)) {
+    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y+250 && y <= GAMEBOARD_Y+283)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnMainMenu(int x, int y) {
-    if ((x >= 500 && x <= 655) && (y >= GAMEBOARD_Y+240 && y <= GAMEBOARD_Y+293)) {
+    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y+330 && y <= GAMEBOARD_Y+383)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnQuitGame(int x, int y) {
-    if ((x >= 500 && x <= 593) && (y >= GAMEBOARD_Y+300 && y <= GAMEBOARD_Y+353)) {
+    if ((x >= 550 && x <= 643) && (y >= GAMEBOARD_Y+410 && y <= GAMEBOARD_Y+463)) {
         return 1;
     }
     return 0;
@@ -1140,14 +1140,14 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     SDL_RenderPresent(src->gameRenderer);
 }
 
-GAME_EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event) {
+GAME_EVENT gameWindowHandleEvent(GameSession* session ,gameWin *src, SDL_Event *event) {
     if (!event) {
         return GAME_INVALID;
     }
     switch (event->type) {
-//        case SDL_MOUSEBUTTONUP:
-//            if (isClickOnBack(event->button.x, event->button.y))
-//                return LOAD_BACK;
+        case SDL_MOUSEBUTTONUP:
+            if (isClickedOnUndo(event->button.x,event->button.y,session)
+                return GAME_UNDO;
 //            if (isClickOnLoadGame(event->button.x, event->button.y,src->chosenSlot))
 //                return LOAD_START;
 //            if (isSlot1Clicked(event->button.x, event->button.y, src->availableSlots))

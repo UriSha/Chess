@@ -187,6 +187,6 @@ void gameWindowDraw(gameWin *src, GameSession *session);
 
 void gameWindowDestroy(gameWin *src);
 
-GAME_EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event);
+GAME_EVENT gameWindowHandleEvent(GameSession* session, gameWin *src, SDL_Event *event);
 
 #endif //CHESS_GUIMAINWINDOW_H
