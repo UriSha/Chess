@@ -187,7 +187,7 @@ MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *sr
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src, EVENT event) {
+MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src, GAME_EVENT event) {
 //    if (event == SP_GAME_EVENT_NONE || src == NULL ) {
 //        return SP_MANAGER_NONE;
 //    }
@@ -229,7 +229,7 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
         return handleManagerDueToMainEvent( session,src, loadEvent);
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {
-        EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
+        GAME_EVENT gameEvent = gameWindowHandleEvent(src->gameWin, event);
         return handleManagerDueToGameEvent(session, src, gameEvent);
     }
     return MANAGER_NONE;

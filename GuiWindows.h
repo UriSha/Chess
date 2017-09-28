@@ -42,8 +42,17 @@ typedef enum {
     LOAD_BACK,
     LOAD_START,
     LOAD_QUIT,
-    GAME_QUIT
 } EVENT;
+typedef enum{
+    GAME_QUIT,
+    GAME_UNDO,
+    GAME_RESTART,
+    GAME_MAINMENU,
+    GAME_SAVE,
+    GAME_LOAD,
+    GAME_MOVE,
+    GAME_NONE
+}GAME_EVENT;
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *mainRenderer;

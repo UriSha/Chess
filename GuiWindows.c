@@ -1137,7 +1137,7 @@ EVENT gameWindowHandleEvent(gameWin *src, SDL_Event *event) {
             }
             break;
         default:
-            return NONE;
+            return GAME_NONE;
     }
-    return NONE;
+    return GAME_NONE;
 }
