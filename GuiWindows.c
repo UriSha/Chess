@@ -1146,12 +1146,12 @@ GAME_EVENT gameWindowHandleEvent(GameSession* session ,gameWin *src, SDL_Event *
     }
     switch (event->type) {
         case SDL_MOUSEBUTTONUP:
-            if (isClickedOnUndo(event->button.x,event->button.y,session)
+            if (isClickedOnUndo(event->button.x,event->button.y,session))
                 return GAME_UNDO;
-//            if (isClickOnLoadGame(event->button.x, event->button.y,src->chosenSlot))
-//                return LOAD_START;
-//            if (isSlot1Clicked(event->button.x, event->button.y, src->availableSlots))
-//                return LOAD_1SLOT;
+            if (isClickedOnRestartGame(event->button.x, event->button.y))
+                return GAME_RESTART;
+            if (isClickedOnSaveGame(event->button.x, event->button.y))
+                return GAME_SAVE;
 //            if (isSlot2Clicked(event->button.x, event->button.y, src->availableSlots))
 //                return LOAD_2SLOT;
 //            if (isSlot3Clicked(event->button.x, event->button.y, src->availableSlots))
