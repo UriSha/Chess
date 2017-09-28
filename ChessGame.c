@@ -792,7 +792,7 @@ int getMoves(ChessGame *game, Position *result, Position pos) {
             if (legalCastling(game, kingPos, dest, true))
                 result[movesCounter++] = pos;
         } else if (pos.column == 'A') {
-            dest.column = 'B';
+            dest.column = 'C';
             if (legalCastling(game, kingPos, dest, false))
                 result[movesCounter++] = pos;
         }
@@ -832,18 +832,18 @@ void printMoves(ChessGame *game, Position pos) {
         }
     }
     int k = 0;
-    char *castle1 = (char *) malloc(sizeof(char) * 15);
-    if(castle1==NULL)
-    {
-        printf("%s", MALLOC_ERROR);
-        return;
-    }
-    char *castle2 = (char *) malloc(sizeof(char) * 15);
-    if(castle2==NULL)
-    {
-        printf("%s", MALLOC_ERROR);
-        return;
-    }
+    char castle1[15];
+//    if(castle1==NULL)
+//    {
+//        printf("%s", MALLOC_ERROR);
+//        return;
+//    }
+    char castle2[15];
+//    if(castle2==NULL)
+//    {
+//        printf("%s", MALLOC_ERROR);
+//        return;
+//    }
     for (int i = 0; i < positionCounter; i++, k++) {
         movesArray[k] = getStringFromPosition(result[i]);
         if(movesArray[k]==NULL)
@@ -898,15 +898,15 @@ void printMoves(ChessGame *game, Position pos) {
 
     }
     if (strcmp(castle1, "") != 0)
-        movesArray[k++] = castle1;
+        strcpy(movesArray[k++],castle1);
     if (strcmp(castle2, "") != 0)
-        movesArray[k] = castle2;
+        strcpy(movesArray[k],castle2);
     for (int i = 0; i < positionCounter; i++)
         printf("%s\n", movesArray[i]);
     for (int i = 0; i < positionCounter; i++)
         free(movesArray[i]);
-    free(castle1);
-    free(castle2);
+//    free(castle2);
+//    free(castle1);
     free(result);
 }
 
