@@ -874,38 +874,45 @@ int isClickedOnUndo(int x, int y, GameSession *session) {
     if (session == NULL)
         return 0;
     if (session->game->history->actualSize > 0) {
-        if ((x >= 550 && x <= 651) && (y >= GAMEBOARD_Y+10 && y <= GAMEBOARD_Y+63)) {
+        if ((x >= 550 && x <= 651) && (y >= GAMEBOARD_Y + 10 && y <= GAMEBOARD_Y + 63)) {
             return 1;
         }
     }
     return 0;
 }
+
 int isClickedOnRestartGame(int x, int y) {
-    if ((x >= 550 && x <= 723) && (y >= GAMEBOARD_Y+90 && y <= GAMEBOARD_Y+143)) {
+    if ((x >= 550 && x <= 723) && (y >= GAMEBOARD_Y + 90 && y <= GAMEBOARD_Y + 143)) {
         return 1;
     }
     return 0;
 }
-int isClickedOnSaveGame(int x, int y) {
-    if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y+170 && y <= GAMEBOARD_Y+223)) {
-        return 1;
+
+int isClickedOnSaveGame(int x, int y, gameWin *src) {
+    if (src->isSaved) {
+        if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y + 170 && y <= GAMEBOARD_Y + 223)) {
+            return 1;
+        }
     }
     return 0;
 }
+
 int isClickedOnLoadGame(int x, int y) {
-    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y+250 && y <= GAMEBOARD_Y+283)) {
+    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y + 250 && y <= GAMEBOARD_Y + 283)) {
         return 1;
     }
     return 0;
 }
+
 int isClickedOnMainMenu(int x, int y) {
-    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y+330 && y <= GAMEBOARD_Y+383)) {
+    if ((x >= 550 && x <= 705) && (y >= GAMEBOARD_Y + 330 && y <= GAMEBOARD_Y + 383)) {
         return 1;
     }
     return 0;
 }
+
 int isClickedOnQuitGame(int x, int y) {
-    if ((x >= 550 && x <= 643) && (y >= GAMEBOARD_Y+410 && y <= GAMEBOARD_Y+463)) {
+    if ((x >= 550 && x <= 643) && (y >= GAMEBOARD_Y + 410 && y <= GAMEBOARD_Y + 463)) {
         return 1;
     }
     return 0;
@@ -976,6 +983,8 @@ gameWin *gameWindowCreate(GameSession *session) {
         return NULL;
     if (!loadImageGameWindow("../images/gameSave.bmp", res, &(res->saveTexture)))
         return NULL;
+    if (!loadImageGameWindow("../images/gameSaveFade.bmp", res, &(res->saveFadeTexture)))
+        return NULL;
 
     if (!loadImageGameWindow("../images/gameLoad.bmp", res, &(res->loadTexture)))
         return NULL;
@@ -983,6 +992,7 @@ gameWin *gameWindowCreate(GameSession *session) {
         return NULL;
     if (!loadImageGameWindow("../images/gameQuit.bmp", res, &(res->quitTexture)))
         return NULL;
+    res->isSaved = 0;
     return res;
 }
 
@@ -1040,6 +1050,9 @@ void gameWindowDestroy(gameWin *src) {
     }
     if (src->saveTexture != NULL) {
         SDL_DestroyTexture(src->saveTexture);
+    }
+    if (src->saveFadeTexture != NULL) {
+        SDL_DestroyTexture(src->saveFadeTexture);
     }
     if (src->loadTexture != NULL) {
         SDL_DestroyTexture(src->loadTexture);
@@ -1109,7 +1122,7 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
             soldiers[i][j].w = 60;
         }
     }
-    SDL_Rect undoR = {.x =550, .y = GAMEBOARD_Y+10, .h = 53, .w =101};
+    SDL_Rect undoR = {.x =550, .y = GAMEBOARD_Y + 10, .h = 53, .w =101};
     SDL_Rect restartR = {.x =550, .y = GAMEBOARD_Y + 90, .h = 53, .w = 173};
     SDL_Rect saveR = {.x =550, .y = GAMEBOARD_Y + 170, .h = 53, .w = 151};
     SDL_Rect loadR = {.x =550, .y = GAMEBOARD_Y + 250, .h = 53, .w = 155};
@@ -1125,45 +1138,55 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
                                NULL, &soldiers[7 - i][j]);
         }
     }
-    if(session->mode==ONE_PLAYER){
-        if(session->game->history->actualSize>0)
+    if (session->mode == ONE_PLAYER) {
+        if (session->game->history->actualSize > 0)
             SDL_RenderCopy(src->gameRenderer, src->undoTexture, NULL, &undoR);
         else
             SDL_RenderCopy(src->gameRenderer, src->undoFadeTexture, NULL, &undoR);
 
     }
     SDL_RenderCopy(src->gameRenderer, src->restartTexture, NULL, &restartR);
-    SDL_RenderCopy(src->gameRenderer, src->saveTexture, NULL, &saveR);
+    if (src->isSaved)
+        SDL_RenderCopy(src->gameRenderer, src->saveFadeTexture, NULL, &saveR);
+    else
+        SDL_RenderCopy(src->gameRenderer, src->saveTexture, NULL, &saveR);
+
     SDL_RenderCopy(src->gameRenderer, src->loadTexture, NULL, &loadR);
     SDL_RenderCopy(src->gameRenderer, src->mainMenuTexture, NULL, &mainMenuR);
     SDL_RenderCopy(src->gameRenderer, src->quitTexture, NULL, &quitR);
     SDL_RenderPresent(src->gameRenderer);
 }
 
-GAME_EVENT gameWindowHandleEvent(GameSession* session ,gameWin *src, SDL_Event *event) {
+GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *event) {
     if (!event) {
         return GAME_INVALID;
     }
     switch (event->type) {
         case SDL_MOUSEBUTTONUP:
-            if (isClickedOnUndo(event->button.x,event->button.y,session))
+            if (isClickedOnUndo(event->button.x, event->button.y, session))
                 return GAME_UNDO;
             if (isClickedOnRestartGame(event->button.x, event->button.y))
                 return GAME_RESTART;
-            if (isClickedOnSaveGame(event->button.x, event->button.y))
+            if (isClickedOnSaveGame(event->button.x, event->button.y,src))
                 return GAME_SAVE;
-//            if (isSlot2Clicked(event->button.x, event->button.y, src->availableSlots))
-//                return LOAD_2SLOT;
-//            if (isSlot3Clicked(event->button.x, event->button.y, src->availableSlots))
-//                return LOAD_3SLOT;
-//            if (isSlot4Clicked(event->button.x, event->button.y, src->availableSlots))
-//                return LOAD_4SLOT;
-//            if (isSlot5Clicked(event->button.x, event->button.y, src->availableSlots))
-//                return LOAD_5SLOT;
+            if (isClickedOnLoadGame(event->button.x, event->button.y))
+                return GAME_LOAD;
+            if (isClickedOnMainMenu(event->button.x, event->button.y)) {
+                if (src->isSaved)
+                    return GAME_MAINMENU_SAVED;
+                return GAME_MAINMENU_UNSAVED;
+            }
+            if (isClickedOnQuitGame(event->button.x, event->button.y)) {
+                if (src->isSaved)
+                    return GAME_QUIT_SAVED;
+                return GAME_QUIT_UNSAVED;
+            }
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
-                return GAME_QUIT;
+                if (src->isSaved)
+                    return GAME_QUIT_SAVED;
+                return GAME_QUIT_UNSAVED;
             }
             break;
         default:

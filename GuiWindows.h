@@ -44,10 +44,12 @@ typedef enum {
     LOAD_QUIT,
 } EVENT;
 typedef enum{
-    GAME_QUIT,
+    GAME_QUIT_SAVED,
+    GAME_QUIT_UNSAVED,
     GAME_UNDO,
     GAME_RESTART,
-    GAME_MAINMENU,
+    GAME_MAINMENU_SAVED,
+    GAME_MAINMENU_UNSAVED,
     GAME_SAVE,
     GAME_LOAD,
     GAME_MOVE,
@@ -120,6 +122,7 @@ typedef struct {
     SDL_Texture *gameBoardTexture;
     SDL_Texture *restartTexture;
     SDL_Texture *saveTexture;
+    SDL_Texture *saveFadeTexture;
     SDL_Texture *loadTexture;
     SDL_Texture *undoFadeTexture;
     SDL_Texture *undoTexture;
@@ -137,6 +140,7 @@ typedef struct {
     SDL_Texture *queenBlackTexture;
     SDL_Texture *kingWhiteTexture;
     SDL_Texture *kingBlackTexture;
+    int isSaved;
 } gameWin;
 
 //Main Window
