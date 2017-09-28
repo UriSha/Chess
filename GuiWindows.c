@@ -949,6 +949,7 @@ gameWin *gameWindowCreate(GameSession *session) {
         printf("Could not create window: %s\n", SDL_GetError());
         return NULL;
     }
+    res->movesGrid = (SDL_Texture **) calloc(GAME_SIZE * GAME_SIZE, sizeof(SDL_Texture *));
     res->movingRect.w = TILE_SIZE;
     res->movingRect.h = TILE_SIZE;
     if (!loadImageGameWindow("../images/board.bmp", res, &(res->gameBoardTexture)))
@@ -994,7 +995,17 @@ gameWin *gameWindowCreate(GameSession *session) {
         return NULL;
     if (!loadImageGameWindow("../images/gameQuit.bmp", res, &(res->quitTexture)))
         return NULL;
+    if (!loadImageGameWindow("../images/yellow.bmp", res, &(res->yellow)))
+        return NULL;
+
+    if (!loadImageGameWindow("../images/red.bmp", res, &(res->red)))
+        return NULL;
+    if (!loadImageGameWindow("../images/green.bmp", res, &(res->green)))
+        return NULL;
+    if (!loadImageGameWindow("../images/purple.bmp", res, &(res->purple)))
+        return NULL;
     res->isSaved = 0;
+    res->getMovesShowing = 0;
     return res;
 }
 
@@ -1053,6 +1064,18 @@ void gameWindowDestroy(gameWin *src) {
     if (src->saveTexture != NULL) {
         SDL_DestroyTexture(src->saveTexture);
     }
+    if (src->yellow != NULL) {
+        SDL_DestroyTexture(src->yellow);
+    }
+    if (src->red != NULL) {
+        SDL_DestroyTexture(src->red);
+    }
+    if (src->green != NULL) {
+        SDL_DestroyTexture(src->green);
+    }
+    if (src->purple != NULL) {
+        SDL_DestroyTexture(src->purple);
+    }
     if (src->saveFadeTexture != NULL) {
         SDL_DestroyTexture(src->saveFadeTexture);
     }
@@ -1065,6 +1088,9 @@ void gameWindowDestroy(gameWin *src) {
 
     if (src->quitTexture != NULL) {
         SDL_DestroyTexture(src->quitTexture);
+    }
+    if (src->movesGrid != NULL) {
+        free(src->movesGrid);
     }
     if (src->gameRenderer != NULL) {
         SDL_DestroyRenderer(src->gameRenderer);
@@ -1110,6 +1136,24 @@ SDL_Texture *getTexture(gameWin *gameWin,
 
 }
 
+void drawGetMoves(gameWin *src, GameSession *session) {
+    SDL_Rect rec;
+    int i, j;
+    for (i = 0; i < GAME_SIZE; i++) {
+        for (j = 0; j < GAME_SIZE; j++) {
+            rec.x = GAMEBOARD_X + (j * TILE_SIZE);
+            rec.y = ACTUAL_BOARD_SIZE - ((i + 1) * TILE_SIZE) + GAMEBOARD_Y;
+            rec.w = TILE_SIZE;
+            rec.h = TILE_SIZE;
+            if (src->getMovesShowing == 1) {
+                SDL_RenderCopy(src->gameRenderer, (src->movesGrid[i * sizeof(SDL_Texture *) + j]), NULL, &rec);
+            } else {
+                src->movesGrid[i * sizeof(SDL_Texture *) + j] = NULL;
+            }
+        }
+    }
+}
+
 void gameWindowDraw(gameWin *src, GameSession *session) {
     if (src == NULL) {
         return;
@@ -1136,20 +1180,19 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     for (int i = 0; i < GAME_SIZE; i++) {
         for (int j = 0; j < GAME_SIZE; j++) {
             if (session->game->gameBoard[i][j] != EMPTY_ENTRY) {
-                if (GET_ROW(src->moveSrc) ==  i && GET_COLUMN(src->moveSrc)==j){
+                if (GET_ROW(src->moveSrc) == i && GET_COLUMN(src->moveSrc) == j) {
                     SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
                                    NULL, &src->movingRect);
-                }
-                else {
+                } else {
                     SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
-                                   NULL, &soldiers[7-i][j]);
+                                   NULL, &soldiers[7 - i][j]);
                 }
             }
         }
     }
 
 
-
+    drawGetMoves(src, session);
 
     if (session->mode == ONE_PLAYER) {
         if (session->game->history->actualSize > 0)
@@ -1179,34 +1222,74 @@ bool isClickedOnBoard(int x, int y) {
 
 int getClickRow(int y) {
     if (y >= GAMEBOARD_Y && y <= GAMEBOARD_Y + ACTUAL_BOARD_SIZE) {
-        return  GAME_SIZE -( (y - GAMEBOARD_Y) / TILE_SIZE);
+        return GAME_SIZE - ((y - GAMEBOARD_Y) / TILE_SIZE);
     }
     return INVALID_ROW;
 }
 
 char getClickCol(int x) {
     if (x >= GAMEBOARD_X && x <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
-        return (char) ('A'+((x - GAMEBOARD_X) / TILE_SIZE));
+        return (char) ('A' + ((x - GAMEBOARD_X) / TILE_SIZE));
     }
     return INVALID_COL;
 }
 
-double getDistance(int x1, int y1, int x2, int y2){
-    return pow((y1-y2)*(y1-y2)+(x1-x2)*(x1-x2), 0.5);
+double getDistance(int x1, int y1, int x2, int y2) {
+    return pow((y1 - y2) * (y1 - y2) + (x1 - x2) * (x1 - x2), 0.5);
 }
 
-void drag(SDL_Event *event, gameWin *src){
-    int srcX = src->movingRect.x + (TILE_SIZE/2);
-    int srcY = src->movingRect.y + (TILE_SIZE/2);
+void drag(SDL_Event *event, gameWin *src) {
+    int srcX = src->movingRect.x + (TILE_SIZE / 2);
+    int srcY = src->movingRect.y + (TILE_SIZE / 2);
 
-    double distance = getDistance(srcX, srcY, event->button.x , event->button.y);
+    double distance = getDistance(srcX, srcY, event->button.x, event->button.y);
 
-    if (distance > 20){
+    if (distance > 20) {
         src->movingRect.x = event->button.x - (TILE_SIZE / 2);
         src->movingRect.y = event->button.y - (TILE_SIZE / 2);
     }
 
 }
+
+
+bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
+    int row = getClickRow(event->button.y);
+    char col = getClickCol(event->button.x);
+
+    char soldier = session->game->gameBoard[row - 1][col - 'A'];
+    if (session->user_color != getPlayer(soldier))
+        return false;
+
+    Position srcPos;
+    srcPos.row = row;
+    srcPos.column = col;
+    Position movesList[GAME_SIZE * GAME_SIZE];
+    int numOfMoves = getMoves(session->game, movesList, srcPos);
+
+    Position curDest;
+    char soldierAtSite;
+
+    ChessGame *copy = gameCopy(session->game);
+
+    for (int i = 0; i < numOfMoves; i++) {
+        curDest = movesList[i];
+        //TODO more colors
+        src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->yellow;
+        soldierAtSite = session->game->gameBoard[GET_ROW(curDest)][GET_COLUMN(curDest)];
+        if (soldierAtSite != EMPTY_ENTRY)
+            src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->green;
+        setMove(copy, srcPos, curDest);
+        if (myPositionUnderThreat(copy, curDest))
+            src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->red;
+        undoMove(copy);
+
+    }
+    gameDestroy(&copy);
+    return true;
+
+
+}
+
 GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *event) {
     if (!event) {
         return GAME_INVALID;
@@ -1214,6 +1297,7 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
     switch (event->type) {
         case SDL_MOUSEBUTTONUP:
             if (event->button.button == SDL_BUTTON_LEFT) {
+                src->getMovesShowing = 0;
                 if (isClickedOnUndo(event->button.x, event->button.y, session))
                     return GAME_UNDO;
                 if (isClickedOnRestartGame(event->button.x, event->button.y))
@@ -1234,7 +1318,7 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                 }
                 if (isClickedOnBoard(event->button.x, event->button.y) && src->currentlyDragged) {
                     src->currentlyDragged = 0;
-                    src->moveDest.row =getClickRow(event->button.y);
+                    src->moveDest.row = getClickRow(event->button.y);
                     src->moveDest.column = getClickCol(event->button.x);
                     int r = src->moveDest.row;
                     char c = src->moveDest.column;
@@ -1242,13 +1326,26 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
 
                 }
             } else if (event->button.button == SDL_BUTTON_RIGHT) {
+                if (isClickedOnBoard(event->button.x, event->button.y)) {
+                    if (session->difficulty <= 2 && session->mode == ONE_PLAYER) {
+                        if (src->getMovesShowing)
+                            src->getMovesShowing = 0;
+                        else {
+                            if (showGetMovesGameWin(session, src, event))
+                                src->getMovesShowing = 1;
+                        }
+                    }
+                } else {
+                    src->getMovesShowing = 0;
+                }
                 //TODO get_moves
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
             if (event->button.button == SDL_BUTTON_LEFT) {
                 if (isClickedOnBoard(event->button.x, event->button.y)) {
-                    char soldier = session->game->gameBoard[getClickRow(event->button.y)-1][getClickCol(event->button.x)-'A'];
+                    char soldier = session->game->gameBoard[getClickRow(event->button.y) - 1][
+                            getClickCol(event->button.x) - 'A'];
 //                   int r = GAME_SIZE-getClickRow(event->button.y)-1;
 //                    int c = getClickCol(event->button.x)-'A';
                     if (getPlayer(soldier) == session->game->currentPlayer) {
@@ -1263,10 +1360,10 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
             }
             break;
         case SDL_MOUSEMOTION:
-            if (src->currentlyDragged && isClickedOnBoard(event->button.x,event->button.y))
+            if (src->currentlyDragged && isClickedOnBoard(event->button.x, event->button.y))
                 drag(event, src);
-            else{
-                src->currentlyDragged =0;
+            else {
+                src->currentlyDragged = 0;
                 src->moveSrc.row = INVALID_ROW;
                 src->moveSrc.column = INVALID_COL;
 

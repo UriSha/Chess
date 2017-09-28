@@ -147,6 +147,12 @@ typedef struct {
     Position moveDest;
     int currentlyDragged;
     int isSaved;
+    int getMovesShowing;
+    SDL_Texture** movesGrid;
+    SDL_Texture* yellow;
+    SDL_Texture* red;
+    SDL_Texture* green;
+    SDL_Texture* purple;
 } gameWin;
 
 //Main Window
