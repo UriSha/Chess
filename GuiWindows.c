@@ -535,7 +535,7 @@ EVENT settingsWindowHandleEvent(settingsWin *src, SDL_Event *event) {
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
-                return MAIN_QUIT;
+                return SEETINGS_QUIT;
             }
             break;
         default:
@@ -842,7 +842,7 @@ EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event) {
 
         case SDL_WINDOWEVENT:
             if (event->window.event == SDL_WINDOWEVENT_CLOSE) {
-                return MAIN_QUIT;
+                return LOAD_QUIT;
             }
             break;
         default:
@@ -874,38 +874,38 @@ int isClickedOnUndo(int x, int y, GameSession *session) {
     if (session == NULL)
         return 0;
     if (session->game->history->actualSize > 0) {
-        if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+        if ((x >= 500 && x <= 601) && (y >= GAMEBOARD_Y && y <= GAMEBOARD_Y+53)) {
             return 1;
         }
     }
     return 0;
 }
 int isClickedOnRestartGame(int x, int y) {
-    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+    if ((x >= 500 && x <= 673) && (y >= GAMEBOARD_Y+60 && y <= GAMEBOARD_Y+113)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnSaveGame(int x, int y) {
-    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+    if ((x >= 500 && x <= 651) && (y >= GAMEBOARD_Y+120 && y <= GAMEBOARD_Y+173)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnLoadGame(int x, int y) {
-    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+    if ((x >= 500 && x <= 655) && (y >= GAMEBOARD_Y+180 && y <= GAMEBOARD_Y+233)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnMainMenu(int x, int y) {
-    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+    if ((x >= 500 && x <= 655) && (y >= GAMEBOARD_Y+240 && y <= GAMEBOARD_Y+293)) {
         return 1;
     }
     return 0;
 }
 int isClickedOnQuitGame(int x, int y) {
-    if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+    if ((x >= 500 && x <= 593) && (y >= GAMEBOARD_Y+300 && y <= GAMEBOARD_Y+353)) {
         return 1;
     }
     return 0;
@@ -968,20 +968,20 @@ gameWin *gameWindowCreate(GameSession *session) {
         return NULL;
     if (!loadImageGameWindow("../images/blackKing.bmp", res, &(res->kingBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/undoMove.bmp", res, &(res->undoTexture)))
+    if (!loadImageGameWindow("../images/gameUndo.bmp", res, &(res->undoTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/undoMoveFade.bmp", res, &(res->undoFadeTexture)))
+    if (!loadImageGameWindow("../images/gameUndoFade.bmp", res, &(res->undoFadeTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/restartGame.bmp", res, &(res->restartTexture)))
+    if (!loadImageGameWindow("../images/gameRestart.bmp", res, &(res->restartTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/saveGame.bmp", res, &(res->saveTexture)))
+    if (!loadImageGameWindow("../images/gameSave.bmp", res, &(res->saveTexture)))
         return NULL;
 
-    if (!loadImageGameWindow("../images/loadGame.bmp", res, &(res->loadTexture)))
+    if (!loadImageGameWindow("../images/gameLoad.bmp", res, &(res->loadTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/mainMenu.bmp", res, &(res->mainMenuTexture)))
+    if (!loadImageGameWindow("../images/gameMenu.bmp", res, &(res->mainMenuTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/quitGame.bmp", res, &(res->quitTexture)))
+    if (!loadImageGameWindow("../images/gameQuit.bmp", res, &(res->quitTexture)))
         return NULL;
     return res;
 }
@@ -1109,12 +1109,12 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
             soldiers[i][j].w = 60;
         }
     }
-    SDL_Rect undoR = {.x =500, .y = GAMEBOARD_Y, .h = 56, .w = 196};
-    SDL_Rect restartR = {.x =500, .y = GAMEBOARD_Y + 60, .h = 56, .w = 196};
-    SDL_Rect saveR = {.x =500, .y = GAMEBOARD_Y + 120, .h = 56, .w = 196};
-    SDL_Rect loadR = {.x =500, .y = GAMEBOARD_Y + 180, .h = 56, .w = 196};
-    SDL_Rect mainMenuR = {.x =500, .y = GAMEBOARD_Y + 240, .h = 56, .w = 196};
-    SDL_Rect quitR = {.x =500, .y = GAMEBOARD_Y + 300, .h = 56, .w = 196};
+    SDL_Rect undoR = {.x =550, .y = GAMEBOARD_Y+10, .h = 53, .w =101};
+    SDL_Rect restartR = {.x =550, .y = GAMEBOARD_Y + 90, .h = 53, .w = 173};
+    SDL_Rect saveR = {.x =550, .y = GAMEBOARD_Y + 170, .h = 53, .w = 151};
+    SDL_Rect loadR = {.x =550, .y = GAMEBOARD_Y + 250, .h = 53, .w = 155};
+    SDL_Rect mainMenuR = {.x =550, .y = GAMEBOARD_Y + 330, .h = 53, .w = 155};
+    SDL_Rect quitR = {.x =550, .y = GAMEBOARD_Y + 410, .h = 53, .w = 93};
     SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->gameRenderer);
     SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
