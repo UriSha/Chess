@@ -33,6 +33,7 @@ typedef enum {
     SETTINGS_5DIFF,
     SETTINGS_USERCOLOR_0,
     SETTINGS_USERCOLOR_1,
+    SEETINGS_QUIT,
     LOAD_1SLOT,
     LOAD_2SLOT,
     LOAD_3SLOT,
@@ -40,6 +41,7 @@ typedef enum {
     LOAD_5SLOT,
     LOAD_BACK,
     LOAD_START,
+    LOAD_QUIT,
     GAME_QUIT
 } EVENT;
 typedef struct {
@@ -109,6 +111,7 @@ typedef struct {
     SDL_Texture *restartTexture;
     SDL_Texture *saveTexture;
     SDL_Texture *loadTexture;
+    SDL_Texture *undoFadeTexture;
     SDL_Texture *undoTexture;
     SDL_Texture *mainMenuTexture;
     SDL_Texture *quitTexture;

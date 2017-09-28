@@ -46,7 +46,7 @@ mainWin *mainWindowCreate() {
     mainWin *res = NULL;
     res = (mainWin *) malloc(sizeof(mainWin));
     if (res == NULL) {
-        printf("%s",MALLOC_ERROR);
+        printf("%s", MALLOC_ERROR);
         return NULL;
     }
 
@@ -102,7 +102,7 @@ void mainWindowDestroy(mainWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src=NULL;
+    src = NULL;
 }
 
 void mainWindowDraw(mainWin *src) {
@@ -271,7 +271,7 @@ settingsWin *settingsWindowCreate() {
     settingsWin *res = NULL;
     res = (settingsWin *) malloc(sizeof(settingsWin));
     if (res == NULL) {
-        printf("%s",MALLOC_ERROR);
+        printf("%s", MALLOC_ERROR);
         return NULL;
     }
 
@@ -435,7 +435,7 @@ void settingsWindowDestroy(settingsWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src=NULL;
+    src = NULL;
 }
 
 void settingsWindowDraw(settingsWin *src) {
@@ -625,9 +625,9 @@ int getNumOfSlots() {
     return result;
 }
 
-int isClickOnLoadGame(int x, int y,int chosenSlot){
-    if(chosenSlot!=0) {
-        if (x >= GAME_WIDTH-119 && x <= GAME_WIDTH && (y >= GAME_HEIGHT-48 && y<=GAME_HEIGHT)) {
+int isClickOnLoadGame(int x, int y, int chosenSlot) {
+    if (chosenSlot != 0) {
+        if (x >= GAME_WIDTH - 119 && x <= GAME_WIDTH && (y >= GAME_HEIGHT - 48 && y <= GAME_HEIGHT)) {
             return 1;
         }
     }
@@ -638,7 +638,7 @@ loadGameWin *loadGameWindowCreate() {
     loadGameWin *res = NULL;
     res = (loadGameWin *) malloc(sizeof(loadGameWin));
     if (res == NULL) {
-        printf("%s",MALLOC_ERROR);
+        printf("%s", MALLOC_ERROR);
         return NULL;
     }
 
@@ -752,7 +752,7 @@ void loadGameWindowDestroy(loadGameWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src=NULL;
+    src = NULL;
 }
 
 
@@ -827,7 +827,7 @@ EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event) {
         case SDL_MOUSEBUTTONUP:
             if (isClickOnBack(event->button.x, event->button.y))
                 return LOAD_BACK;
-            if (isClickOnLoadGame(event->button.x, event->button.y,src->chosenSlot))
+            if (isClickOnLoadGame(event->button.x, event->button.y, src->chosenSlot))
                 return LOAD_START;
             if (isSlot1Clicked(event->button.x, event->button.y, src->availableSlots))
                 return LOAD_1SLOT;
@@ -870,11 +870,22 @@ bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture) {
     return true;
 }
 
-gameWin *gameWindowCreate(GameSession* session){
+int isClickedOnUndo(int x, int y, GameSession *session) {
+    if (session == NULL)
+        return 0;
+    if (session->game->history->actualSize > 0) {
+        if ((x >= 500 && x <= 590) && (y >= 100 && y <= 150)) {//TODO check the pixels
+            return 1;
+        }
+    }
+    return 0;
+}
+
+gameWin *gameWindowCreate(GameSession *session) {
     gameWin *res = NULL;
     res = (gameWin *) malloc(sizeof(gameWin));
     if (res == NULL) {
-        printf("%s",MALLOC_ERROR);
+        printf("%s", MALLOC_ERROR);
         return NULL;
     }
 
@@ -927,10 +938,24 @@ gameWin *gameWindowCreate(GameSession* session){
         return NULL;
     if (!loadImageGameWindow("../images/blackKing.bmp", res, &(res->kingBlackTexture)))
         return NULL;
+    if (!loadImageGameWindow("../images/undoMove.bmp", res, &(res->undoTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/undoMoveFade.bmp", res, &(res->undoFadeTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/restartGame.bmp", res, &(res->restartTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/saveGame.bmp", res, &(res->saveTexture)))
+        return NULL;
+
     if (!loadImageGameWindow("../images/loadGame.bmp", res, &(res->loadTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/mainMenu.bmp", res, &(res->mainMenuTexture)))
+        return NULL;
+    if (!loadImageGameWindow("../images/quitGame.bmp", res, &(res->quitTexture)))
         return NULL;
     return res;
 }
+
 void gameWindowDestroy(gameWin *src) {
     if (!src) {
         return;
@@ -970,11 +995,31 @@ void gameWindowDestroy(gameWin *src) {
     }
     if (src->kingWhiteTexture != NULL) {
         SDL_DestroyTexture(src->kingWhiteTexture);
-    }if (src->kingBlackTexture != NULL) {
+    }
+    if (src->kingBlackTexture != NULL) {
         SDL_DestroyTexture(src->kingBlackTexture);
+    }
+    if (src->undoTexture != NULL) {
+        SDL_DestroyTexture(src->undoTexture);
+    }
+    if (src->undoFadeTexture != NULL) {
+        SDL_DestroyTexture(src->undoFadeTexture);
+    }
+    if (src->restartTexture != NULL) {
+        SDL_DestroyTexture(src->restartTexture);
+    }
+    if (src->saveTexture != NULL) {
+        SDL_DestroyTexture(src->saveTexture);
     }
     if (src->loadTexture != NULL) {
         SDL_DestroyTexture(src->loadTexture);
+    }
+    if (src->mainMenuTexture != NULL) {
+        SDL_DestroyTexture(src->mainMenuTexture);
+    }
+
+    if (src->quitTexture != NULL) {
+        SDL_DestroyTexture(src->quitTexture);
     }
     if (src->gameRenderer != NULL) {
         SDL_DestroyRenderer(src->gameRenderer);
@@ -984,11 +1029,12 @@ void gameWindowDestroy(gameWin *src) {
     }
 
     free(src);
-    src=NULL;
+    src = NULL;
 }
-SDL_Texture *getTexture(gameWin* gameWin, char soldier){
-    switch(soldier)
-    {
+
+SDL_Texture *getTexture(gameWin *gameWin,
+                        char soldier) {
+    switch (soldier) {
         case KING_BLACK:
             return gameWin->kingBlackTexture;
         case KING_WHITE:
@@ -1018,35 +1064,49 @@ SDL_Texture *getTexture(gameWin* gameWin, char soldier){
     }
 
 }
-void gameWindowDraw(gameWin *src, GameSession * session) {
+
+void gameWindowDraw(gameWin *src, GameSession *session) {
     if (src == NULL) {
         return;
     }
     SDL_Rect boardR = {.x = GAMEBOARD_X, .y = GAMEBOARD_Y, .h = 480, .w = 480};
     SDL_Rect soldiers[8][8];
-    for(int i=0;i<GAME_SIZE;i++)
-    {
-        for (int j=0;j<GAME_SIZE;j++)
-        {
-            soldiers[i][j].x=GAMEBOARD_X+(j*60);
-            soldiers[i][j].y=GAMEBOARD_Y+(i*60);
-            soldiers[i][j].h=60;
-            soldiers[i][j].w=60;
+    for (int i = 0; i < GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
+            soldiers[i][j].x = GAMEBOARD_X + (j * 60);
+            soldiers[i][j].y = GAMEBOARD_Y + (i * 60);
+            soldiers[i][j].h = 60;
+            soldiers[i][j].w = 60;
         }
     }
-    SDL_Rect loadR = {.x =500, .y = 240, .h = 56, .w = 196};
+    SDL_Rect undoR = {.x =500, .y = GAMEBOARD_Y, .h = 56, .w = 196};
+    SDL_Rect restartR = {.x =500, .y = GAMEBOARD_Y + 60, .h = 56, .w = 196};
+    SDL_Rect saveR = {.x =500, .y = GAMEBOARD_Y + 120, .h = 56, .w = 196};
+    SDL_Rect loadR = {.x =500, .y = GAMEBOARD_Y + 180, .h = 56, .w = 196};
+    SDL_Rect mainMenuR = {.x =500, .y = GAMEBOARD_Y + 240, .h = 56, .w = 196};
+    SDL_Rect quitR = {.x =500, .y = GAMEBOARD_Y + 300, .h = 56, .w = 196};
     SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->gameRenderer);
     SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
-    for(int i=0;i<GAME_SIZE;i++)
-    {
-        for (int j=0;j<GAME_SIZE;j++){
+    for (int i = 0; i < GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
             if (session->game->gameBoard[i][j] != EMPTY_ENTRY)
-                SDL_RenderCopy(src->gameRenderer, getTexture(src,session->game->gameBoard[i][j]),
-                               NULL, &soldiers[7-i][j]);
+                SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
+                               NULL, &soldiers[7 - i][j]);
         }
     }
+    if(session->mode==ONE_PLAYER){
+        if(session->game->history->actualSize>0)
+            SDL_RenderCopy(src->gameRenderer, src->undoTexture, NULL, &undoR);
+        else
+            SDL_RenderCopy(src->gameRenderer, src->undoFadeTexture, NULL, &undoR);
+
+    }
+    SDL_RenderCopy(src->gameRenderer, src->restartTexture, NULL, &restartR);
+    SDL_RenderCopy(src->gameRenderer, src->saveTexture, NULL, &saveR);
     SDL_RenderCopy(src->gameRenderer, src->loadTexture, NULL, &loadR);
+    SDL_RenderCopy(src->gameRenderer, src->mainMenuTexture, NULL, &mainMenuR);
+    SDL_RenderCopy(src->gameRenderer, src->quitTexture, NULL, &quitR);
     SDL_RenderPresent(src->gameRenderer);
 }
 
