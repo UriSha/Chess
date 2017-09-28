@@ -53,5 +53,7 @@ void guiMode(){
 }
 int main(int argc, char** argv) {
     guiMode();
+//    consoleMode();
 return 0;
+
 }

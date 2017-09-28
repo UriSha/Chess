@@ -117,6 +117,11 @@ MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager 
             return MANAGER_QUIT;
         }
         src->activeWin = GAME_WINDOW_ACTIVE;
+        if(session->user_color==0){// The computer starts
+            moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
+            setMove(session->game,move.source,move.destination);
+            changePlayer(session->game);
+        }
     }
     if (event == SETTINGS_1PLAYER) {
         session->mode = ONE_PLAYER;
@@ -262,6 +267,17 @@ MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src
     if (event == GAME_QUIT_SAVED) {
         gameDestroy((&(session->game)));
         return MANAGER_QUIT;
+    }
+    if (event == GAME_MOVE) {
+        if (setMove(session->game, src->gameWin->moveSrc, src->gameWin->moveDest) == SUCCESS) {
+//        MANAGER_EVENET managerEvent=checkWinner() TODO checkStatus and simpleBox
+            changePlayer(session->game);
+            if (session->mode == ONE_PLAYER) {
+                moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
+                setMove(session->game, move.source, move.destination);
+                changePlayer(session->game);
+            }
+        }
     }
     return MANAGER_NONE;
 }

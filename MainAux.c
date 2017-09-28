@@ -295,7 +295,7 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
                     return true;
             } else if (command.source.row == myRow && command.source.column == 'A')//left castle
             {
-                dest.column = KING_INITIAL_COL_CHAR - 3;
+                dest.column = KING_INITIAL_COL_CHAR - 2;
                 if (!legalCastling(session->game, kingPos, dest, false)) {
                     printf("Illegal castling move\n");
                     return false;
@@ -320,6 +320,10 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
                 char *playerColor;
                 playerColor = session->game->currentPlayer == WHITE_PLAYER ? "white" : "black";
                 printf("The specified position does not contain %s player piece\n", playerColor);
+                return false;
+            }
+            if(session->difficulty>2){
+                printf("Error: Computer level is higher than \"Easy\"\n");
                 return false;
             }
             printMoves(session->game, command.source);

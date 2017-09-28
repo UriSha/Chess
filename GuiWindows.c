@@ -1136,9 +1136,14 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     for (int i = 0; i < GAME_SIZE; i++) {
         for (int j = 0; j < GAME_SIZE; j++) {
             if (session->game->gameBoard[i][j] != EMPTY_ENTRY) {
-                if (GET_ROW(src->moveSrc) == GAME_SIZE - i-1)
-                SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
-                               NULL, &soldiers[7 - i][j]);
+                if (GET_ROW(src->moveSrc) ==  i && GET_COLUMN(src->moveSrc)==j){
+                    SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
+                                   NULL, &src->movingRect);
+                }
+                else {
+                    SDL_RenderCopy(src->gameRenderer, getTexture(src, session->game->gameBoard[i][j]),
+                                   NULL, &soldiers[7-i][j]);
+                }
             }
         }
     }
@@ -1171,16 +1176,17 @@ bool isClickedOnBoard(int x, int y) {
     return false;
 }
 
-int getClickRow(int x) {
-    if (x >= GAMEBOARD_X && x <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
-        return (x - GAMEBOARD_X) / TILE_SIZE + 1;
+
+int getClickRow(int y) {
+    if (y >= GAMEBOARD_Y && y <= GAMEBOARD_Y + ACTUAL_BOARD_SIZE) {
+        return  GAME_SIZE -( (y - GAMEBOARD_Y) / TILE_SIZE);
     }
     return INVALID_ROW;
 }
 
-char getClickCol(int y) {
-    if (y >= GAMEBOARD_X && y <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
-        return (char) ('A' + (y - GAMEBOARD_Y) / TILE_SIZE);
+char getClickCol(int x) {
+    if (x >= GAMEBOARD_X && x <= GAMEBOARD_X + ACTUAL_BOARD_SIZE) {
+        return (char) ('A'+((x - GAMEBOARD_X) / TILE_SIZE));
     }
     return INVALID_COL;
 }
@@ -1228,8 +1234,10 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                 }
                 if (isClickedOnBoard(event->button.x, event->button.y) && src->currentlyDragged) {
                     src->currentlyDragged = 0;
-                    src->moveDest.row = getClickRow(event->button.x);
-                    src->moveDest.column = getClickCol(event->button.y);
+                    src->moveDest.row =getClickRow(event->button.y);
+                    src->moveDest.column = getClickCol(event->button.x);
+                    int r = src->moveDest.row;
+                    char c = src->moveDest.column;
                     return GAME_MOVE;
 
                 }
@@ -1240,10 +1248,12 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
         case SDL_MOUSEBUTTONDOWN:
             if (event->button.button == SDL_BUTTON_LEFT) {
                 if (isClickedOnBoard(event->button.x, event->button.y)) {
-                    char soldier = session->game->gameBoard[GET_ROW(src->moveSrc)][GET_COLUMN(src->moveSrc)];
+                    char soldier = session->game->gameBoard[getClickRow(event->button.y)-1][getClickCol(event->button.x)-'A'];
+//                   int r = GAME_SIZE-getClickRow(event->button.y)-1;
+//                    int c = getClickCol(event->button.x)-'A';
                     if (getPlayer(soldier) == session->game->currentPlayer) {
-                        src->moveSrc.row = getClickRow(event->button.x);
-                        src->moveSrc.column = getClickCol(event->button.y);
+                        src->moveSrc.row = getClickRow(event->button.y);
+                        src->moveSrc.column = getClickCol(event->button.x);
                         src->currentlyDragged = 1;
                         src->movingRect.x = event->button.x - (TILE_SIZE / 2);
                         src->movingRect.y = event->button.y - (TILE_SIZE / 2);
