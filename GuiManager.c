@@ -1,4 +1,5 @@
 #include "GuiManager.h"
+#include "GuiWindows.h"
 
 
 GuiManager *ManagerCreate() {
@@ -11,8 +12,8 @@ GuiManager *ManagerCreate() {
         free(res);
         return NULL;
     }
-    res->loadGameWin=NULL;
-    res->settingsWin=NULL;
+    res->loadGameWin = NULL;
+    res->settingsWin = NULL;
     res->gameWin = NULL;
     res->activeWin = MAIN_WINDOW_ACTIVE;
     return res;
@@ -23,54 +24,54 @@ void ManagerDestroy(GuiManager *src) {
         return;
     if (src->activeWin == MAIN_WINDOW_ACTIVE) {
         mainWindowDestroy(src->mainWin);
-        src->mainWin=NULL;
+        src->mainWin = NULL;
     }
     if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
         settingsWindowDestroy(src->settingsWin);
-        src->settingsWin=NULL;
+        src->settingsWin = NULL;
     }
     if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         loadGameWindowDestroy(src->loadGameWin);
-        src->loadGameWin=NULL;
+        src->loadGameWin = NULL;
     }
-    if(src->activeWin==GAME_WINDOW_ACTIVE) {
+    if (src->activeWin == GAME_WINDOW_ACTIVE) {
         gameWindowDestroy(src->gameWin);
-        src->gameWin=NULL;
+        src->gameWin = NULL;
     }
     free(src);
 }
 
-void ManagerDraw(GuiManager *manager, GameSession* session) {
+void ManagerDraw(GuiManager *manager, GameSession *session) {
     if (!manager) {
         return;
     }
-    if (manager->activeWin == MAIN_WINDOW_ACTIVE ) {
-         if(manager->mainWin==NULL)
-             manager->mainWin=mainWindowCreate();
-            mainWindowDraw(manager->mainWin);
+    if (manager->activeWin == MAIN_WINDOW_ACTIVE) {
+        if (manager->mainWin == NULL)
+            manager->mainWin = mainWindowCreate();
+        mainWindowDraw(manager->mainWin);
     } else if (manager->activeWin == SETTINGS_WINDOW_ACTIVE) {
-        if(manager->settingsWin==NULL)
-            manager->settingsWin=settingsWindowCreate();
+        if (manager->settingsWin == NULL)
+            manager->settingsWin = settingsWindowCreate();
         settingsWindowDraw(manager->settingsWin);
     } else if (manager->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
-        if(manager->loadGameWin==NULL)
-            manager->loadGameWin=loadGameWindowCreate();
+        if (manager->loadGameWin == NULL)
+            manager->loadGameWin = loadGameWindowCreate();
         loadGameWindowDraw(manager->loadGameWin);
     } else if (manager->activeWin == GAME_WINDOW_ACTIVE) {
-        if(manager->gameWin==NULL)
-            manager->gameWin=gameWindowCreate(session);
-        gameWindowDraw(manager->gameWin,session);
+        if (manager->gameWin == NULL)
+            manager->gameWin = gameWindowCreate(session);
+        gameWindowDraw(manager->gameWin, session);
     }
 }
 
-MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *src, EVENT event){
+MANAGER_EVENET handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
     if (event == MAIN_NEW_GAME) {
         (*session) = sessionCreate(HISTORYSIZE);
         mainWindowDestroy(src->mainWin);
-        src->mainWin=NULL;
+        src->mainWin = NULL;
         src->settingsWin = settingsWindowCreate();
         if (src->settingsWin == NULL) {
             printf("Couldn't move to settings window\n");
@@ -81,7 +82,7 @@ MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *sr
     if (event == MAIN_LOAD_GAME) {
         (*session) = sessionCreate(HISTORYSIZE);
         mainWindowDestroy(src->mainWin);
-        src->mainWin=NULL;
+        src->mainWin = NULL;
         src->loadGameWin = loadGameWindowCreate();
         src->loadGameWin->fromMainMenu = true;//TODO do this also in gameWindow with false parameter
         if (src->loadGameWin == NULL) {
@@ -96,20 +97,20 @@ MANAGER_EVENET handleManagerDueToMainEvent( GameSession* session, GuiManager *sr
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event){
+MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
     if (event == SETTINGS_BACK) {
         gameDestroy(&(session->game));
         settingsWindowDestroy(src->settingsWin);
-        src->settingsWin=NULL;
+        src->settingsWin = NULL;
         src->mainWin = mainWindowCreate();
         src->activeWin = MAIN_WINDOW_ACTIVE;
     }
     if (event == SETTINGS_START) {
         settingsWindowDestroy(src->settingsWin);
-        src->settingsWin=NULL;
+        src->settingsWin = NULL;
         src->gameWin = gameWindowCreate(session);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
@@ -153,7 +154,7 @@ MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager 
         session->user_color = WHITE_PLAYER;
         src->settingsWin->user_color = 1;
     }
-    if (event == SEETINGS_QUIT){
+    if (event == SEETINGS_QUIT) {
         gameDestroy(&(session->game));
         return MANAGER_QUIT;
     }
@@ -161,16 +162,15 @@ MANAGER_EVENET handleManagerDueToSettingsEvent(GameSession *session, GuiManager 
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event){
+MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (event == LOAD_BACK) {
-        if(src->loadGameWin->fromMainMenu) {
+        if (src->loadGameWin->fromMainMenu) {
             gameDestroy(&(session->game));
             loadGameWindowDestroy(src->loadGameWin);
             src->loadGameWin = NULL;
             src->mainWin = mainWindowCreate();
             src->activeWin = MAIN_WINDOW_ACTIVE;
-        }
-        else{
+        } else {
             loadGameWindowDestroy(src->loadGameWin);
             src->loadGameWin = NULL;
             src->gameWin = gameWindowCreate(session);
@@ -198,7 +198,7 @@ MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src
         sprintf(path, "%d.xml", src->loadGameWin->chosenSlot);
         loadGame(path, session);
         loadGameWindowDestroy(src->loadGameWin);
-        src->loadGameWin=NULL;
+        src->loadGameWin = NULL;
         src->gameWin = gameWindowCreate(session);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
@@ -213,30 +213,31 @@ MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src
     return MANAGER_NONE;
 }
 
-MANAGER_EVENET handleManagerDueToGameEvent(GameSession* session,GuiManager *src, GAME_EVENT event) {
-    if (event == GAME_LOAD){
+MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
+    if (event == GAME_LOAD) {
         gameWindowDestroy(src->gameWin);
         src->gameWin = NULL;
         src->loadGameWin = loadGameWindowCreate();
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-    if (event == GAME_UNDO){
+    if (event == GAME_UNDO) {
         if (undo(session))
             undo(session);
         src->gameWin->isSaved = false;
     }
-    if (event == GAME_SAVE){
-
+    if (event == GAME_SAVE) {
+        if(saveFromGameWindow(session))
+            src->gameWin->isSaved=true;
     }
-    if (event == GAME_MAINMENU_SAVED){
-
-
-    }
-    if (event == GAME_MAINMENU_UNSAVED){
+    if (event == GAME_MAINMENU_SAVED) {
 
 
     }
-    if (event == GAME_RESTART){
+    if (event == GAME_MAINMENU_UNSAVED) {
+
+
+    }
+    if (event == GAME_RESTART) {
         gameDestroy(&(session->game));
         session->game = gameCreate(HISTORYSIZE);
         src->gameWin->isSaved = false;
@@ -280,7 +281,7 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
     }
     if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
         EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
-        return handleManagerDueToLoadEvent( session,src, loadEvent);
+        return handleManagerDueToLoadEvent(session, src, loadEvent);
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {
         GAME_EVENT gameEvent = gameWindowHandleEvent(session, src->gameWin, event);
@@ -289,7 +290,7 @@ MANAGER_EVENET ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Eve
     return MANAGER_NONE;
 }
 
-int askWhetherToSave(GameSession* session) {
+int askWhetherToSave(GameSession *session,gameWin* src) {
     const SDL_MessageBoxButtonData buttons[] = {
             {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Yes"},
             {0,                                       1, "No"},
@@ -325,7 +326,8 @@ int askWhetherToSave(GameSession* session) {
     }
     switch (buttonID) {
         case 0:
-//            saveGame(session);
+            if(saveFromGameWindow(session))
+                src->isSaved=true;
             return 1;
         case 1:
             return 1;
@@ -337,18 +339,36 @@ int askWhetherToSave(GameSession* session) {
     return 0;
 }
 
-bool saveFromGameWindow(GameSession *session, gameWin *gameWin){
+bool saveFromGameWindow(GameSession *session) {
     FILE *numOfSlots = NULL;
-    numOfSlots = fopen("../numOfSlots.xml", "w+");
+    numOfSlots = fopen("numOfSlots.xml", "a+");
     int validSlots;
+    char *filePath=(char*)malloc(sizeof(char)*6);
     char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
-    if(token==NULL)
-    {
-        printf("%s",MALLOC_ERROR);
+    if (token == NULL) {
+        printf("%s", MALLOC_ERROR);
         return false;
     }
     fgets(token, MAX_LINE_LENGTH, numOfSlots);
-    fscanf(numOfSlots,"<validSlots>%d",&validSlots);
-
-
+    fscanf(numOfSlots, "<validSlots>%d", &validSlots);
+    if (validSlots < MAX_NUM_OF_SLOTS) {
+        sprintf(filePath, "%d.xml", validSlots + 1);
+    } else {
+        char *secondPath=(char*)malloc(sizeof(char)*6);
+        for (int i = 1; i < MAX_NUM_OF_SLOTS; i++) {
+            sprintf(filePath, "%d.xml", i + 1);
+            sprintf(secondPath, "%d.xml", i);
+            rename(filePath, secondPath);
+        }
+        sprintf(filePath, "%d.xml", MAX_NUM_OF_SLOTS);
+        free(secondPath);
+    }
+    saveGame(filePath, session);
+    fseek(numOfSlots, 0, SEEK_SET);
+    fgets(token, MAX_LINE_LENGTH, numOfSlots);
+    fprintf(numOfSlots, "<validSlots>%d</validSlots>",
+            validSlots == MAX_NUM_OF_SLOTS ? MAX_NUM_OF_SLOTS : validSlots + 1);
+    free(filePath);
+    free(token);
+    fclose(numOfSlots);
 }

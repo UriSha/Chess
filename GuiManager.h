@@ -42,6 +42,7 @@ MANAGER_EVENET handleManagerDueToLoadEvent(GameSession *session, GuiManager *src
 
 MANAGER_EVENET handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event);
 
-bool saveFromGameWindow(GameSession *session, gameWin *gameWin);
+bool saveFromGameWindow(GameSession *session);
+int askWhetherToSave(GameSession *session,gameWin* src);
 
 #endif //CHESS_GUIMANAGER_H

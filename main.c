@@ -52,7 +52,7 @@ void guiMode(){
     SDL_Quit();
 }
 int main(int argc, char** argv) {
-//    guiMode();
+    guiMode();
 //    consoleMode();
 //rename("2.xml","1.xml");
     FILE *numOfSlots = NULL;
@@ -71,6 +71,5 @@ int main(int argc, char** argv) {
     }
 
     fclose(numOfSlots);
-    int x =8;
 
 }

@@ -889,7 +889,7 @@ int isClickedOnRestartGame(int x, int y) {
 }
 
 int isClickedOnSaveGame(int x, int y, gameWin *src) {
-    if (src->isSaved) {
+    if (!src->isSaved) {
         if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y + 170 && y <= GAMEBOARD_Y + 223)) {
             return 1;
         }

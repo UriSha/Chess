@@ -88,7 +88,7 @@ bool loadGame(char *filePath, GameSession *session) {
     FILE *loadedFile = NULL;
     char path[MAX_LINE_LENGTH];
     strcpy(path,filePath);
-    loadedFile = fopen(filePath, "r+");
+    loadedFile = fopen(path, "r+");
     if (loadedFile == NULL) {
         printf("Error: File doesn’t exist or cannot be opened\n");
         return false;
