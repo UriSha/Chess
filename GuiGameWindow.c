@@ -285,17 +285,16 @@ SDL_Texture *getTexture(gameWin *gameWin,
 
 }
 
-void drawGetMoves(gameWin *src, GameSession *session) {
-    SDL_Rect rec;
-    int i, j;
-    for (i = 0; i < GAME_SIZE; i++) {
-        for (j = 0; j < GAME_SIZE; j++) {
-            rec.x = GAMEBOARD_X + (j * TILE_SIZE);
-            rec.y = ACTUAL_BOARD_SIZE - ((i + 1) * TILE_SIZE) + GAMEBOARD_Y;
-            rec.w = TILE_SIZE;
-            rec.h = TILE_SIZE;
+void drawGetMoves(gameWin *src) {
+    SDL_Rect rect;
+    for (int i = 0; i < GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
+            rect.x = GAMEBOARD_X + (j * TILE_SIZE);
+            rect.y = ACTUAL_BOARD_SIZE - ((i + 1) * TILE_SIZE) + GAMEBOARD_Y;
+            rect.w = TILE_SIZE;
+            rect.h = TILE_SIZE;
             if (src->getMovesShowing == 1) {
-                SDL_RenderCopy(src->gameRenderer, (src->movesGrid[i * sizeof(SDL_Texture *) + j]), NULL, &rec);
+                SDL_RenderCopy(src->gameRenderer, (src->movesGrid[i * sizeof(SDL_Texture *) + j]), NULL, &rect);
             } else {
                 src->movesGrid[i * sizeof(SDL_Texture *) + j] = NULL;
             }
@@ -317,12 +316,12 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
             soldiers[i][j].w = TILE_SIZE;
         }
     }
-    SDL_Rect undoR = {.x =550, .y = GAMEBOARD_Y + 10, .h = 53, .w =101};
-    SDL_Rect restartR = {.x =550, .y = GAMEBOARD_Y + 90, .h = 53, .w = 173};
-    SDL_Rect saveR = {.x =550, .y = GAMEBOARD_Y + 170, .h = 53, .w = 151};
-    SDL_Rect loadR = {.x =550, .y = GAMEBOARD_Y + 250, .h = 53, .w = 155};
-    SDL_Rect mainMenuR = {.x =550, .y = GAMEBOARD_Y + 330, .h = 53, .w = 155};
-    SDL_Rect quitR = {.x =550, .y = GAMEBOARD_Y + 410, .h = 53, .w = 93};
+    SDL_Rect undoR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 10, .h = GAME_BUTTONS_HIGHT, .w =101};
+    SDL_Rect restartR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 90, .h = GAME_BUTTONS_HIGHT, .w = 173};
+    SDL_Rect saveR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 170, .h = GAME_BUTTONS_HIGHT, .w = 151};
+    SDL_Rect loadR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 250, .h = GAME_BUTTONS_HIGHT, .w = 155};
+    SDL_Rect mainMenuR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 330, .h = GAME_BUTTONS_HIGHT, .w = 155};
+    SDL_Rect quitR = {.x =X_GAME_BUTTONS, .y = GAMEBOARD_Y + 410, .h = GAME_BUTTONS_HIGHT, .w = 93};
     SDL_SetRenderDrawColor(src->gameRenderer, 0, 0, 0, 0);
     SDL_RenderClear(src->gameRenderer);
     SDL_RenderCopy(src->gameRenderer, src->gameBoardTexture, NULL, &boardR);
@@ -341,7 +340,7 @@ void gameWindowDraw(gameWin *src, GameSession *session) {
     }
 
 
-    drawGetMoves(src, session);
+    drawGetMoves(src);
 
     if (session->mode == ONE_PLAYER) {
         if (session->game->history->actualSize > 0)
@@ -393,7 +392,7 @@ void drag(SDL_Event *event, gameWin *src) {
 
     double distance = getDistance(srcX, srcY, event->button.x, event->button.y);
 
-    if (distance > 20) {
+    if (distance > PIXELS_TO_CHANGE_MOTION) {
         src->movingRect.x = event->button.x - (TILE_SIZE / 2);
         src->movingRect.y = event->button.y - (TILE_SIZE / 2);
     }
@@ -519,8 +518,6 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                 if (isClickedOnBoard(event->button.x, event->button.y)) {
                     char soldier = session->game->gameBoard[getClickRow(event->button.y) - 1][
                             getClickCol(event->button.x) - 'A'];
-//                   int r = GAME_SIZE-getClickRow(event->button.y)-1;
-//                    int c = getClickCol(event->button.x)-'A';
                     if (getPlayer(soldier) == session->game->currentPlayer) {
                         src->moveSrc.row = getClickRow(event->button.y);
                         src->moveSrc.column = getClickCol(event->button.x);

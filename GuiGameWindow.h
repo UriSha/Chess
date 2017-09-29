@@ -3,6 +3,10 @@
 
 
 #include "GuiDefinitions.h"
+#define X_GAME_BUTTONS 550
+#define GAME_BUTTONS_HIGHT 53
+#define PIXELS_TO_CHANGE_MOTION 20
+
 
 /**
  * The game Gui window
