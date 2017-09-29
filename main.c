@@ -4,7 +4,11 @@
 //#include "ChessHistory.h"
 //#include "ChessGame.h"
 #include "tester.h"
-#include "GuiWindows.h"
+//#include "GuiWindows.h"
+//#include "GuiSettingsWindow.h"
+//#include "GuiLoadWindow.h"
+//#include "GuiGameWindow.h"
+//#include "GuiMainWindow.h"
 #include "GuiManager.h"
 
 

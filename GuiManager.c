@@ -1,5 +1,5 @@
 #include "GuiManager.h"
-#include "GuiWindows.h"
+//#include "GuiWindows.h"
 
 
 GuiManager *ManagerCreate() {
@@ -64,7 +64,7 @@ void ManagerDraw(GuiManager *manager, GameSession *session) {
     }
 }
 
-MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, MAIN_EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
@@ -97,7 +97,7 @@ MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src,
     return MANAGER_NONE;
 }
 
-MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, SETTINGS_EVENT event) {
     if (src == NULL) {
         return MANAGER_NONE;
     }
@@ -159,7 +159,7 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
         session->user_color = WHITE_PLAYER;
         src->settingsWin->user_color = 1;
     }
-    if (event == SEETINGS_QUIT) {
+    if (event == SETTINGS_QUIT) {
         gameDestroy(&(session->game));
         return MANAGER_QUIT;
     }
@@ -167,7 +167,7 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
     return MANAGER_NONE;
 }
 
-MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event) {
+MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, LOAD_EVENT event) {
     if (event == LOAD_BACK) {
         if (src->loadGameWin->fromMainMenu == 1) {
             gameDestroy(&(session->game));
@@ -332,15 +332,15 @@ MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Even
         return MANAGER_NONE;
     }
     if (src->activeWin == MAIN_WINDOW_ACTIVE) {
-        EVENT mainEvent = mainWindowHandleEvent(src->mainWin, event);
+        MAIN_EVENT mainEvent = mainWindowHandleEvent(src->mainWin, event);
         return handleManagerDueToMainEvent(session, src, mainEvent);
     }
     if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
-        EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
+        SETTINGS_EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
         return handleManagerDueToSettingsEvent(session, src, settingsEvent);
     }
     if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
-        EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
+        LOAD_EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
         return handleManagerDueToLoadEvent(session, src, loadEvent);
     }
     if (src->activeWin == GAME_WINDOW_ACTIVE) {

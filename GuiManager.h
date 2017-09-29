@@ -2,9 +2,12 @@
 #ifndef CHESS_GUIMANAGER_H
 #define CHESS_GUIMANAGER_H
 
-#include "GuiWindows.h"
+//#include "GuiWindows.h"
+#include "GuiSettingsWindow.h"
+#include "GuiLoadWindow.h"
+#include "GuiGameWindow.h"
+#include "GuiMainWindow.h"
 
-#define MAX_NUM_OF_SLOTS 5
 
 typedef enum {
     MAIN_WINDOW_ACTIVE,
@@ -16,9 +19,9 @@ typedef enum {
 typedef enum {
     MANAGER_QUIT,
     MANAGER_NONE,
-    MANAGER_CHECK,
-    MANAGER_TIE,
-    MANAGER_MATE,
+//    MANAGER_CHECK,
+//    MANAGER_TIE,
+//    MANAGER_MATE,
 } MANAGER_EVENT;
 
 typedef struct {
@@ -37,11 +40,11 @@ void ManagerDraw(GuiManager *src, GameSession *session);
 
 MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event);
 
-MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src, MAIN_EVENT event);
 
-MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, SETTINGS_EVENT event);
 
-MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event);
+MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, LOAD_EVENT event);
 
 MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event);
 
