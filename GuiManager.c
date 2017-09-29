@@ -84,7 +84,7 @@ MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src,
         mainWindowDestroy(src->mainWin);
         src->mainWin = NULL;
         src->loadGameWin = loadGameWindowCreate();
-        src->loadGameWin->fromMainMenu = true;//TODO do this also in gameWindow with false parameter
+        src->loadGameWin->fromMainMenu = 1;//TODO do this also in gameWindow with false parameter
         if (src->loadGameWin == NULL) {
             printf("Couldn't move to settings window\n");
             return MANAGER_QUIT;
@@ -169,7 +169,7 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
 
 MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, EVENT event) {
     if (event == LOAD_BACK) {
-        if (src->loadGameWin->fromMainMenu) {
+        if (src->loadGameWin->fromMainMenu == 1) {
             gameDestroy(&(session->game));
             loadGameWindowDestroy(src->loadGameWin);
             src->loadGameWin = NULL;
@@ -223,6 +223,7 @@ MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src,
         gameWindowDestroy(src->gameWin);
         src->gameWin = NULL;
         src->loadGameWin = loadGameWindowCreate();
+        src->loadGameWin->fromMainMenu = 0;
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
     if (event == GAME_UNDO) {
@@ -288,7 +289,7 @@ MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src,
             }
             if(msg==CHECK) {
                 char *playerColor;
-                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
+                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "White" : "Black";
                 char message[MAX_LINE_LENGTH];
                 sprintf(message,"Check: %s King is threatened!",playerColor);
                 SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Check",

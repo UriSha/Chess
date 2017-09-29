@@ -807,13 +807,6 @@ void loadGameWindowDraw(loadGameWin *src) {
 
     }
 
-
-//    SDL_RenderCopy(src->loadRenderer, src->load1Texture, NULL, &slot1R);
-//    SDL_RenderCopy(src->loadRenderer, src->load2Texture, NULL, &slot2R);
-//    SDL_RenderCopy(src->loadRenderer, src->load3Texture, NULL, &slot3R);
-//    SDL_RenderCopy(src->loadRenderer, src->load4Texture, NULL, &slot4R);
-//    SDL_RenderCopy(src->loadRenderer, src->load5Texture, NULL, &slot5R);
-
     SDL_RenderCopy(src->loadRenderer, src->backTexture, NULL, &backR);
     SDL_RenderCopy(src->loadRenderer, src->startTexture, NULL, &startR);
     SDL_RenderPresent(src->loadRenderer);
@@ -1348,8 +1341,6 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                     src->currentlyDragged = 0;
                     src->moveDest.row = getClickRow(event->button.y);
                     src->moveDest.column = getClickCol(event->button.x);
-                    int r = src->moveDest.row;
-                    char c = src->moveDest.column;
                     return GAME_MOVE;
 
                 }
@@ -1366,7 +1357,6 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                 } else {
                     src->getMovesShowing = 0;
                 }
-                //TODO get_moves
             }
             break;
         case SDL_MOUSEBUTTONDOWN:

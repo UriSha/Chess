@@ -1043,8 +1043,8 @@ int getScore(ChessGame *game){
                 score++;
             else if (current==PAWN_BLACK)
                 score--;
-            else if (current==PAWN_BLACK)
-                score--;
+//            else if (current==PAWN_BLACK)
+//                score--;
             else if (current==ROOK_WHITE)
                 score+=5;
             else if (current==ROOK_BLACK)
