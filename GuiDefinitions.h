@@ -7,6 +7,10 @@
 #include <SDL_video.h>
 #include "MainAux.h"
 
+/**
+ * Constants for the Gui windows
+ */
+
 #define GAME_WIDTH 800
 #define GAME_HEIGHT 600
 #define WINDOW_WIDTH 400

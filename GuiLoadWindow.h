@@ -4,6 +4,11 @@
 #include "GuiDefinitions.h"
 #define MAX_NUM_OF_SLOTS 5
 
+/**
+ * The load game Gui window
+ * allows the user to load a game from his previous saved games
+ * the user can choose from MAX_NUM_OF_SLOTS recent saved game
+ */
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *loadRenderer;
@@ -24,8 +29,12 @@ typedef struct {
     int chosenSlot;
     int availableSlots;
     int fromMainMenu;
+    int isCurrentGameSaved;
 } loadGameWin;
 
+/**
+ * Event that occur in the load window
+ */
 typedef enum {
     LOAD_1SLOT,
     LOAD_2SLOT,
@@ -39,14 +48,39 @@ typedef enum {
     LOAD_NONE,
 } LOAD_EVENT;
 
+/**
+ * Loads and image into an SDL_Texture
+ *
+ * @param path - the path to the image file
+ * @param src - the main menu window
+ * @param texture - the texture of the image
+ * @return
+ * true if the loading was successful
+ */
 bool loadImageLoadWindow(char *path, loadGameWin *src, SDL_Texture **texture);
 
+/**
+ * Creates a new load window
+ *
+ * @return
+ * a pointer to the window created
+ */
 loadGameWin *loadGameWindowCreate();
 
+/**
+ * Draws the load window
+ */
 void loadGameWindowDraw(loadGameWin *src);
 
+/**
+ * Destroys the load input window
+ */
 void loadGameWindowDestroy(loadGameWin *src);
 
+/**
+ * @return
+ * LOAD_EVENT according to the event occurred
+ */
 LOAD_EVENT loadGameWindowHandleEvent(loadGameWin *src, SDL_Event *event);
 
 

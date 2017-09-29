@@ -4,7 +4,13 @@
 
 #include "GuiDefinitions.h"
 
-
+/**
+ * The settings Gui window
+ * Has 3 functionalities:
+ *          choosing game mode - one or two players
+ *          choosing difficulty (only in one player mode) - noob, easy, moderate, hard or expert
+ *          choosing user color (only in one player mode) - white or black
+ */
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *settingsRenderer;
@@ -37,6 +43,9 @@ typedef struct {
     int user_color;
 } settingsWin;
 
+/**
+ * Event that occur in the main menu window
+ */
 typedef enum {
     SETTINGS_INVALID_GUI_ARGUMENT,
     SETTINGS_NONE,
@@ -55,15 +64,39 @@ typedef enum {
 
 } SETTINGS_EVENT;
 
-//Settings Window
+/**
+ * Loads and image into an SDL_Texture
+ *
+ * @param path - the path to the image file
+ * @param src - the settings window
+ * @param texture - the texture of the image
+ * @return
+ * true if the loading was successful
+ */
 bool loadImageSettingsWindow(char *path, settingsWin *src, SDL_Texture **texture);
 
+/**
+ * Creates a new settings window
+ *
+ * @return
+ * a pointer to the window created
+ */
 settingsWin *settingsWindowCreate();
 
+/**
+ * Draws the settings window
+ */
 void settingsWindowDraw(settingsWin *src);
 
+/**
+ * Destroys the main menu input window
+ */
 void settingsWindowDestroy(settingsWin *src);
 
+/**
+ * @return
+ * SETTINGS_EVENT according to the event occurred
+ */
 SETTINGS_EVENT settingsWindowHandleEvent(settingsWin *src, SDL_Event *event);
 
 

@@ -134,6 +134,7 @@ loadGameWin *loadGameWindowCreate() {
     }
     res->chosenSlot = 0;
     res->availableSlots = getNumOfSlots();
+    res->isCurrentGameSaved = 0;
     if (!loadImageLoadWindow("../images/back.bmp", res, &(res->backTexture)))
         return NULL;
     if (!loadImageLoadWindow("../images/gameLoadWindow.bmp", res, &(res->startTexture)))

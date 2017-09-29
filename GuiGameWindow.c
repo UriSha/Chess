@@ -38,12 +38,11 @@ int isClickedOnRestartGame(int x, int y) {
     return 0;
 }
 
-int isClickedOnSaveGame(int x, int y, gameWin *src) {
-    if (!src->isSaved) {
-        if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y + 170 && y <= GAMEBOARD_Y + 223)) {
-            return 1;
-        }
+int isClickedOnSaveGame(int x, int y) {
+    if ((x >= 550 && x <= 701) && (y >= GAMEBOARD_Y + 170 && y <= GAMEBOARD_Y + 223)) {
+        return 1;
     }
+
     return 0;
 }
 
@@ -68,7 +67,7 @@ int isClickedOnQuitGame(int x, int y) {
     return 0;
 }
 
-gameWin *gameWindowCreate(GameSession *session) {
+gameWin *gameWindowCreate(GameSession *session, int isAlreadySaved) {
     gameWin *res = NULL;
     res = (gameWin *) malloc(sizeof(gameWin));
     if (res == NULL) {
@@ -154,7 +153,7 @@ gameWin *gameWindowCreate(GameSession *session) {
         return NULL;
     if (!loadImageGameWindow("../images/purple.bmp", res, &(res->purple)))
         return NULL;
-    res->isSaved = 0;
+    res->isSaved = isAlreadySaved;
     res->getMovesShowing = 0;
     return res;
 }
@@ -401,17 +400,16 @@ void drag(SDL_Event *event, gameWin *src) {
 
 }
 
-bool isCastlingGameWindow(GameSession *session, Position source, Position dest,int myRow){
-    if (dest.column==source.column && dest.row ==source.row)
+bool isCastlingGameWindow(GameSession *session, Position source, Position dest, int myRow) {
+    if (dest.column == source.column && dest.row == source.row)
         return true;
-    if (source.row-1 == myRow && source.column==KING_INITIAL_COL_CHAR){
-        if (dest.row-1 == myRow){
+    if (source.row - 1 == myRow && source.column == KING_INITIAL_COL_CHAR) {
+        if (dest.row - 1 == myRow) {
             if (dest.column == 'C' || dest.column == 'G')
                 return true;
         }
     }
     return false;
-
 
 
 }
@@ -438,19 +436,17 @@ bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
     for (int i = 0; i < numOfMoves; i++) {
         curDest = movesList[i];
 
-        int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW-1 : BLACK_INITIAL_ROW-1;
-        if (isCastlingGameWindow(session,srcPos,curDest, myRow)){
+        int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
+        if (isCastlingGameWindow(session, srcPos, curDest, myRow)) {
             if (soldier == KING_BLACK || soldier == KING_WHITE) {
-                int column = curDest.column == 'C' ? 0 : GAME_SIZE-1;
+                int column = curDest.column == 'C' ? 0 : GAME_SIZE - 1;
                 src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + column] = src->purple;
-            }
-            else{
+            } else {
 
                 src->movesGrid[myRow * sizeof(SDL_Texture *) + KING_INITIAL_COL_NUM] = src->purple;
             }
 
-        }
-        else {
+        } else {
             src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->yellow;
             soldierAtSite = session->game->gameBoard[GET_ROW(curDest)][GET_COLUMN(curDest)];
             if (soldierAtSite != EMPTY_ENTRY)
@@ -480,8 +476,9 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                     return GAME_UNDO;
                 if (isClickedOnRestartGame(event->button.x, event->button.y))
                     return GAME_RESTART;
-                if (isClickedOnSaveGame(event->button.x, event->button.y, src))
-                    return GAME_SAVE;
+                if (isClickedOnSaveGame(event->button.x, event->button.y))
+                    if (src->isSaved == 0)
+                        return GAME_SAVE;
                 if (isClickedOnLoadGame(event->button.x, event->button.y))
                     return GAME_LOAD;
                 if (isClickedOnMainMenu(event->button.x, event->button.y)) {
@@ -498,6 +495,7 @@ GAME_EVENT gameWindowHandleEvent(GameSession *session, gameWin *src, SDL_Event *
                     src->currentlyDragged = 0;
                     src->moveDest.row = getClickRow(event->button.y);
                     src->moveDest.column = getClickCol(event->button.x);
+                    src->isSaved = 0;
                     return GAME_MOVE;
 
                 }

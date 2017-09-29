@@ -4,21 +4,17 @@
 
 #include "GuiDefinitions.h"
 
-
-typedef enum{
-    GAME_QUIT_SAVED,
-    GAME_QUIT_UNSAVED,
-    GAME_UNDO,
-    GAME_RESTART,
-    GAME_MAINMENU_SAVED,
-    GAME_MAINMENU_UNSAVED,
-    GAME_SAVE,
-    GAME_LOAD,
-    GAME_MOVE,
-    GAME_NONE,
-    GAME_INVALID
-}GAME_EVENT;
-
+/**
+ * The game Gui window
+ * allows the user to play chess
+ * has 6 buttons:
+ *          undo (only for one player) - undo the last move of the computer and the user
+ *          restart game - restarts the game with the same settings
+ *          save game - saves the game in the next open slot or runs over the oldest
+ *          load game - opens the load window
+ *          Main menu game - opens the main menu window
+ *          Quit - terminates the program
+ */
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *gameRenderer;
@@ -56,18 +52,66 @@ typedef struct {
     SDL_Texture* purple;
 } gameWin;
 
+/**
+ * Event that occur in the main menu window
+ */
+typedef enum{
+    GAME_QUIT_SAVED,
+    GAME_QUIT_UNSAVED,
+    GAME_UNDO,
+    GAME_RESTART,
+    GAME_MAINMENU_SAVED,
+    GAME_MAINMENU_UNSAVED,
+    GAME_SAVE,
+    GAME_LOAD,
+    GAME_MOVE,
+    GAME_NONE,
+    GAME_INVALID
+}GAME_EVENT;
 
-
+/**
+ * Loads and image into an SDL_Texture
+ *
+ * @param path - the path to the image file
+ * @param src - the settings window
+ * @param texture - the texture of the image
+ * @return
+ * true if the loading was successful
+ */
 bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture);
 
-gameWin *gameWindowCreate(GameSession *session);
+/**
+ * Creates a new game window
+ *
+ * @return
+ * a pointer to the window created
+ */
+gameWin *gameWindowCreate(GameSession *session, int isAlreadySaved);
 
+/**
+ * @param gameWin - the current game window
+ * @param soldier - char representing a chess piece
+ * @return
+ *
+ * @return
+ * the SDL_Texture that holds the image of the input soldier
+ */
 SDL_Texture *getTexture(gameWin *gameWin, char soldier);
 
+/**
+ * Draws the game window
+ */
 void gameWindowDraw(gameWin *src, GameSession *session);
 
+/**
+ * Destroys the game input window
+ */
 void gameWindowDestroy(gameWin *src);
 
+/**
+ * @return
+ * GAME_EVENT according to the event occurred
+ */
 GAME_EVENT gameWindowHandleEvent(GameSession* session, gameWin *src, SDL_Event *event);
 
 #endif //CHESS_GUIGAMEWINDOW_H

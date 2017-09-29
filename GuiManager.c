@@ -59,7 +59,7 @@ void ManagerDraw(GuiManager *manager, GameSession *session) {
         loadGameWindowDraw(manager->loadGameWin);
     } else if (manager->activeWin == GAME_WINDOW_ACTIVE) {
         if (manager->gameWin == NULL)
-            manager->gameWin = gameWindowCreate(session);
+            manager->gameWin = gameWindowCreate(session, manager->gameWin->isSaved);
         gameWindowDraw(manager->gameWin, session);
     }
 }
@@ -111,7 +111,7 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
     if (event == SETTINGS_START) {
         settingsWindowDestroy(src->settingsWin);
         src->settingsWin = NULL;
-        src->gameWin = gameWindowCreate(session);
+        src->gameWin = gameWindowCreate(session,0);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
             return MANAGER_QUIT;
@@ -176,9 +176,10 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
             src->mainWin = mainWindowCreate();
             src->activeWin = MAIN_WINDOW_ACTIVE;
         } else {
+            int isSaved = src->loadGameWin->isCurrentGameSaved;
             loadGameWindowDestroy(src->loadGameWin);
             src->loadGameWin = NULL;
-            src->gameWin = gameWindowCreate(session);
+            src->gameWin = gameWindowCreate(session, isSaved);
             src->activeWin = GAME_WINDOW_ACTIVE;
         }
     }
@@ -204,7 +205,7 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
         loadGame(path, session);
         loadGameWindowDestroy(src->loadGameWin);
         src->loadGameWin = NULL;
-        src->gameWin = gameWindowCreate(session);
+        src->gameWin = gameWindowCreate(session, 0);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
             return MANAGER_QUIT;
@@ -220,10 +221,12 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
 
 MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
     if (event == GAME_LOAD) {
+        int isSaved = src->gameWin->isSaved;
         gameWindowDestroy(src->gameWin);
         src->gameWin = NULL;
         src->loadGameWin = loadGameWindowCreate();
         src->loadGameWin->fromMainMenu = 0;
+        src->loadGameWin->isCurrentGameSaved = isSaved;
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
     if (event == GAME_UNDO) {
