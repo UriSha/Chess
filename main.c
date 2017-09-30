@@ -25,6 +25,7 @@ void guiMode() {
     GameSession *gameSession = (GameSession *) malloc(sizeof(GameSession));
     if (SDL_Init(SDL_INIT_VIDEO) < 0) { //SDL2 INIT
         printf("ERROR: unable to init SDL: %s\n", SDL_GetError());
+        free(gameSession);
         return;
     }
     GuiManager *manager = ManagerCreate();
