@@ -1,5 +1,4 @@
 #include "GuiManager.h"
-//#include "GuiWindows.h"
 
 
 GuiManager *ManagerCreate() {
@@ -59,7 +58,7 @@ void ManagerDraw(GuiManager *manager, GameSession *session) {
         loadGameWindowDraw(manager->loadGameWin);
     } else if (manager->activeWin == GAME_WINDOW_ACTIVE) {
         if (manager->gameWin == NULL)
-            manager->gameWin = gameWindowCreate(session, manager->gameWin->isSaved);
+            manager->gameWin = gameWindowCreate(manager->gameWin->isSaved);
         gameWindowDraw(manager->gameWin, session);
     }
 }
@@ -96,6 +95,7 @@ MANAGER_EVENT handleManagerDueToMainEvent(GameSession *session, GuiManager *src,
     }
     return MANAGER_NONE;
 }
+//This function handles the events sent by the user when the active window is the Settings window
 
 MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *src, SETTINGS_EVENT event) {
     if (src == NULL) {
@@ -111,15 +111,15 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
     if (event == SETTINGS_START) {
         settingsWindowDestroy(src->settingsWin);
         src->settingsWin = NULL;
-        src->gameWin = gameWindowCreate(session,0);
+        src->gameWin = gameWindowCreate( 0);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
             return MANAGER_QUIT;
         }
         src->activeWin = GAME_WINDOW_ACTIVE;
-        if(session->user_color==0){// The computer starts
+        if (session->user_color == 0) {// The computer starts
             moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
-            setMove(session->game,move.source,move.destination);
+            setMove(session->game, move.source, move.destination);
             changePlayer(session->game);
         }
     }
@@ -167,6 +167,7 @@ MANAGER_EVENT handleManagerDueToSettingsEvent(GameSession *session, GuiManager *
     return MANAGER_NONE;
 }
 
+//This function handles the events sent by the user when the active window is the Load window
 MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src, LOAD_EVENT event) {
     if (event == LOAD_BACK) {
         if (src->loadGameWin->fromMainMenu == 1) {
@@ -179,7 +180,7 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
             int isSaved = src->loadGameWin->isCurrentGameSaved;
             loadGameWindowDestroy(src->loadGameWin);
             src->loadGameWin = NULL;
-            src->gameWin = gameWindowCreate(session, isSaved);
+            src->gameWin = gameWindowCreate( isSaved);
             src->activeWin = GAME_WINDOW_ACTIVE;
         }
     }
@@ -201,11 +202,11 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
     }
     if (event == LOAD_START) {
         char path[6];
-        sprintf(path, "%d.xml",(src->loadGameWin->availableSlots-src->loadGameWin->chosenSlot+1));
+        sprintf(path, "%d.xml", (src->loadGameWin->availableSlots - src->loadGameWin->chosenSlot + 1));
         loadGame(path, session);
         loadGameWindowDestroy(src->loadGameWin);
         src->loadGameWin = NULL;
-        src->gameWin = gameWindowCreate(session, 0);
+        src->gameWin = gameWindowCreate(0);
         if (src->gameWin == NULL) {
             printf("ERROR: Couldn't move to game window\n");
             return MANAGER_QUIT;
@@ -218,142 +219,47 @@ MANAGER_EVENT handleManagerDueToLoadEvent(GameSession *session, GuiManager *src,
     }
     return MANAGER_NONE;
 }
-
-MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
-    if (event == GAME_LOAD) {
-        int isSaved = src->gameWin->isSaved;
-        gameWindowDestroy(src->gameWin);
-        src->gameWin = NULL;
-        src->loadGameWin = loadGameWindowCreate();
-        src->loadGameWin->fromMainMenu = 0;
-        src->loadGameWin->isCurrentGameSaved = isSaved;
-        src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
+//This function performs the save function during GUI mode
+bool saveFromGameWindow(GameSession *session) {
+    FILE *numOfSlots = NULL;
+    numOfSlots = fopen("numOfSlots.xml", "r+");
+    int validSlots;
+    char *filePath = (char *) malloc(sizeof(char) * 6);
+    char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
+    if (token == NULL) {
+        printf("%s", MALLOC_ERROR);
+        return false;
     }
-    if (event == GAME_UNDO) {
-        if (undo(session))
-            undo(session);
-        src->gameWin->isSaved = false;
-    }
-    if (event == GAME_SAVE) {
-        if(saveFromGameWindow(session))
-            src->gameWin->isSaved=true;
-    }
-    if (event == GAME_MAINMENU_SAVED) {
-        gameDestroy(&(session->game));
-        (*session)=sessionCreate(HISTORYSIZE);
-        gameWindowDestroy(src->gameWin);
-        src->gameWin=NULL;
-        src->mainWin=mainWindowCreate();
-        src->activeWin=MAIN_WINDOW_ACTIVE;
-    }
-    if (event == GAME_MAINMENU_UNSAVED) {
-        if(askWhetherToSave(session,src->gameWin))
-        {
-            gameDestroy(&(session->game));
-            (*session)=sessionCreate(HISTORYSIZE);
-            gameWindowDestroy(src->gameWin);
-            src->gameWin=NULL;
-            src->mainWin=mainWindowCreate();
-            src->activeWin=MAIN_WINDOW_ACTIVE;
+    fgets(token, MAX_LINE_LENGTH, numOfSlots);
+    fscanf(numOfSlots, "<validSlots>%d", &validSlots);
+    if (validSlots < MAX_NUM_OF_SLOTS) {
+        sprintf(filePath, "%d.xml", validSlots + 1);
+    } else {
+        char *secondPath = (char *) malloc(sizeof(char) * 6);
+        for (int i = 1; i < MAX_NUM_OF_SLOTS; i++) {
+            sprintf(filePath, "%d.xml", i + 1);
+            sprintf(secondPath, "%d.xml", i);
+            rename(filePath, secondPath);
         }
+        sprintf(filePath, "%d.xml", MAX_NUM_OF_SLOTS);
+        free(secondPath);
     }
-    if (event == GAME_RESTART) {
-        gameDestroy(&(session->game));
-        session->game = gameCreate(HISTORYSIZE);
-        src->gameWin->isSaved = false;
-    }
-    if(event==GAME_QUIT_UNSAVED){
-        if(askWhetherToSave(session,src->gameWin)){
-            gameDestroy((&(session->game)));
-            return MANAGER_QUIT;
-        }
-    }
-    if (event == GAME_QUIT_SAVED) {
-        gameDestroy((&(session->game)));
-        return MANAGER_QUIT;
-    }
-    if (event == GAME_MOVE) {
-        if (setMove(session->game, src->gameWin->moveSrc, src->gameWin->moveDest) == SUCCESS) {
-            changePlayer(session->game);
-            CHESS_MESSAGE msg=checkStatus(session->game);
-            if(msg==TIE){
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Tie",
-                                         "The game is tied!",src->gameWin->window);
-                return MANAGER_QUIT;
-            }
-            if(msg==MATE) {
-                char *playerColor;
-                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
-                char message[MAX_LINE_LENGTH];
-                sprintf(message,"Checkmate! %s player wins the game",playerColor);
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Mate",
-                                         message,src->gameWin->window);
-                return MANAGER_QUIT;
-            }
-            if(msg==CHECK) {
-                char *playerColor;
-                playerColor= session->game->currentPlayer==WHITE_PLAYER ? "White" : "Black";
-                char message[MAX_LINE_LENGTH];
-                sprintf(message,"Check: %s King is threatened!",playerColor);
-                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Check",
-                                         message,src->gameWin->window);
+    saveGame(filePath, session);
+    FILE *newSlotsFile = NULL;
+    newSlotsFile = fopen("newSlotsFile.xml", "w+");
+    fprintf(newSlotsFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    fprintf(newSlotsFile, "<validSlots>%d</validSlots>",
+            validSlots == MAX_NUM_OF_SLOTS ? MAX_NUM_OF_SLOTS : validSlots + 1);
+    fclose(newSlotsFile);
+    rename("newSlotsFile.xml", "numOfSlots.xml");
+    free(filePath);
+    free(token);
 
-            }
-
-            if (session->mode == ONE_PLAYER) {
-                moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
-                setMove(session->game, move.source, move.destination);
-                changePlayer(session->game);
-                CHESS_MESSAGE msg=checkStatus(session->game);
-                if(msg==TIE){
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Tie",
-                                             "The game is tied!",src->gameWin->window);
-                    return MANAGER_QUIT;
-                }
-                if(msg==MATE) {
-                    char *playerColor;
-                    playerColor= session->game->currentPlayer==WHITE_PLAYER ? "Black" : "White";
-                    char message[MAX_LINE_LENGTH];
-                    sprintf(message,"Checkmate! %s player wins the game",playerColor);
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Mate",
-                                             message,src->gameWin->window);
-                    return MANAGER_QUIT;
-                }
-                if(msg==CHECK) {
-
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,"Check",
-                                             "Check!",src->gameWin->window);
-                }
-            }
-        }
-    }
-    return MANAGER_NONE;
+    fclose(numOfSlots);
+    return true;
 }
-
-MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event) {
-    if (src == NULL || event == NULL) {
-        return MANAGER_NONE;
-    }
-    if (src->activeWin == MAIN_WINDOW_ACTIVE) {
-        MAIN_EVENT mainEvent = mainWindowHandleEvent(src->mainWin, event);
-        return handleManagerDueToMainEvent(session, src, mainEvent);
-    }
-    if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
-        SETTINGS_EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
-        return handleManagerDueToSettingsEvent(session, src, settingsEvent);
-    }
-    if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
-        LOAD_EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
-        return handleManagerDueToLoadEvent(session, src, loadEvent);
-    }
-    if (src->activeWin == GAME_WINDOW_ACTIVE) {
-        GAME_EVENT gameEvent = gameWindowHandleEvent(session, src->gameWin, event);
-        return handleManagerDueToGameEvent(session, src, gameEvent);
-    }
-    return MANAGER_NONE;
-}
-
-int askWhetherToSave(GameSession *session,gameWin* src) {
+//This function sends the Massage box, when the user wants to quit or go to main menu without saving first
+int askWhetherToSave(GameSession *session, gameWin *src) {
     const SDL_MessageBoxButtonData buttons[] = {
             {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 0, "Yes"},
             {0,                                       1, "No"},
@@ -389,7 +295,7 @@ int askWhetherToSave(GameSession *session,gameWin* src) {
     }
     switch (buttonID) {
         case 0:
-            if(saveFromGameWindow(session))
+            if (saveFromGameWindow(session))
                 src->isSaved = true;
 
             return 1;
@@ -403,41 +309,136 @@ int askWhetherToSave(GameSession *session,gameWin* src) {
     return 0;
 }
 
-bool saveFromGameWindow(GameSession *session) {
-    FILE *numOfSlots = NULL;
-    numOfSlots = fopen("numOfSlots.xml", "r+");
-    int validSlots;
-    char *filePath=(char*)malloc(sizeof(char)*6);
-    char *token = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
-    if (token == NULL) {
-        printf("%s", MALLOC_ERROR);
-        return false;
+//This function handles the events sent by the user when the active window is the Game window
+MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src, GAME_EVENT event) {
+    if (event == GAME_LOAD) {
+        int isSaved = src->gameWin->isSaved;
+        gameWindowDestroy(src->gameWin);
+        src->gameWin = NULL;
+        src->loadGameWin = loadGameWindowCreate();
+        src->loadGameWin->fromMainMenu = 0;
+        src->loadGameWin->isCurrentGameSaved = isSaved;
+        src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
-    fgets(token, MAX_LINE_LENGTH, numOfSlots);
-    fscanf(numOfSlots, "<validSlots>%d", &validSlots);
-    if (validSlots < MAX_NUM_OF_SLOTS) {
-        sprintf(filePath, "%d.xml", validSlots + 1);
-    } else {
-        char *secondPath=(char*)malloc(sizeof(char)*6);
-        for (int i = 1; i < MAX_NUM_OF_SLOTS; i++) {
-            sprintf(filePath, "%d.xml", i + 1);
-            sprintf(secondPath, "%d.xml", i);
-            rename(filePath, secondPath);
+    if (event == GAME_UNDO) {
+        if (undo(session))
+            undo(session);
+        src->gameWin->isSaved = false;
+    }
+    if (event == GAME_SAVE) {
+        if (saveFromGameWindow(session))
+            src->gameWin->isSaved = true;
+    }
+    if (event == GAME_MAINMENU_SAVED) {
+        gameDestroy(&(session->game));
+        (*session) = sessionCreate(HISTORYSIZE);
+        gameWindowDestroy(src->gameWin);
+        src->gameWin = NULL;
+        src->mainWin = mainWindowCreate();
+        src->activeWin = MAIN_WINDOW_ACTIVE;
+    }
+    if (event == GAME_MAINMENU_UNSAVED) {
+        if (askWhetherToSave(session, src->gameWin)) {
+            gameDestroy(&(session->game));
+            (*session) = sessionCreate(HISTORYSIZE);
+            gameWindowDestroy(src->gameWin);
+            src->gameWin = NULL;
+            src->mainWin = mainWindowCreate();
+            src->activeWin = MAIN_WINDOW_ACTIVE;
         }
-        sprintf(filePath, "%d.xml", MAX_NUM_OF_SLOTS);
-        free(secondPath);
     }
-    saveGame(filePath, session);
-    FILE* newSlotsFile=NULL;
-    newSlotsFile = fopen("newSlotsFile.xml", "w+");
-    fprintf(newSlotsFile,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    fprintf(newSlotsFile, "<validSlots>%d</validSlots>",
-            validSlots == MAX_NUM_OF_SLOTS ? MAX_NUM_OF_SLOTS : validSlots + 1);
-    fclose(newSlotsFile);
-    rename("newSlotsFile.xml","numOfSlots.xml");
-    free(filePath);
-    free(token);
+    if (event == GAME_RESTART) {
+        gameDestroy(&(session->game));
+        session->game = gameCreate(HISTORYSIZE);
+        src->gameWin->isSaved = false;
+    }
+    if (event == GAME_QUIT_UNSAVED) {
+        if (askWhetherToSave(session, src->gameWin)) {
+            gameDestroy((&(session->game)));
+            return MANAGER_QUIT;
+        }
+    }
+    if (event == GAME_QUIT_SAVED) {
+        gameDestroy((&(session->game)));
+        return MANAGER_QUIT;
+    }
+    if (event == GAME_MOVE) {
+        if (setMove(session->game, src->gameWin->moveSrc, src->gameWin->moveDest) == SUCCESS) {
+            changePlayer(session->game);
+            CHESS_MESSAGE msg = checkStatus(session->game);
+            if (msg == TIE) {
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Tie",
+                                         "The game is tied!", src->gameWin->window);
+                return MANAGER_QUIT;
+            }
+            if (msg == MATE) {
+                char *playerColor;
+                playerColor = session->game->currentPlayer == WHITE_PLAYER ? "Black" : "White";
+                char message[MAX_LINE_LENGTH];
+                sprintf(message, "Checkmate! %s player wins the game", playerColor);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Mate",
+                                         message, src->gameWin->window);
+                return MANAGER_QUIT;
+            }
+            if (msg == CHECK) {
+                char *playerColor;
+                playerColor = session->game->currentPlayer == WHITE_PLAYER ? "White" : "Black";
+                char message[MAX_LINE_LENGTH];
+                sprintf(message, "Check: %s King is threatened!", playerColor);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Check",
+                                         message, src->gameWin->window);
 
-    fclose(numOfSlots);
-    return true;
+            }
+
+            if (session->mode == ONE_PLAYER) {
+                moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
+                setMove(session->game, move.source, move.destination);
+                changePlayer(session->game);
+                CHESS_MESSAGE msg = checkStatus(session->game);
+                if (msg == TIE) {
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Tie",
+                                             "The game is tied!", src->gameWin->window);
+                    return MANAGER_QUIT;
+                }
+                if (msg == MATE) {
+                    char *playerColor;
+                    playerColor = session->game->currentPlayer == WHITE_PLAYER ? "Black" : "White";
+                    char message[MAX_LINE_LENGTH];
+                    sprintf(message, "Checkmate! %s player wins the game", playerColor);
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Mate",
+                                             message, src->gameWin->window);
+                    return MANAGER_QUIT;
+                }
+                if (msg == CHECK) {
+
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Check",
+                                             "Check!", src->gameWin->window);
+                }
+            }
+        }
+    }
+    return MANAGER_NONE;
+}
+
+MANAGER_EVENT ManagerHandleEvent(GameSession *session, GuiManager *src, SDL_Event *event) {
+    if (src == NULL || event == NULL) {
+        return MANAGER_NONE;
+    }
+    if (src->activeWin == MAIN_WINDOW_ACTIVE) {
+        MAIN_EVENT mainEvent = mainWindowHandleEvent(event);
+        return handleManagerDueToMainEvent(session, src, mainEvent);
+    }
+    if (src->activeWin == SETTINGS_WINDOW_ACTIVE) {
+        SETTINGS_EVENT settingsEvent = settingsWindowHandleEvent(src->settingsWin, event);
+        return handleManagerDueToSettingsEvent(session, src, settingsEvent);
+    }
+    if (src->activeWin == LOAD_GAME_WINDOW_ACTIVE) {
+        LOAD_EVENT loadEvent = loadGameWindowHandleEvent(src->loadGameWin, event);
+        return handleManagerDueToLoadEvent(session, src, loadEvent);
+    }
+    if (src->activeWin == GAME_WINDOW_ACTIVE) {
+        GAME_EVENT gameEvent = gameWindowHandleEvent(session, src->gameWin, event);
+        return handleManagerDueToGameEvent(session, src, gameEvent);
+    }
+    return MANAGER_NONE;
 }

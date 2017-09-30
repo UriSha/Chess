@@ -67,7 +67,7 @@ int isClickedOnQuitGame(int x, int y) {
     return 0;
 }
 
-gameWin *gameWindowCreate(GameSession *session, int isAlreadySaved) {
+gameWin *gameWindowCreate(int isAlreadySaved) {
     gameWin *res = NULL;
     res = (gameWin *) malloc(sizeof(gameWin));
     if (res == NULL) {
@@ -101,57 +101,55 @@ gameWin *gameWindowCreate(GameSession *session, int isAlreadySaved) {
     res->movesGrid = (SDL_Texture **) calloc(GAME_SIZE * GAME_SIZE, sizeof(SDL_Texture *));
     res->movingRect.w = TILE_SIZE;
     res->movingRect.h = TILE_SIZE;
-    if (!loadImageGameWindow("../images/board.bmp", res, &(res->gameBoardTexture)))
+    if (!loadImageGameWindow("images/board.bmp", res, &(res->gameBoardTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/whitePawn.bmp", res, &(res->pawnWhiteTexture)))
+    if (!loadImageGameWindow("images/whitePawn.bmp", res, &(res->pawnWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackPawn.bmp", res, &(res->pawnBlackTexture)))//
+    if (!loadImageGameWindow("images/blackPawn.bmp", res, &(res->pawnBlackTexture)))//
         return NULL;
-    if (!loadImageGameWindow("../images/whiteBishop.bmp", res, &(res->bishopWhiteTexture)))
+    if (!loadImageGameWindow("images/whiteBishop.bmp", res, &(res->bishopWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackBishop.bmp", res, &(res->bishopBlackTexture)))
+    if (!loadImageGameWindow("images/blackBishop.bmp", res, &(res->bishopBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/whiteKnight.bmp", res, &(res->knightWhiteTexture)))
+    if (!loadImageGameWindow("images/whiteKnight.bmp", res, &(res->knightWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackKnight.bmp", res, &(res->knightBlackTexture)))
+    if (!loadImageGameWindow("images/blackKnight.bmp", res, &(res->knightBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/whiteRook.bmp", res, &(res->rookWhiteTexture)))
+    if (!loadImageGameWindow("images/whiteRook.bmp", res, &(res->rookWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackRook.bmp", res, &(res->rookBlackTexture)))
+    if (!loadImageGameWindow("images/blackRook.bmp", res, &(res->rookBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/whiteQueen.bmp", res, &(res->queenWhiteTexture)))
+    if (!loadImageGameWindow("images/whiteQueen.bmp", res, &(res->queenWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackQueen.bmp", res, &(res->queenBlackTexture)))
+    if (!loadImageGameWindow("images/blackQueen.bmp", res, &(res->queenBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/whiteKing.bmp", res, &(res->kingWhiteTexture)))
+    if (!loadImageGameWindow("images/whiteKing.bmp", res, &(res->kingWhiteTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/blackKing.bmp", res, &(res->kingBlackTexture)))
+    if (!loadImageGameWindow("images/blackKing.bmp", res, &(res->kingBlackTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameUndo.bmp", res, &(res->undoTexture)))
+    if (!loadImageGameWindow("images/gameUndo.bmp", res, &(res->undoTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameUndoFade.bmp", res, &(res->undoFadeTexture)))
+    if (!loadImageGameWindow("images/gameUndoFade.bmp", res, &(res->undoFadeTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameRestart.bmp", res, &(res->restartTexture)))
+    if (!loadImageGameWindow("images/gameRestart.bmp", res, &(res->restartTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameSave.bmp", res, &(res->saveTexture)))
+    if (!loadImageGameWindow("images/gameSave.bmp", res, &(res->saveTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameSaveFade.bmp", res, &(res->saveFadeTexture)))
+    if (!loadImageGameWindow("images/gameSaveFade.bmp", res, &(res->saveFadeTexture)))
         return NULL;
-
-    if (!loadImageGameWindow("../images/gameLoad.bmp", res, &(res->loadTexture)))
+    if (!loadImageGameWindow("images/gameLoad.bmp", res, &(res->loadTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameMenu.bmp", res, &(res->mainMenuTexture)))
+    if (!loadImageGameWindow("images/gameMenu.bmp", res, &(res->mainMenuTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/gameQuit.bmp", res, &(res->quitTexture)))
+    if (!loadImageGameWindow("images/gameQuit.bmp", res, &(res->quitTexture)))
         return NULL;
-    if (!loadImageGameWindow("../images/yellow.bmp", res, &(res->yellow)))
+    if (!loadImageGameWindow("images/yellow.bmp", res, &(res->yellow)))
         return NULL;
-
-    if (!loadImageGameWindow("../images/red.bmp", res, &(res->red)))
+    if (!loadImageGameWindow("images/red.bmp", res, &(res->red)))
         return NULL;
-    if (!loadImageGameWindow("../images/green.bmp", res, &(res->green)))
+    if (!loadImageGameWindow("images/green.bmp", res, &(res->green)))
         return NULL;
-    if (!loadImageGameWindow("../images/purple.bmp", res, &(res->purple)))
+    if (!loadImageGameWindow("images/purple.bmp", res, &(res->purple)))
         return NULL;
     res->isSaved = isAlreadySaved;
     res->getMovesShowing = 0;
@@ -383,7 +381,7 @@ char getClickCol(int x) {
 }
 
 double getDistance(int x1, int y1, int x2, int y2) {
-    return pow((y1 - y2) * (y1 - y2) + (x1 - x2) * (x1 - x2), 0.5);
+    return sqrt((y1 - y2) * (y1 - y2) + (x1 - x2) * (x1 - x2));
 }
 
 void drag(SDL_Event *event, gameWin *src) {
@@ -399,7 +397,7 @@ void drag(SDL_Event *event, gameWin *src) {
 
 }
 
-bool isCastlingGameWindow(GameSession *session, Position source, Position dest, int myRow) {
+bool isCastlingGameWindow(Position source, Position dest, int myRow) {
     if (dest.column == source.column && dest.row == source.row)
         return true;
     if (source.row - 1 == myRow && source.column == KING_INITIAL_COL_CHAR) {
@@ -436,7 +434,7 @@ bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
         curDest = movesList[i];
 
         int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
-        if (isCastlingGameWindow(session, srcPos, curDest, myRow)) {
+        if (isCastlingGameWindow( srcPos, curDest, myRow)) {
             if (soldier == KING_BLACK || soldier == KING_WHITE) {
                 int column = curDest.column == KING_INITIAL_COL_CHAR-2 ? 0 : GAME_SIZE - 1;
                 src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + column] = src->purple;

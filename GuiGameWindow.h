@@ -3,9 +3,8 @@
 
 
 #include "GuiDefinitions.h"
-#define X_GAME_BUTTONS 550
-#define GAME_BUTTONS_HIGHT 53
-#define PIXELS_TO_CHANGE_MOTION 20
+#include <math.h>
+
 
 
 /**
@@ -90,7 +89,7 @@ bool loadImageGameWindow(char *path, gameWin *src, SDL_Texture **texture);
  * @return
  * a pointer to the window created
  */
-gameWin *gameWindowCreate(GameSession *session, int isAlreadySaved);
+gameWin *gameWindowCreate(int isAlreadySaved);
 
 /**
  * @param gameWin - the current game window

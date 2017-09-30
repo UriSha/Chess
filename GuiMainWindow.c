@@ -72,11 +72,11 @@ mainWin *mainWindowCreate() {
         printf("Could not create window: %s\n", SDL_GetError());
         return NULL;
     }
-    if (!loadImageMainWindow("../images/new.bmp", res, &(res->newTexture)))
+    if (!loadImageMainWindow("images/new.bmp", res, &(res->newTexture)))
         return NULL;
-    if (!loadImageMainWindow("../images/load.bmp", res, &(res->loadTexture)))
+    if (!loadImageMainWindow("images/load.bmp", res, &(res->loadTexture)))
         return NULL;
-    if (!loadImageMainWindow("../images/quit.bmp", res, &(res->quitTexture)))
+    if (!loadImageMainWindow("images/quit.bmp", res, &(res->quitTexture)))
         return NULL;
     return res;
 }
@@ -119,7 +119,7 @@ void mainWindowDraw(mainWin *src) {
     SDL_RenderPresent(src->mainRenderer);
 }
 
-MAIN_EVENT mainWindowHandleEvent(mainWin *src, SDL_Event *event) {
+MAIN_EVENT mainWindowHandleEvent(SDL_Event *event) {
     if (!event) {
         return MAIN_INVALID_GUI_ARGUMENT;
     }

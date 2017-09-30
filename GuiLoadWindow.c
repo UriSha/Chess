@@ -135,33 +135,33 @@ loadGameWin *loadGameWindowCreate() {
     res->chosenSlot = 0;
     res->availableSlots = getNumOfSlots();
     res->isCurrentGameSaved = 0;
-    if (!loadImageLoadWindow("../images/back.bmp", res, &(res->backTexture)))
+    if (!loadImageLoadWindow("images/back.bmp", res, &(res->backTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/gameLoadWindow.bmp", res, &(res->startTexture)))
+    if (!loadImageLoadWindow("images/gameLoadWindow.bmp", res, &(res->startTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/init.bmp", res, &(res->logoTexture)))
+    if (!loadImageLoadWindow("images/init.bmp", res, &(res->logoTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/loadGame.bmp", res, &(res->headerTexture)))
+    if (!loadImageLoadWindow("images/loadGame.bmp", res, &(res->headerTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot1.bmp", res, &(res->load1Texture)))
+    if (!loadImageLoadWindow("images/slot1.bmp", res, &(res->load1Texture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot1Fade.bmp", res, &(res->load1FadeTexture)))
+    if (!loadImageLoadWindow("images/slot1Fade.bmp", res, &(res->load1FadeTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot2.bmp", res, &(res->load2Texture)))
+    if (!loadImageLoadWindow("images/slot2.bmp", res, &(res->load2Texture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot2Fade.bmp", res, &(res->load2FadeTexture)))
+    if (!loadImageLoadWindow("images/slot2Fade.bmp", res, &(res->load2FadeTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot3.bmp", res, &(res->load3Texture)))
+    if (!loadImageLoadWindow("images/slot3.bmp", res, &(res->load3Texture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot3Fade.bmp", res, &(res->load3FadeTexture)))
+    if (!loadImageLoadWindow("images/slot3Fade.bmp", res, &(res->load3FadeTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot4.bmp", res, &(res->load4Texture)))
+    if (!loadImageLoadWindow("images/slot4.bmp", res, &(res->load4Texture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot4Fade.bmp", res, &(res->load4FadeTexture)))
+    if (!loadImageLoadWindow("images/slot4Fade.bmp", res, &(res->load4FadeTexture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot5.bmp", res, &(res->load5Texture)))
+    if (!loadImageLoadWindow("images/slot5.bmp", res, &(res->load5Texture)))
         return NULL;
-    if (!loadImageLoadWindow("../images/slot5Fade.bmp", res, &(res->load5FadeTexture)))
+    if (!loadImageLoadWindow("images/slot5Fade.bmp", res, &(res->load5FadeTexture)))
         return NULL;
     return res;
 }

@@ -149,53 +149,53 @@ settingsWin *settingsWindowCreate() {
     res->is1player = true;
     res->diff = 2;
     res->user_color = 1;
-    if (!loadImageSettingsWindow("../images/back.bmp", res, &(res->backTexture)))
+    if (!loadImageSettingsWindow("images/back.bmp", res, &(res->backTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/start.bmp", res, &(res->startTexture)))
+    if (!loadImageSettingsWindow("images/start.bmp", res, &(res->startTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/gameModeBig.bmp", res, &(res->gameModeTexture)))
+    if (!loadImageSettingsWindow("images/gameModeBig.bmp", res, &(res->gameModeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/difficultyBig.bmp", res, &(res->difficultyTexture)))
+    if (!loadImageSettingsWindow("images/difficultyBig.bmp", res, &(res->difficultyTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/userColorBig.bmp", res, &(res->userColorTexture)))
+    if (!loadImageSettingsWindow("images/userColorBig.bmp", res, &(res->userColorTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/white.bmp", res, &(res->whiteTexture)))
+    if (!loadImageSettingsWindow("images/white.bmp", res, &(res->whiteTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/whiteFade.bmp", res, &(res->whiteFadeTexture)))
+    if (!loadImageSettingsWindow("images/whiteFade.bmp", res, &(res->whiteFadeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/black.bmp", res, &(res->blackTexture)))
+    if (!loadImageSettingsWindow("images/black.bmp", res, &(res->blackTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/blackFade.bmp", res, &(res->blackFadeTexture)))
+    if (!loadImageSettingsWindow("images/blackFade.bmp", res, &(res->blackFadeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/player1.bmp", res, &(res->player1Texture)))
+    if (!loadImageSettingsWindow("images/player1.bmp", res, &(res->player1Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/player2.bmp", res, &(res->player2Texture)))
+    if (!loadImageSettingsWindow("images/player2.bmp", res, &(res->player2Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/player1Fade.bmp", res, &(res->player1FadeTexture)))
+    if (!loadImageSettingsWindow("images/player1Fade.bmp", res, &(res->player1FadeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/player2Fade.bmp", res, &(res->player2FadeTexture)))
+    if (!loadImageSettingsWindow("images/player2Fade.bmp", res, &(res->player2FadeTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/init.bmp", res, &(res->logoTexture)))
+    if (!loadImageSettingsWindow("images/init.bmp", res, &(res->logoTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/moderateFade.bmp", res, &(res->difficulty3FTexture)))
+    if (!loadImageSettingsWindow("images/moderateFade.bmp", res, &(res->difficulty3FTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/moderate.bmp", res, &(res->difficulty3Texture)))
+    if (!loadImageSettingsWindow("images/moderate.bmp", res, &(res->difficulty3Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/noobFade.bmp", res, &(res->difficulty1FTexture)))
+    if (!loadImageSettingsWindow("images/noobFade.bmp", res, &(res->difficulty1FTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/noob.bmp", res, &(res->difficulty1Texture)))
+    if (!loadImageSettingsWindow("images/noob.bmp", res, &(res->difficulty1Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/easyFade.bmp", res, &(res->difficulty2FTexture)))
+    if (!loadImageSettingsWindow("images/easyFade.bmp", res, &(res->difficulty2FTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/easy.bmp", res, &(res->difficulty2Texture)))
+    if (!loadImageSettingsWindow("images/easy.bmp", res, &(res->difficulty2Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/hardFade.bmp", res, &(res->difficulty4FTexture)))
+    if (!loadImageSettingsWindow("images/hardFade.bmp", res, &(res->difficulty4FTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/hard.bmp", res, &(res->difficulty4Texture)))
+    if (!loadImageSettingsWindow("images/hard.bmp", res, &(res->difficulty4Texture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/expertFade.bmp", res, &(res->difficulty5FTexture)))
+    if (!loadImageSettingsWindow("images/expertFade.bmp", res, &(res->difficulty5FTexture)))
         return NULL;
-    if (!loadImageSettingsWindow("../images/expert.bmp", res, &(res->difficulty5Texture)))
+    if (!loadImageSettingsWindow("images/expert.bmp", res, &(res->difficulty5Texture)))
         return NULL;
     return res;
 }

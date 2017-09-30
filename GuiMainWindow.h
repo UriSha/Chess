@@ -63,6 +63,6 @@ void mainWindowDestroy(mainWin *src);
  * @return
  * MAIN_EVENT according to the event occurred
  */
-MAIN_EVENT mainWindowHandleEvent(mainWin *src, SDL_Event *event);
+MAIN_EVENT mainWindowHandleEvent(SDL_Event *event);
 
 #endif //CHESS_GUIMAINWINDOW_H

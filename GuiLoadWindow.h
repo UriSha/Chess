@@ -2,7 +2,7 @@
 #define CHESS_GUILOADWINDOW_H
 
 #include "GuiDefinitions.h"
-#define MAX_NUM_OF_SLOTS 5
+
 
 /**
  * The load game Gui window
