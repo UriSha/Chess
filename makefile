@@ -6,11 +6,16 @@ GuiGameWindow.o
  
 EXEC = chessprog
 COMP_FLAG = -std=c99 -Wall -Wextra -Werror -pedantic-errors
-SDL_COMP_FLAG = -I/usr/include/SDL2 -D_REENTRANT
-SDL_LIB = -L/usr/local/lib/sdl_2.0.5/lib -Wl,-rpath,/usr/local/lib/sdl_2.0.5/lib -Wl,--enable-new-dtags -lSDL2 -lSDL2main
+SDL_COMP_FLAG = -I/usr/local/lib/sdl_2.0.5/include/SDL2 -D_REENTRANT
+SDL_LIB = -L/usr/local/lib/sdl_2.0.5/lib -Wl,-rpath,/usr/local/lib/sdl_2.0.5/lib -Wl,--enable-new-dtags -lSDL2 -lSDL2main -lm
 
+
+all: $(OBJS)
+	$(CC) $(OBJS) $(SDL_LIB) -o $(EXEC)
+clean:
+	rm -f *.o $(EXEC)
 $(EXEC): $(OBJS)
-	$(CC) $(OBJS) $(SDL_LIB) -o $@ -lm
+	$(CC) $(OBJS) $(SDL_LIB) -o $@
 main.o: main.c GuiManager.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
 ChessParser.o: ChessParser.c ChessParser.h 
@@ -33,5 +38,4 @@ GuiGameWindow.o: GuiGameWindow.c GuiGameWindow.h GuiDefinitions.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
 GuiManager.o: GuiManager.c GuiManager.h GuiMainWindow.h GuiSettingsWindow.h GuiLoadWindow.h GuiGameWindow.h
 	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c 
-clean:
-	rm -f *.o $(EXEC)
+

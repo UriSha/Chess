@@ -43,7 +43,7 @@ bool loadImageMainWindow(char *path, mainWin *src, SDL_Texture **texture) {
 
 mainWin *mainWindowCreate() {
     mainWin *res = NULL;
-    res = (mainWin *) malloc(sizeof(mainWin));
+    res = (mainWin *) calloc(1, sizeof(mainWin));
     if (res == NULL) {
         printf("%s", MALLOC_ERROR);
         return NULL;
@@ -69,7 +69,7 @@ mainWin *mainWindowCreate() {
     if (res->mainRenderer == NULL) {
         // In the case that the window could not be made...
         mainWindowDestroy(res);
-        printf("Could not create window: %s\n", SDL_GetError());
+        printf("Could not create renderer: %s\n", SDL_GetError());
         return NULL;
     }
     if (!loadImageMainWindow("images/new.bmp", res, &(res->newTexture)))

@@ -30,6 +30,7 @@ void guiMode() {
     }
     GuiManager *manager = ManagerCreate();
     if (manager == NULL) {
+        free(gameSession);
         SDL_Quit();
         return;
     }
