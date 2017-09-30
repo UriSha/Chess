@@ -351,6 +351,11 @@ MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src,
         gameDestroy(&(session->game));
         session->game = gameCreate(HISTORYSIZE);
         src->gameWin->isSaved = false;
+        if (session->user_color == 0) {// The computer starts
+            moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
+            setMove(session->game, move.source, move.destination);
+            changePlayer(session->game);
+        }
     }
     if (event == GAME_QUIT_UNSAVED) {
         if (askWhetherToSave(session, src->gameWin)) {

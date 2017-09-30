@@ -46,12 +46,21 @@ void guiMode() {
     SDL_Quit();
 }
 
-//int main(int argc, char **argv) {
-int main(){
-//    if (strcmp(argv[0], "-g") == 0)
+int main(int argc, char **argv) {
+    if (argc > 2) {
+        printf("too many argument where given. 1 expected\n");
+        return 0;
+    }
+    else if (argc == 1)
         guiMode();
-//    else if (strcmp(argv[0], "-c") == 0 || strcmp(argv[0], "\0") == 0)
-//        consoleMode();
+    else if (argc == 2){
+        if (strcmp(argv[1], "-c") == 0)
+            consoleMode();
+        else if (strcmp(argv[1], "-g") == 0)
+            guiMode();
+    }
+    else
+        printf("expected argument: '-c' or '-g'\n");
     return 0;
 
 }
