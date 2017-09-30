@@ -58,8 +58,10 @@ int main(int argc, char **argv) {
             consoleMode();
         else if (strcmp(argv[1], "-g") == 0)
             guiMode();
+        else
+            printf("expected argument: '-c' or '-g'\n");
+
     }
-    else
-        printf("expected argument: '-c' or '-g'\n");
+
     return 0;
 }
