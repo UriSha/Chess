@@ -1,30 +1,37 @@
-FLAGS = -c -std=c99 -pedantic-errors -Wall -Werror -g $(CFLAGS) 
-HFILES = ChessParser.h  ChessHistory.h MiniMax.h MainAux.h MainAux.h
-OBJECTS = ChessHistory.o ChessGame.o main.o MainAux.o MiniMax.o ChessParser.o
-all: chessprog
+CC = gcc
+OBJS = main.o ChessParser.o ChessHistory.o \
+ChessGame.o MiniMax.o MainAux.o GuiManager.o \
+GuiMainWindow.o GuiSettingsWindow.o GuiLoadWindow.o \
+GuiGameWindow.o
+ 
+EXEC = chessprog
+COMP_FLAG = -std=c99 -Wall -Wextra -Werror -pedantic-errors
+SDL_COMP_FLAG = -I/usr/include/SDL2 -D_REENTRANT
+SDL_LIB = -L/usr/local/lib/sdl_2.0.5/lib -Wl,-rpath,/usr/local/lib/sdl_2.0.5/lib -Wl,--enable-new-dtags -lSDL2 -lSDL2main
 
-
-
+$(EXEC): $(OBJS)
+	$(CC) $(OBJS) $(SDL_LIB) -o $@ -lm
+main.o: main.c GuiManager.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+ChessParser.o: ChessParser.c ChessParser.h 
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+ChessHistory.o: ChessHistory.c ChessHistory.h ChessParser.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+ChessGame.o: ChessGame.c ChessGame.h ChessParser.h ChessHistory.h  
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+MiniMax.o: MiniMax.c MiniMax.h ChessGame.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+MainAux.o: MainAux.c MainAux.h ChessGame.h MiniMax.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+GuiMainWindow.o: GuiMainWindow.c GuiMainWindow.h GuiDefinitions.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+GuiSettingsWindow.o: GuiSettingsWindow.c GuiSettingsWindow.h GuiDefinitions.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+GuiLoadWindow.o: GuiLoadWindow.c GuiLoadWindow.h GuiDefinitions.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+GuiGameWindow.o: GuiGameWindow.c GuiGameWindow.h GuiDefinitions.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c
+GuiManager.o: GuiManager.c GuiManager.h GuiMainWindow.h GuiSettingsWindow.h GuiLoadWindow.h GuiGameWindow.h
+	$(CC) $(COMP_FLAG) $(SDL_COMP_FLAG) -c $*.c 
 clean:
-	rm -r $(OBJECTS) chessprog
-
-chessprog: $(OBJECTS)
-	gcc -o chessprog $(OBJECTS) -std=c99 -Wall -Wextra -Werror -pedantic-errors -g
-	
-ChessParser.o: ChessParser.c $(HFILES)
-	gcc $(FLAGS) ChessParser.c -o ChessParser.o
-
-ChessHistory.o: ChessHistory.c $(HFILES)
-	gcc $(FLAGS) ChessHistory.c -o ChessHistory.o
-
-ChessGame.o: ChessGame.c $(HFILES)
-	gcc $(FLAGS) ChessGame.c -o ChessGame.o
-
-MiniMax.o: MiniMax.c $(HFILES)
-	gcc $(FLAGS) MiniMax.c -o MiniMax.o
-
-MainAux.o: MainAux.c $(HFILES)
-	gcc $(FLAGS) MainAux.c -o MainAux.o
-
-main.o: main.c $(HFILES)
-	gcc $(FLAGS) main.c -o main.o
+	rm -f *.o $(EXEC)

@@ -247,7 +247,6 @@ void gameWindowDestroy(gameWin *src) {
     }
 
     free(src);
-    src = NULL;
 }
 
 SDL_Texture *getTexture(gameWin *gameWin,

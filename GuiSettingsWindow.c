@@ -283,7 +283,6 @@ void settingsWindowDestroy(settingsWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src = NULL;
 }
 
 void settingsWindowDraw(settingsWin *src) {

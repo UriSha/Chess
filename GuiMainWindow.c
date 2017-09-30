@@ -101,7 +101,6 @@ void mainWindowDestroy(mainWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src = NULL;
 }
 
 void mainWindowDraw(mainWin *src) {

@@ -62,5 +62,4 @@ int main(int argc, char **argv) {
     else
         printf("expected argument: '-c' or '-g'\n");
     return 0;
-
 }

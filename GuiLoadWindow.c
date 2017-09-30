@@ -220,7 +220,6 @@ void loadGameWindowDestroy(loadGameWin *src) {
         SDL_DestroyWindow(src->window);
     }
     free(src);
-    src = NULL;
 }
 
 
