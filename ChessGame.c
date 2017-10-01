@@ -134,50 +134,17 @@ CHESS_MESSAGE movePiece(ChessGame *game, Position src, Position dest) {
         return INVALID_ARGUMENT;
     char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
     if (srcSoldier == KING_WHITE) {
-        if (GET_COLUMN(game->whiteKingPos) + 2 == GET_COLUMN(dest)) { // right castling white player
-            game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_WHITE;
-            game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
-            game->rightWhiteRookMoved = true;
-//            game->whiteCastle = false;
-        } else if (GET_COLUMN(game->whiteKingPos) - 2 == GET_COLUMN(dest)) {// left castling white player
-            game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 1] = ROOK_WHITE;
-            game->gameBoard[WHITE_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
-            game->leftWhiteRookMoved = true;
-//            game->whiteCastle = false;
-        }
         game->whiteKingPos.row = dest.row;
         game->whiteKingPos.column = dest.column;
-        game->whiteCastle = false;
-
+        game->whiteCastle = 0;
 
     } else if (srcSoldier == KING_BLACK) {
-        if (GET_COLUMN(game->blackKingPos) + 2 == GET_COLUMN(dest)) { // right castling black player
-            game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 1] = ROOK_BLACK;
-            game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM + 3] = EMPTY_ENTRY;
-//            game->blackCastle = false;  // TODO why not outside the inner if?
-            game->rightBlackRookMoved = true;
-        } else if (GET_COLUMN(game->blackKingPos) - 2 == GET_COLUMN(dest)) {// left castling black player
-            game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 1] = ROOK_BLACK;
-            game->gameBoard[BLACK_INITIAL_ROW - 1][KING_INITIAL_COL_NUM - 4] = EMPTY_ENTRY;
-//            game->blackCastle = false;  // TODO why not outside the inner if?
-            game->leftBlackRookMoved = true;
-        }
         game->blackKingPos.row = dest.row;
         game->blackKingPos.column = dest.column;
-        game->blackCastle = false;
+        game->blackCastle = 0;
     }
-    if (srcSoldier == ROOK_WHITE) {
-        if (src.column == 'H' && src.row == WHITE_INITIAL_ROW)//Right Rook White moved
-            game->rightWhiteRookMoved = true;
-        else if (src.column == 'A' && src.row == WHITE_INITIAL_ROW)//Left Rook White moved
-            game->leftWhiteRookMoved = true;
-    } else if (srcSoldier == ROOK_BLACK) {
-        if (src.column == 'H' && src.row == BLACK_INITIAL_ROW)//Right Rook Black moved
-            game->rightBlackRookMoved = true;
-        else if (src.column == 'A' && src.row == BLACK_INITIAL_ROW)//Left Rook Black moved
-            game->leftBlackRookMoved = true;
-    }
-    game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = srcSoldier;
+
+    game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)] = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
     game->gameBoard[GET_ROW(src)][GET_COLUMN(src)] = EMPTY_ENTRY;
     return SUCCESS;
 }
@@ -301,78 +268,10 @@ bool myPositionUnderThreat(ChessGame *game, Position pos) {
             QBRThreatsPosition(game, row, col) || kingThreatsPosition(game, row, col));
 }
 
-bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling) {
-    if (game == NULL)
-        return false;
-    int kingRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
-    char rook = (char) (game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
-    Position firstStep;
-    firstStep.row = kingRow;
-    Position kingPos = game->currentPlayer == WHITE_PLAYER ?
-                       game->whiteKingPos : game->blackKingPos;
-    if (isRightCastling) {
-        firstStep.column = KING_INITIAL_COL_CHAR + 1;
-        if ((game->gameBoard[kingRow - 1][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow - 1][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
-            game->gameBoard[kingRow - 1][GAME_SIZE - 1] != rook)
-            return false;
-        if (myPositionUnderThreat(game, kingPos))
-            return false;
-        ChessGame *copy = gameCopy(game);
-        movePiece(copy, src, firstStep);
-        kingPos.column++;
-        if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(&copy);
-            return false;
-        }
-        movePiece(copy, firstStep, dest);
-        kingPos.column++;
-        if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(&copy);
-            return false;
-        }
-        gameDestroy(&copy);
-    } else {//leftCastling
-        firstStep.column = KING_INITIAL_COL_CHAR - 1;
-        if ((game->gameBoard[kingRow - 1][GET_COLUMN(firstStep)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow - 1][GET_COLUMN(dest)] != EMPTY_ENTRY) ||
-            (game->gameBoard[kingRow - 1][0] != rook))
-            return false;
-        if (myPositionUnderThreat(game, kingPos))
-            return false;
-        ChessGame *copy = gameCopy(game);
-        movePiece(copy, src, firstStep);
-        kingPos.column--;
-        if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(&copy);
-            return false;
-        }
-        movePiece(copy, firstStep, dest);
-        kingPos.column--;
-        if (myPositionUnderThreat(copy, kingPos)) {
-            gameDestroy(&copy);
-            return false;
-        }
-        gameDestroy(&copy);
-    }
-    return true;
-}
-
 
 bool isValidMove_King(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return false;
-    if (dest.row == src.row) {//possible Castling
-        int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
-        bool rightCastle = game->currentPlayer == WHITE_PLAYER ? (game->whiteCastle && !(game->rightWhiteRookMoved)) : (
-                game->blackCastle && !(game->rightBlackRookMoved));
-        bool leftCastle = game->currentPlayer == WHITE_PLAYER ? (game->whiteCastle && !(game->leftWhiteRookMoved)) : (
-                game->blackCastle && !(game->leftBlackRookMoved));
-        if (rightCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM + 2 && src.column == KING_INITIAL_COL_CHAR && src.row == myRow)
-            return legalCastling(game, src, dest, 1);
-        if (leftCastle && GET_COLUMN(dest) == KING_INITIAL_COL_NUM - 2 && src.column == KING_INITIAL_COL_CHAR && src.row == myRow)
-            return legalCastling(game, src, dest, 0);
-    }
     return (abs(dest.column - src.column) <= 1 && abs(dest.row - src.row) <= 1);
 }
 
@@ -563,7 +462,8 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
     if (game->currentPlayer != getPlayer(game->gameBoard[GET_ROW(src)][GET_COLUMN(src)]))
         return false;
     if (game->currentPlayer == getPlayer(game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)]))
-        return false;
+        return isCastleMove(game, src, dest);
+
 
     bool result;
 
@@ -611,31 +511,6 @@ bool isValidMove(ChessGame *game, Position src, Position dest) {
     return result;
 }
 
-//void pawnPromotion(ChessGame *game, Position posOfPawn) {//TODO Delete this function
-//    char userInput[MAX_LINE_LENGTH];
-//    char chosenSolider = '\0';
-//    do {
-//        printf("Pawn promotion- please replace the pawn by queen, rook, knight, bishop or pawn:\n");
-//        scanf("%s", userInput);
-//        if (strcmp(userInput, "queen") == 0)
-//            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? QUEEN_WHITE : QUEEN_BLACK);
-//        else if (strcmp(userInput, "bishop") == 0)
-//            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? BISHOP_WHITE : BISHOP_BLACK);
-//        else if (strcmp(userInput, "rook") == 0)
-//            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
-//        else if (strcmp(userInput, "knight") == 0)
-//            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? KNIGHT_WHITE : KNIGHT_BLACK);
-//        else if (strcmp(userInput, "pawn") == 0)
-//            chosenSolider = (char) (game->currentPlayer == WHITE_PLAYER ? PAWN_WHITE : PAWN_BLACK);
-//        else {
-//            printf("Invalid Type\n");
-//        }
-//    } while (chosenSolider == '\0');
-//
-//    game->gameBoard[GET_ROW(posOfPawn)][GET_COLUMN(posOfPawn)] = chosenSolider;
-//
-//}
-
 void updateScore(char soldierDied, ChessGame *game) {
     int isBlackDied = isupper(soldierDied) == 0 ? -1 : 1;
 
@@ -671,6 +546,108 @@ void updateScore(char soldierDied, ChessGame *game) {
 
 }
 
+void doCastleMove(ChessGame *game, Position src, Position dest, moveNode *move) {
+    char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
+    int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+
+    Position kingDest;
+    Position rookDest;
+    kingDest.row = myRow;
+    rookDest.row = myRow;
+
+
+    if (srcSoldier == KING_WHITE || srcSoldier == KING_BLACK) {
+        if (dest.column == 'A') { // left castling
+            if (srcSoldier == KING_WHITE)
+                move->turnedOffWhiteLeftCastle = 1;
+            else if (srcSoldier == KING_BLACK)
+                move->turnedOffBlackLeftCastle = 1;
+            kingDest.column = 'C';
+            rookDest.column = 'D';
+        } else if (dest.column == 'H') {
+            if (srcSoldier == KING_WHITE)
+                move->turnedOffWhiteRightCastle = 1;
+            else if (srcSoldier == KING_BLACK)
+                move->turnedOffBlackRightCastle = 1;
+            kingDest.column = 'G';
+            rookDest.column = 'F';
+        }
+        movePiece(game, src, kingDest);
+        movePiece(game, dest, rookDest);
+    } else if (srcSoldier == ROOK_WHITE || srcSoldier == ROOK_BLACK) {
+        if (src.column == 'A') { // left castling
+            if (srcSoldier == ROOK_WHITE)
+                move->turnedOffWhiteLeftCastle = 1;
+            else if (srcSoldier == ROOK_BLACK)
+                move->turnedOffBlackLeftCastle = 1;
+            kingDest.column = 'C';
+            rookDest.column = 'D';
+        } else if (src.column == 'H') {
+            if (srcSoldier == ROOK_WHITE)
+                move->turnedOffWhiteRightCastle = 1;
+            else if (srcSoldier == ROOK_BLACK)
+                move->turnedOffBlackRightCastle = 1;
+            kingDest.column = 'G';
+            rookDest.column = 'F';
+        }
+        movePiece(game, dest, kingDest);
+        movePiece(game, src, rookDest);
+    }
+    if (game->currentPlayer == WHITE_PLAYER)
+        game->whiteCastle = 0;
+    else
+        game->blackCastle = 0;
+}
+
+
+
+void updateCastleFlags(ChessGame *game, moveNode *move) {
+    if (move->source.column == 'A') {
+        if (move->srcSoldier == ROOK_WHITE) {
+            if (game->leftWhiteRookMoved == 0)
+                move->turnedOffWhiteLeftCastle = 1;
+            else
+                move->turnedOffWhiteLeftCastle = 0;
+        } else if (move->srcSoldier == ROOK_BLACK) {
+            if (game->leftBlackRookMoved == 0)
+                move->turnedOffBlackLeftCastle = 1;
+            else
+                move->turnedOffBlackLeftCastle = 0;
+        }
+    } else if (move->source.column == 'H') {
+        if (move->srcSoldier == ROOK_WHITE) {
+            if (game->rightWhiteRookMoved == 0)
+                move->turnedOffWhiteRightCastle = 1;
+            else
+                move->turnedOffWhiteRightCastle = 0;
+        } else if (move->srcSoldier == ROOK_BLACK) {
+            if (game->rightBlackRookMoved == 0)
+                move->turnedOffBlackRightCastle = 1;
+            else
+                move->turnedOffBlackRightCastle = 0;
+        }
+    } else if (move->source.column == KING_INITIAL_COL_CHAR) {
+        if (move->srcSoldier == KING_WHITE) {
+            if (game->whiteCastle == 1) {
+                move->turnedOffWhiteRightCastle = 1;
+                move->turnedOffWhiteLeftCastle = 1;
+            } else {
+                move->turnedOffWhiteRightCastle = 0;
+                move->turnedOffWhiteLeftCastle = 0;
+            }
+        } else if (move->srcSoldier == KING_BLACK) {
+            if (game->blackCastle == 1) {
+                move->turnedOffBlackRightCastle = 1;
+                move->turnedOffBlackLeftCastle = 1;
+            } else {
+                move->turnedOffBlackRightCastle = 0;
+                move->turnedOffBlackLeftCastle = 0;
+            }
+        }
+    }
+}
+
+
 CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (game == NULL)
         return INVALID_ARGUMENT;
@@ -678,21 +655,34 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (!isValidMove(game, src, dest))
         return ILLEGAL_MOVE;
 
+    int otherPlayer = game->currentPlayer == WHITE_PLAYER ? BLACK_PLAYER : WHITE_PLAYER;
+    char destSoldier = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
+    char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
 
-    char soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-    if (soldierDied != EMPTY_ENTRY)
-        updateScore(soldierDied, game);
+    if (getPlayer(destSoldier) == otherPlayer)
+        updateScore(destSoldier, game);
+
     moveNode move;
     move.source = src;
     move.destination = dest;
-    move.soldierDied = soldierDied;
+    move.destSoldier = destSoldier;
+    move.srcSoldier = srcSoldier;
+    move.turnedOffBlackRightCastle = 0;
+    move.turnedOffBlackLeftCastle = 0;
+    move.turnedOffWhiteRightCastle = 0;
+    move.turnedOffWhiteLeftCastle = 0;
 
-    addMovetoHistory(game->history, move);
+    if (isCastleMove(game, src, dest)) {
+        doCastleMove(game, src, dest, &move);
+    } else {
+        updateCastleFlags(game, &move);
+        movePiece(game, src, dest);
+    }
 
-    movePiece(game, src, dest);
 
     if (game->gameBoard[WHITE_INITIAL_ROW - 1][0] != ROOK_WHITE)
         game->leftWhiteRookMoved = true;
+
     if (game->gameBoard[WHITE_INITIAL_ROW - 1][GAME_SIZE - 1] != ROOK_WHITE)
         game->rightWhiteRookMoved = true;
     if (game->gameBoard[BLACK_INITIAL_ROW - 1][0] != ROOK_BLACK)
@@ -700,6 +690,7 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
     if (game->gameBoard[BLACK_INITIAL_ROW - 1][GAME_SIZE - 1] != ROOK_BLACK)
         game->rightBlackRookMoved = true;
 
+    addMovetoHistory(game->history, move);
     return SUCCESS;
 
 }
@@ -707,12 +698,6 @@ CHESS_MESSAGE setMove(ChessGame *game, Position src, Position dest) {
 void changePlayer(ChessGame *game) {
     game->currentPlayer = 1 - game->currentPlayer;
 }
-
-//int getSoldierColor(char soldier) {// We have that function already!
-//    if (soldier == EMPTY_ENTRY)
-//        return -1;
-//    return isupper(soldier) == 0 ? WHITE_PLAYER : BLACK_PLAYER;
-//}
 
 bool areThereAnyMoves(ChessGame *game) {
 
@@ -758,8 +743,7 @@ CHESS_MESSAGE checkStatus(ChessGame *game) {
 
 char *getStringFromPosition(Position dest) {
     char *result = (char *) malloc(sizeof(char) * 15);
-    if(result==NULL)
-    {
+    if (result == NULL) {
         printf("%s", MALLOC_ERROR);
         return NULL;
     }
@@ -779,22 +763,9 @@ int getMoves(ChessGame *game, Position *result, Position pos) {
         dest.row = i;
         for (int j = 0; j < GAME_SIZE; j++) {
             dest.column = 'A' + j;
-            if (isValidMove(game, pos, dest))
+            if (isValidMove(game, pos, dest)) {
                 result[movesCounter++] = dest;
-        }
-    }
-    int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
-    Position kingPos = game->currentPlayer == WHITE_PLAYER ? game->whiteKingPos : game->blackKingPos;
-    dest.row = myRow;
-    if (pos.row == myRow) {
-        if (pos.column == 'H') {
-            dest.column = 'G';
-            if (legalCastling(game, kingPos, dest, true))
-                result[movesCounter++] = pos;
-        } else if (pos.column == 'A') {
-            dest.column = 'C';
-            if (legalCastling(game, kingPos, dest, false))
-                result[movesCounter++] = pos;
+            }
         }
     }
     return movesCounter;
@@ -805,49 +776,45 @@ void printMoves(ChessGame *game, Position pos) {
     if (game == NULL)
         return;
     Position *result = (Position *) malloc(28 * sizeof(Position));//28 is approximately the maximum number of moves
-    if(result==NULL)
-    {
+    if (result == NULL) {
         printf("%s", MALLOC_ERROR);
         return;
     }
     int positionCounter = getMoves(game, result, pos);
+    if (positionCounter == 0) {
+        free(result);
+        printf("No available move\n");
+        return;
+    }
     result = (Position *) realloc(result, positionCounter * sizeof(Position));
-    if(result==NULL)
-    {
+    if (result == NULL) {
         printf("%s", MALLOC_ERROR);
         return;
     }
     char **movesArray = (char **) malloc(sizeof(char) * positionCounter);
-    if(movesArray==NULL)
-    {
+    if (movesArray == NULL) {
         printf("%s", MALLOC_ERROR);
         return;
     }
     for (int i = 0; i < positionCounter; i++) {
         movesArray[i] = (char *) malloc(sizeof(char) * 15);//15 is maximum length of a row
-        if(movesArray[i]==NULL)
-        {
+        if (movesArray[i] == NULL) {
             printf("%s", MALLOC_ERROR);
             return;
         }
     }
     int k = 0;
-    char castle1[15];
-//    if(castle1==NULL)
-//    {
-//        printf("%s", MALLOC_ERROR);
-//        return;
-//    }
-    char castle2[15];
-//    if(castle2==NULL)
-//    {
-//        printf("%s", MALLOC_ERROR);
-//        return;
-//    }
+    char castle1[15] = "";
+    char castle2[15] = "";
+
     for (int i = 0; i < positionCounter; i++, k++) {
         movesArray[k] = getStringFromPosition(result[i]);
-        if(movesArray[k]==NULL)
+        if (movesArray[k] == NULL) {
+            for (int i = 0; i < positionCounter; i++)
+                free(movesArray[i]);
+            free(result);
             return;
+        }
         char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
         int myKingInitRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
 
@@ -859,27 +826,37 @@ void printMoves(ChessGame *game, Position pos) {
         if (game->gameBoard[GET_ROW(pos)][GET_COLUMN(pos)] == myKing) {//if get_moves asks for king
             if (pos.column == KING_INITIAL_COL_CHAR && GET_ROW(pos) == myKingInitRow) {
                 if (GET_ROW(result[i]) == myKingInitRow) {
-                    if (castleRight && GET_COLUMN(result[i]) == KING_INITIAL_COL_NUM + 2) {
+                    if (castleRight && result[i].column == 'H') {
                         sprintf(castle2, "castle <%d,H>", result[i].row);
                         k--;
                         continue;
                     }
-                    if (castleLeft && GET_COLUMN(result[i]) == KING_INITIAL_COL_NUM - 2) {
+                    if (castleLeft && GET_COLUMN(result[i]) == 'A') {
                         sprintf(castle1, "castle <%d,A>", result[i].row);
                         k--;
                         continue;
                     }
                 }
             }
-        } else if (movesArray[k][3] == pos.column && movesArray[k][1] - '0' == pos.row) { // if get_moves asks for rook
-            sprintf(castle1, "castle <%d,%c>", result[i].row, pos.column);
-            k--;
-            continue;
+        } else if (movesArray[k][3] == KING_INITIAL_COL_CHAR &&
+                   movesArray[k][1] - '0' == pos.row) { // if get_moves asks for rook
+            if (game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] == myKing) {
+                sprintf(castle1, "castle <%d,%c>", result[i].row, pos.column);
+                k--;
+                continue;
+            }
         }
 
+        char soldierDiedOrMyKing = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])];
+        bool someoneDied;
+        if (getPlayer(soldierDiedOrMyKing) == game->currentPlayer)
+            someoneDied = false;
+        else if (getPlayer(soldierDiedOrMyKing) == EMPTY_SQUARE)
+            someoneDied = false;
+        else
+            someoneDied = true;
 
-        bool someoneDied = game->gameBoard[GET_ROW(result[i])][GET_COLUMN(result[i])] != EMPTY_ENTRY ?
-                           true : false;
+
         ChessGame *copy = gameCopy(game);
         movePiece(copy, pos, result[i]);
         if (myPositionUnderThreat(copy, result[i])) {
@@ -898,61 +875,133 @@ void printMoves(ChessGame *game, Position pos) {
 
     }
     if (strcmp(castle1, "") != 0)
-        strcpy(movesArray[k++],castle1);
+        strcpy(movesArray[k++], castle1);
     if (strcmp(castle2, "") != 0)
-        strcpy(movesArray[k],castle2);
+        strcpy(movesArray[k], castle2);
     for (int i = 0; i < positionCounter; i++)
         printf("%s\n", movesArray[i]);
     for (int i = 0; i < positionCounter; i++)
         free(movesArray[i]);
-//    free(castle2);
-//    free(castle1);
+
     free(result);
 }
 
-Position *isCastling(ChessGame *game, moveNode move) {
-    Position *res = (Position *) malloc(sizeof(Position) * 2);
-    int myRow = game->currentPlayer == WHITE_PLAYER ? BLACK_INITIAL_ROW : WHITE_INITIAL_ROW;
-    char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_BLACK : KING_WHITE);
+Position *isCastling(moveNode move) {
+    Position *res = (Position *) malloc(sizeof(Position) * 4);
 
-    res[0].row = res[1].row = INVALID_ROW;
-    res[0].column = res[1].column = INVALID_COL;
+    int myRow = INVALID_ROW;
+    char myKing = INVALID_COL;
+    char myRook = INVALID_COL;
 
-
-    if (game->gameBoard[GET_ROW(move.destination)][GET_COLUMN(move.destination)] == myKing) {
-        if (move.source.row == myRow && move.source.column == KING_INITIAL_COL_CHAR) {
-            if (move.destination.row == myRow) {
-                if (move.destination.column == KING_INITIAL_COL_CHAR + 2) {
-                    res[0].row = res[1].row = myRow;
-                    res[0].column = 'F';
-                    res[1].column = 'H';
-                    if (game->currentPlayer == BLACK_PLAYER) {
-                        game->whiteCastle = true;
-                        game->rightWhiteRookMoved = false;
-                    } else {
-                        game->blackCastle = true;
-                        game->rightBlackRookMoved = false;
-                    }
-
-                }
-                if (move.destination.column == KING_INITIAL_COL_CHAR - 2) {
-                    res[0].row = res[1].row = myRow;
-                    res[0].column = 'D';
-                    res[1].column = 'A';
-                    if (game->currentPlayer == BLACK_PLAYER) {
-                        game->whiteCastle = true;
-                        game->leftWhiteRookMoved = false;
-                    } else {
-                        game->blackCastle = true;
-                        game->leftBlackRookMoved = false;
-                    }
-                }
-            }
-        }
+    if (move.srcSoldier == KING_WHITE || move.srcSoldier == KING_BLACK) {
+        myRow = move.srcSoldier == KING_WHITE ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+        myKing = (char) (move.srcSoldier == KING_WHITE ? KING_WHITE : KING_BLACK);
+        myRook = (char) (move.srcSoldier == KING_WHITE ? ROOK_WHITE : ROOK_BLACK);
     }
+
+    if (move.destSoldier == KING_WHITE || move.destSoldier == KING_BLACK) {
+        myRow = move.destSoldier == KING_WHITE ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
+        myKing = (char) (move.destSoldier == KING_WHITE ? KING_WHITE : KING_BLACK);
+        myRook = (char) (move.destSoldier == KING_WHITE ? ROOK_WHITE : ROOK_BLACK);
+    }
+
+
+    res[0].row = INVALID_ROW;
+    res[0].column = INVALID_COL;
+    res[1].row = INVALID_ROW;
+    res[1].column = INVALID_COL;
+    res[2].row = INVALID_ROW;
+    res[2].column = INVALID_COL;
+    res[3].row = INVALID_ROW;
+    res[3].column = INVALID_COL;
+
+    if (move.srcSoldier == myKing && move.destSoldier == myRook) {
+        res[0].row = myRow;
+        res[1].row = myRow;
+        res[2].row = myRow;
+        res[3].row = myRow;
+        if (move.destination.column == 'A') {
+            res[0].column = 'D';
+            res[1].column = 'A';
+            res[2].column = 'C';
+            res[3].column = KING_INITIAL_COL_CHAR;
+        } else if (move.destination.column == 'H') {
+            res[0].column = 'F';
+            res[1].column = 'H';
+            res[2].column = 'G';
+            res[3].column = KING_INITIAL_COL_CHAR;
+        }
+
+    } else if (move.srcSoldier == myRook && move.destSoldier == myKing) {
+        res[0].row = myRow;
+        res[1].row = myRow;
+        res[2].row = myRow;
+        res[3].row = myRow;
+        if (move.source.column == 'A') {
+            res[0].column = 'D';
+            res[1].column = 'A';
+            res[2].column = 'C';
+            res[3].column = KING_INITIAL_COL_CHAR;
+        } else if (move.source.column == 'H') {
+            res[0].column = 'F';
+            res[1].column = 'H';
+            res[2].column = 'G';
+            res[3].column = KING_INITIAL_COL_CHAR;
+        }
+
+    }
+
     return res;
 
 }
+
+int isCastleSoldiers(moveNode *lastMove) {
+    if (lastMove->srcSoldier == ROOK_WHITE && lastMove->destSoldier == KING_WHITE)
+        return 1;
+    if (lastMove->srcSoldier == KING_WHITE && lastMove->destSoldier == ROOK_WHITE)
+        return 1;
+    if (lastMove->srcSoldier == ROOK_BLACK && lastMove->destSoldier == KING_BLACK)
+        return 2;
+    if (lastMove->srcSoldier == KING_BLACK && lastMove->destSoldier == ROOK_BLACK)
+        return 2;
+    return 0;
+}
+
+void updateCastleForUndo(ChessGame *game, moveNode *lastMove) {
+    if (lastMove->turnedOffWhiteRightCastle == 1 &&
+        lastMove->turnedOffWhiteLeftCastle == 1) { // king movement. not castle
+        game->whiteCastle = 1;
+    } else if (lastMove->turnedOffWhiteRightCastle == 1 &&
+               lastMove->turnedOffWhiteLeftCastle == 0) {
+        game->rightWhiteRookMoved = 0;
+        if (isCastleSoldiers(lastMove) == 1) {
+            game->whiteCastle = 1;
+        }
+    } else if (lastMove->turnedOffWhiteRightCastle == 0 &&
+               lastMove->turnedOffWhiteLeftCastle == 1) {
+        game->leftWhiteRookMoved = 0;
+        if (isCastleSoldiers(lastMove) == 1) {
+            game->whiteCastle = 1;
+        }
+    } else if (lastMove->turnedOffBlackRightCastle == 1 &&
+               lastMove->turnedOffBlackLeftCastle == 1) { // king movement. not castle
+        game->blackCastle = 1;
+    } else if (lastMove->turnedOffBlackRightCastle == 1 &&
+               lastMove->turnedOffBlackLeftCastle == 0) {
+        game->rightBlackRookMoved = 0;
+        if (isCastleSoldiers(lastMove) == 2) {
+            game->blackCastle = 1;
+        }
+    } else if (lastMove->turnedOffBlackRightCastle == 0 &&
+               lastMove->turnedOffBlackLeftCastle == 1) {
+        game->leftBlackRookMoved = 0;
+        if (isCastleSoldiers(lastMove) == 2) {
+            game->blackCastle = 1;
+        }
+    }
+
+}
+
 
 CHESS_MESSAGE undoMove(ChessGame *game) {
     if (game == NULL)
@@ -960,29 +1009,26 @@ CHESS_MESSAGE undoMove(ChessGame *game) {
     if (isHistoryEmpty(game->history))
         return NO_HISTORY;
     moveNode *lastMove = removeRecentMove(game->history);
-    Position *rookPositions = isCastling(game, *lastMove);
-    if (rookPositions[0].row != INVALID_ROW) {  // for castling move
+    Position *castlingPositions = isCastling(*lastMove);
+    if (castlingPositions[0].row != INVALID_ROW) {  // for castling move
 
-        movePiece(game, rookPositions[0], rookPositions[1]);
-    }
-    movePiece(game, lastMove->destination, lastMove->source);
-    game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->soldierDied;
-    if (lastMove->soldierDied != EMPTY_ENTRY) {
-        char soldier = (char) (isupper(lastMove->soldierDied) == 0 ? toupper(lastMove->soldierDied) : tolower(
-                lastMove->soldierDied));
-        updateScore(soldier, game);
-    }
-    if (lastMove->source.row == WHITE_INITIAL_ROW && lastMove->source.column ==KING_INITIAL_COL_CHAR){
-        if (game->gameBoard[WHITE_INITIAL_ROW-1][KING_INITIAL_COL_NUM] == KING_WHITE){
-            game->whiteCastle = true;
+        movePiece(game, castlingPositions[0], castlingPositions[1]);
+        movePiece(game, castlingPositions[2], castlingPositions[3]);
+
+    } else {
+        movePiece(game, lastMove->destination, lastMove->source);
+        game->gameBoard[GET_ROW(lastMove->destination)][GET_COLUMN(lastMove->destination)] = lastMove->destSoldier;
+        if (lastMove->destSoldier != EMPTY_ENTRY) {
+            char soldier = (char) (isupper(lastMove->destSoldier) == 0 ? toupper(lastMove->destSoldier) : tolower(
+                    lastMove->destSoldier));
+            updateScore(soldier, game);
         }
     }
-    if (lastMove->source.row == BLACK_INITIAL_ROW && lastMove->source.column ==KING_INITIAL_COL_CHAR){
-        if (game->gameBoard[BLACK_INITIAL_ROW-1][KING_INITIAL_COL_NUM] == KING_BLACK){
-            game->blackCastle = true;
-        }
-    }
-    free(rookPositions);
+
+    updateCastleForUndo(game, lastMove);
+
+
+    free(castlingPositions);
     return SUCCESS;
 }
 
@@ -1033,40 +1079,124 @@ Position getKingPos(ChessGame *game, bool isWhiteKing) {
     return kingPos;
 }
 
-int getScore(ChessGame *game){
+int getScore(ChessGame *game) {
     int score = 0;
     char current;
-    for (int i=0; i<GAME_SIZE; i++){
-        for (int j = 0; j< GAME_SIZE; j++){
+    for (int i = 0; i < GAME_SIZE; i++) {
+        for (int j = 0; j < GAME_SIZE; j++) {
             current = game->gameBoard[i][j];
-            if (current==PAWN_WHITE)
+            if (current == PAWN_WHITE)
                 score++;
-            else if (current==PAWN_BLACK)
+            else if (current == PAWN_BLACK)
                 score--;
-//            else if (current==PAWN_BLACK)
-//                score--;
-            else if (current==ROOK_WHITE)
-                score+=5;
-            else if (current==ROOK_BLACK)
-                score-=5;
-            else if (current==KNIGHT_WHITE)
-                score+=3;
-            else if (current==KNIGHT_BLACK)
-                score-=3;
-            else if (current==BISHOP_WHITE)
-                score+=3;
-            else if (current==BISHOP_BLACK)
-                score-=3;
-            else if (current==QUEEN_WHITE)
-                score+=9;
-            else if (current==QUEEN_BLACK)
-                score-=9;
-            else if (current==KING_WHITE)
-                score+=100;
-            else if (current==KING_BLACK)
-                score-=100;
+            else if (current == ROOK_WHITE)
+                score += 5;
+            else if (current == ROOK_BLACK)
+                score -= 5;
+            else if (current == KNIGHT_WHITE)
+                score += 3;
+            else if (current == KNIGHT_BLACK)
+                score -= 3;
+            else if (current == BISHOP_WHITE)
+                score += 3;
+            else if (current == BISHOP_BLACK)
+                score -= 3;
+            else if (current == QUEEN_WHITE)
+                score += 9;
+            else if (current == QUEEN_BLACK)
+                score -= 9;
+            else if (current == KING_WHITE)
+                score += 100;
+            else if (current == KING_BLACK)
+                score -= 100;
 
         }
     }
     return score;
 }
+
+bool checkCastleRules(ChessGame *game, Position src, Position dest, int castleFlag, int myRow, int plusOrMinus) {
+    Position firstStep;
+    firstStep.row = myRow + 1;
+    firstStep.column = (char) (KING_INITIAL_COL_CHAR + plusOrMinus);
+
+    if (GET_COLUMN(src) != KING_INITIAL_COL_NUM)
+        return false;
+
+    if (myPositionUnderThreat(game, src))
+        return false;
+
+    if (castleFlag)
+        return false;
+
+    if (game->gameBoard[GET_ROW(firstStep)][GET_COLUMN(firstStep)] != EMPTY_ENTRY)
+        return false;
+
+    ChessGame *copy = gameCopy(game);
+    movePiece(copy, src, firstStep);
+    src.column += plusOrMinus;
+    firstStep.column += plusOrMinus;
+
+    if (game->gameBoard[GET_ROW(firstStep)][GET_COLUMN(firstStep)] != EMPTY_ENTRY) {
+        gameDestroy(&copy);
+        return false;
+    }
+    if (myPositionUnderThreat(copy, src)) {
+        gameDestroy(&copy);
+        return false;
+    }
+
+    movePiece(copy, src, firstStep);
+    src.column += plusOrMinus;
+    firstStep.column += plusOrMinus;
+    if (myPositionUnderThreat(copy, src)) {
+        gameDestroy(&copy);
+        return false;
+    }
+
+    if (plusOrMinus == -1) { // left castle
+        if (game->gameBoard[GET_ROW(firstStep)][GET_COLUMN(firstStep)] != EMPTY_ENTRY) {
+            gameDestroy(&copy);
+            return false;
+        }
+    }
+
+    gameDestroy(&copy);
+    return true;
+}
+
+
+bool isCastleMove(ChessGame *game, Position src, Position dest) {
+    int myRow = game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
+    char myKing = (char) (game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
+    char myRook = (char) (game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
+    char srcSoldier = game->gameBoard[GET_ROW(src)][GET_COLUMN(src)];
+    char destSoldier = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
+
+    int myCastle = game->currentPlayer == WHITE_PLAYER ? game->whiteCastle : game->blackCastle;
+    int cantDoLeftCastle = game->currentPlayer == WHITE_PLAYER ? game->leftWhiteRookMoved : game->leftBlackRookMoved;
+    int cantDoRightCastle = game->currentPlayer == WHITE_PLAYER ? game->rightWhiteRookMoved : game->rightBlackRookMoved;
+    if (!myCastle)
+        return false;
+
+    if (GET_ROW(src) != myRow || GET_ROW(dest) != myRow)
+        return false;
+
+
+    if (srcSoldier == myKing && destSoldier == myRook) {
+        if (dest.column == 'A')
+            return checkCastleRules(game, src, dest, cantDoLeftCastle, myRow, -1);
+        else if (dest.column == 'H')
+            return checkCastleRules(game, src, dest, cantDoRightCastle, myRow, 1);
+    } else if (srcSoldier == myRook && destSoldier == myKing) {
+        if (src.column == 'A')
+            return checkCastleRules(game, dest, src, cantDoLeftCastle, myRow, -1);
+        else if (src.column == 'H')
+            return checkCastleRules(game, dest, src, cantDoRightCastle, myRow, 1);
+    }
+
+    return false;
+
+
+}
+

@@ -106,6 +106,7 @@ void updateRoot(MiniMaxNode *root, MiniMaxNode *child) {
     }
 }
 
+
 void updateAlphaBeta(MiniMaxNode *root, bool isExpertLevel, int maxDepth) {
     if (root->game == NULL)
         return;
@@ -182,7 +183,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
     src.column = dest.column = 'Z';
     bestMove.source = src;
     bestMove.destination = dest;
-    bestMove.soldierDied = 'Z';
+    bestMove.destSoldier = 'Z';
     if (maxDepth == 5)
         maxDepth--;
     bool firstValid = true;
@@ -199,21 +200,19 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                 for (int j = 0; j < GAME_SIZE; j++) {
                     dest.column = 'A' + j;
                     if (isValidMove(copy, src, dest)) {
+
+                        setMove(copy, src, dest);
+
                         if (firstValid) {
-                            bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-                            bestMove.source = src;
-                            bestMove.destination = dest;
+                            bestMove= copy->history->moves[copy->history->actualSize-1];
                             firstValid = false;
                         }
-                        setMove(copy, src, dest);
 
                         if (maxDepth == 1) {// no recursion
                             int moveScore = scoringFunction(copy, isExpertLevel);
                             if (moveScore > bestScoreSoFar) {
                                 bestScoreSoFar = moveScore;
-                                bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-                                bestMove.source = src;
-                                bestMove.destination = dest;
+                                bestMove= copy->history->moves[copy->history->actualSize-1];
                             }
                         } else {
                             changePlayer(copy);
@@ -221,9 +220,7 @@ moveNode bestMove(ChessGame *game, int maxDepth, bool isExpertLevel) {
                             updateAlphaBeta(child, isExpertLevel, maxDepth - 1);
                             if (child->beta > currentAlpha) {
                                 currentAlpha = child->beta;
-                                bestMove.soldierDied = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
-                                bestMove.source = src;
-                                bestMove.destination = dest;
+                                bestMove= copy->history->moves[copy->history->actualSize-1];
                             }
                             changePlayer(copy);
                             nodeDestroy(child);

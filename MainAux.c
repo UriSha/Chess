@@ -258,7 +258,11 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
                 printf("The specified position does not contain your piece\n");
                 return false;
             }
-            if (setMove(session->game, command.source, command.destination) != SUCCESS) {
+            if (isCastleMove(session->game,command.source,command.destination)){
+                printf("Illegal move\n");
+                return false;
+            }
+            else if (setMove(session->game, command.source, command.destination) != SUCCESS) {
                 printf("Illegal move\n");
                 return false;
             }
@@ -279,30 +283,15 @@ bool processCommandGame(GameSession *session, ChessCommand command) {
                 printf("Wrong position for a rook\n");
                 return false;
             }
-            Position dest;
-            int myRow = session->game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
-            dest.row = myRow;
             Position kingPos = session->game->currentPlayer == WHITE_PLAYER ? session->game->whiteKingPos
                                                                             : session->game->blackKingPos;
-            if (command.source.row == myRow && command.source.column == 'H') {//right castle
 
-                dest.column = KING_INITIAL_COL_CHAR + 2;
-                if (!legalCastling(session->game, kingPos, dest, true)) {
-                    printf("Illegal castling move\n");
-                    return false;
-                }
-                if (setMove(session->game, kingPos, dest) == SUCCESS)
-                    return true;
-            } else if (command.source.row == myRow && command.source.column == 'A')//left castle
-            {
-                dest.column = KING_INITIAL_COL_CHAR - 2;
-                if (!legalCastling(session->game, kingPos, dest, false)) {
-                    printf("Illegal castling move\n");
-                    return false;
-                }
-                if (setMove(session->game, kingPos, dest) == SUCCESS)
-                    return true;
+            if (!isCastleMove(session->game,command.source,kingPos)){
+                printf("Illegal castling move\n");
+                return false;
             }
+            if (setMove(session->game, kingPos, command.source) == SUCCESS)
+                return true;
             break;
 
         case GET_MOVES:
@@ -434,9 +423,7 @@ CHESS_MESSAGE gameState(GameSession *session) {
         if (session->mode == ONE_PLAYER)//computer's turn
         {
             moveNode move = bestMove(session->game, session->difficulty, session->difficulty == 5);
-            ChessGame *copy = gameCopy(session->game);
-            setMove(copy, move.source, move.destination);
-            Position *positions = isCastling(copy, move);
+            Position *positions = isCastling(move);
             setMove(session->game, move.source, move.destination);
             if (positions[0].row == INVALID_ROW) {
                 char *computerSoldier = getSoldierName(
@@ -448,12 +435,11 @@ CHESS_MESSAGE gameState(GameSession *session) {
                                                                                 : session->game->blackKingPos;
                 Position rookPosition;
                 rookPosition.row = session->game->currentPlayer == WHITE_PLAYER ? WHITE_INITIAL_ROW : BLACK_INITIAL_ROW;
-                rookPosition.column = (char) (kingPos.column == 'B' ? 'C' : 'F');
-                printf("Computer: castle King at <%d,y%c> and Rook at <%d,%c>\n", kingPos.row, kingPos.column,
+                rookPosition.column = (char) (kingPos.column == 'C' ? 'D' : 'F');
+                printf("Computer: castle King at <%d,%c> and Rook at <%d,%c>\n", kingPos.row, kingPos.column,
                        rookPosition.row, rookPosition.column);
             }
             free(positions);
-            gameDestroy(&copy);
             changePlayer(session->game);
             msg = checkStatus(session->game);
             gameStatus(msg, session);

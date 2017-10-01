@@ -396,15 +396,18 @@ void drag(SDL_Event *event, gameWin *src) {
 
 }
 
-bool isCastlingGameWindow(Position source, Position dest, int myRow) {
-    if (dest.column == source.column && dest.row == source.row)
+bool isCastlingGameWindow(Position source, Position dest, ChessGame *game) {
+    char srcSol = game->gameBoard[GET_ROW(source)][GET_COLUMN(source)];
+    char destSol = game->gameBoard[GET_ROW(dest)][GET_COLUMN(dest)];
+
+    char myKing = (char)(game->currentPlayer == WHITE_PLAYER ? KING_WHITE : KING_BLACK);
+    char myRook = (char)(game->currentPlayer == WHITE_PLAYER ? ROOK_WHITE : ROOK_BLACK);
+    if (srcSol ==myKing && destSol == myRook)
         return true;
-    if (source.row - 1 == myRow && source.column == KING_INITIAL_COL_CHAR) {
-        if (dest.row - 1 == myRow) {
-            if (dest.column == 'C' || dest.column == 'G')
-                return true;
-        }
-    }
+
+    if (srcSol ==myRook && destSol == myKing)
+        return true;
+
     return false;
 
 
@@ -432,14 +435,8 @@ bool showGetMovesGameWin(GameSession *session, gameWin *src, SDL_Event *event) {
     for (int i = 0; i < numOfMoves; i++) {
         curDest = movesList[i];
 
-        int myRow = session->user_color == WHITE_PLAYER ? WHITE_INITIAL_ROW - 1 : BLACK_INITIAL_ROW - 1;
-        if (isCastlingGameWindow( srcPos, curDest, myRow)) {
-            if (soldier == KING_BLACK || soldier == KING_WHITE) {
-                int column = curDest.column == KING_INITIAL_COL_CHAR-2 ? 0 : GAME_SIZE - 1;
-                src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + column] = src->purple;
-            } else {
-                src->movesGrid[myRow * sizeof(SDL_Texture *) + KING_INITIAL_COL_NUM] = src->purple; //TODO fix castling
-            }
+        if (isCastlingGameWindow(srcPos,curDest, session->game)) {
+                src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->purple;
 
         } else {
             src->movesGrid[GET_ROW(curDest) * sizeof(SDL_Texture *) + GET_COLUMN(curDest)] = src->yellow;

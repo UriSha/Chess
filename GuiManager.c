@@ -321,8 +321,8 @@ MANAGER_EVENT handleManagerDueToGameEvent(GameSession *session, GuiManager *src,
         src->activeWin = LOAD_GAME_WINDOW_ACTIVE;
     }
     if (event == GAME_UNDO) {
-        if (undo(session))
-            undo(session);
+        if (undoMove(session->game) == SUCCESS)
+            undoMove(session->game);
         src->gameWin->isSaved = false;
     }
     if (event == GAME_SAVE) {

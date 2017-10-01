@@ -272,17 +272,7 @@ bool QBRThreatsPosition(ChessGame *game, int row, int col);
  * False - otherwise
  */
 bool myPositionUnderThreat(ChessGame *game, Position pos);
-/**
- * Checks if the castling move we are trying to do is legal
- * @param game -  The ChessGame
- * @param src  - The source position of the king
- * @param dest   - The destination position of the king
- * @param isRightCastling - a flag that is true if the castling move is right castling
- * @return
- * True - If this specific castling move is legal
- * False - otherwise
- */
-bool legalCastling(ChessGame *game, Position src, Position dest, bool isRightCastling);
+
 /**
  * Returns true if the move from the source Position to destination Position is legal for a king
  * @param game - The ChessGame
@@ -455,12 +445,11 @@ void printMoves(ChessGame *game, Position pos);
  * This function gets a moveNode - a move that was played during the game, and checks if this move was
  * Castling move. if yes:
  * It returns the Position of the rook and the Position of the king, after the Castling move
- * @param game - The ChessGame
  * @param move - moveNode with a move that was played during the game
  * @return
- * an array of two Positions - that contains either invalid data or the Positions of the rook and king
+ * an array of four Positions - that contains either invalid data or the Positions of the rook and king
  */
-Position *isCastling(ChessGame *game, moveNode move);
+Position * isCastling(moveNode move);
 
 /**
  * calculates the score of a given game
@@ -469,4 +458,8 @@ Position *isCastling(ChessGame *game, moveNode move);
  * @return the score of the game
  */
 int getScore(ChessGame *game);
+
+bool isCastleMove(ChessGame *game, Position src, Position dest);
+
+
 #endif //CHESS_CHESSGAME_H

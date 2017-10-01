@@ -13,7 +13,12 @@
 typedef struct chess_move_history{
     Position source;
     Position destination;
-    char soldierDied;
+    char destSoldier;
+    char srcSoldier;
+    int turnedOffWhiteRightCastle;
+    int turnedOffWhiteLeftCastle;
+    int turnedOffBlackRightCastle;
+    int turnedOffBlackLeftCastle;
 }moveNode;
 
 // new type used to hold chess moves
@@ -77,6 +82,5 @@ moveNode* removeRecentMove(ChessHistory* source);
  * @return true if the given ChessHistory is empty, false otherwise
  */
 bool isHistoryEmpty(ChessHistory* source);
-
 
 #endif //CHESS_CHESSHISTORY_H
