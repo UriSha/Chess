@@ -1115,7 +1115,7 @@ int getScore(ChessGame *game) {
     return score;
 }
 
-bool checkCastleRules(ChessGame *game, Position src, Position dest, int castleFlag, int myRow, int plusOrMinus) {
+bool checkCastleRules(ChessGame *game, Position src, int castleFlag, int myRow, int plusOrMinus) {
     Position firstStep;
     firstStep.row = myRow + 1;
     firstStep.column = (char) (KING_INITIAL_COL_CHAR + plusOrMinus);
@@ -1185,14 +1185,14 @@ bool isCastleMove(ChessGame *game, Position src, Position dest) {
 
     if (srcSoldier == myKing && destSoldier == myRook) {
         if (dest.column == 'A')
-            return checkCastleRules(game, src, dest, cantDoLeftCastle, myRow, -1);
+            return checkCastleRules(game, src, cantDoLeftCastle, myRow, -1);
         else if (dest.column == 'H')
-            return checkCastleRules(game, src, dest, cantDoRightCastle, myRow, 1);
+            return checkCastleRules(game, src, cantDoRightCastle, myRow, 1);
     } else if (srcSoldier == myRook && destSoldier == myKing) {
         if (src.column == 'A')
-            return checkCastleRules(game, dest, src, cantDoLeftCastle, myRow, -1);
+            return checkCastleRules(game, dest, cantDoLeftCastle, myRow, -1);
         else if (src.column == 'H')
-            return checkCastleRules(game, dest, src, cantDoRightCastle, myRow, 1);
+            return checkCastleRules(game, dest, cantDoRightCastle, myRow, 1);
     }
 
     return false;

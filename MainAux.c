@@ -170,6 +170,7 @@ bool processCommandSettings(GameSession *session, ChessCommand command) {
                 if (loadGame(command.path, session))
                     return false;
             }
+            return false;
         case GAME_MODE:
             if (command.validArg) {
                 session->mode = command.argument;
